@@ -1,0 +1,465 @@
+package rs.ac.bg.etf.pp1;
+
+import java_cup.runtime.*;
+import org.apache.log4j.*;
+import rs.ac.bg.etf.pp1.ast.*;
+
+parser code {:
+
+	boolean errorDetected;
+	
+	Logger log = Logger.getLogger(getClass());
+	
+	public void report_fatal_error(String message, Object info) throws java.lang.Exception 
+	{
+		done_parsing();
+		report_error(message, info);
+	}
+	
+	public void syntax_error(Symbol cur_token) 
+	{
+		report_error("\nSintaksna greska", cur_token);
+	}
+	
+	public void unrecovered_syntax_error(Symbol cur_token) throws java.lang.Exception
+	{
+		report_fatal_error("Fatalna greska, parsiranje se ne moze nastaviti", cur_token);
+	}
+	
+	public void report_error(String message, Object info)
+	{
+		errorDetected = true;
+		StringBuilder msg = new StringBuilder(message);
+		if (info instanceof Symbol)
+			msg.append(" na liniji ").append(((Symbol)info).left);
+		log.error(msg.toString());
+	}
+
+:}
+
+terminal PRG, CNS;
+terminal String IDT;
+terminal Integer NUM, BOO;
+terminal Character CHR;
+terminal LOB, LCB, MOB, MCB, SCL, ASG, COM, SOB, SCB;
+terminal ENM, CLS, EXT, ABS, VOI;
+terminal SIF, ELS, BRK, CON, RET, RED, PRT, SWC, FOR;
+terminal INC, DEC, LOR, AND, QSM, COL, MNS, PLS, MUL, DIV, MOD;
+terminal NEW, DOT, LEN, CSE;
+terminal EQL, NEQ, GRT, GRE, LET, LTE;
+
+nonterminal Program Program;
+nonterminal ProgramName ProgramName;
+nonterminal DeclList DeclList;
+nonterminal ConstDeclList ConstDeclList;
+nonterminal VarDeclList VarDeclList;
+nonterminal ClassDecl ClassDecl;
+nonterminal EnumDeclList EnumDeclList;
+nonterminal AbstractClassDecl AbstractClassDecl;
+nonterminal MethodDeclList MethodDeclList;
+nonterminal Type Type;
+nonterminal ConstDecl ConstDecl;
+nonterminal Constant Constant;
+nonterminal AdditionalConstDecl AdditionalConstDecl;
+nonterminal VarDecl VarDecl;
+nonterminal VarList VarList;
+nonterminal VarDeclListMultiple VarDeclListMultiple;
+nonterminal EnumIDT EnumIDT;
+nonterminal AdditionalEnumIDT AdditionalEnumIDT;
+nonterminal MethodDeclListOpt MethodDeclListOpt;
+nonterminal ExtendsOpt ExtendsOpt;
+nonterminal AsgNumOpt AsgNumOpt;
+nonterminal AbstractMethodDeclListOpt AbstractMethodDeclListOpt;
+nonterminal AbstractMethodDeclList AbstractMethodDeclList;
+nonterminal AbstractMethodDecl AbstractMethodDecl;
+nonterminal MethodDecl MethodDecl;
+nonterminal MethodTypeAndName MethodTypeAndName;
+nonterminal FormParsList FormParsList;
+nonterminal FormParsAdditional FormParsAdditional;
+nonterminal FormPar FormPar;
+nonterminal FormParOpt FormParOpt;
+nonterminal MethodDeclListPrgOpt MethodDeclListPrgOpt;
+nonterminal Statement Statement;
+nonterminal DesignatorStatement DesignatorStatement;
+nonterminal StatementList StatementList;
+nonterminal Condition Condition;
+nonterminal ElseOpt ElseOpt;
+nonterminal ExpressionOpt ExpressionOpt;
+nonterminal Expression Expression;
+nonterminal NumConst NumConst;
+nonterminal CaseList CaseList;
+nonterminal DesignatorStatementOpt DesignatorStatementOpt;
+nonterminal ConditionOpt ConditionOpt;
+nonterminal NumConstOpt NumConstOpt;
+nonterminal Designator Designator;
+nonterminal StatementListOpt StatementListOpt;
+nonterminal ActPars ActPars;
+nonterminal AssignOp AssignOp;
+nonterminal CondTerm CondTerm;
+nonterminal CondFact CondFact;
+nonterminal Relop Relop;
+nonterminal Addop Addop;
+nonterminal Mulop Mulop;
+nonterminal TermList TermList;
+nonterminal Term Term;
+nonterminal FactorList FactorList;
+nonterminal Factor Factor;
+nonterminal ExtensionFactor ExtensionFactor;
+nonterminal MinusOpt MinusOpt;
+nonterminal SimpleExpression SimpleExpression;
+nonterminal DesignatorTail DesignatorTail;
+
+precedence left ELS;
+
+/* Program */
+
+Program ::= 	(Program) PRG ProgramName:P1 DeclList:D2 LOB MethodDeclListPrgOpt:M3 LCB {: RESULT=new Program(P1, D2, M3); RESULT.setLine(P1left); :};
+
+ProgramName ::= (ProgramName) IDT:I1 {: RESULT=new ProgramName(I1); RESULT.setLine(I1left); :};
+
+DeclList ::= 	(DeclList_const) DeclList:D1 ConstDeclList:C2 {: RESULT=new DeclList_const(D1, C2); RESULT.setLine(D1left); :}
+				|
+				(DeclList_var) DeclList:D1 VarDeclList:V2 {: RESULT=new DeclList_var(D1, V2); RESULT.setLine(D1left); :}
+				|
+				(DeclList_class) DeclList:D1 ClassDecl:C2 {: RESULT=new DeclList_class(D1, C2); RESULT.setLine(D1left); :}
+				|
+				(DeclList_enum) DeclList:D1 EnumDeclList:E2 {: RESULT=new DeclList_enum(D1, E2); RESULT.setLine(D1left); :}
+				|
+				(DeclList_abstract_class) DeclList:D1 AbstractClassDecl:A2 {: RESULT=new DeclList_abstract_class(D1, A2); RESULT.setLine(D1left); :}
+				|
+				(DeclList_epsilon) {: RESULT=new DeclList_epsilon(); :} /* e */
+				; 
+
+/* ConstDecl */
+
+ConstDeclList ::= (ConstDeclList) CNS Type:T1 ConstDecl:C2 AdditionalConstDecl:A3 SCL {: RESULT=new ConstDeclList(T1, C2, A3); RESULT.setLine(T1left); :};
+
+ConstDecl ::= 	(ConstDecl) IDT:I1 ASG Constant:C2 {: RESULT=new ConstDecl(I1, C2); RESULT.setLine(I1left); :};
+
+AdditionalConstDecl ::= (AdditionalConstDecl_recursion) COM ConstDecl:C1 AdditionalConstDecl:A2 {: RESULT=new AdditionalConstDecl_recursion(C1, A2); RESULT.setLine(C1left); :}
+						|
+						(AdditionalConstDecl_epsilon) {: RESULT=new AdditionalConstDecl_epsilon(); :} /* e */
+						;
+
+Constant ::= 	(Constant_num) NUM:N1 {: RESULT=new Constant_num(N1); RESULT.setLine(N1left); :}
+				|
+				(Constant_chr) CHR:C1 {: RESULT=new Constant_chr(C1); RESULT.setLine(C1left); :}
+				|
+				(Constant_boo) BOO:B1 {: RESULT=new Constant_boo(B1); RESULT.setLine(B1left); :}
+				;
+
+/* VarDecl */
+
+VarDeclListMultiple ::= (VarDeclListMultiple_recursion) VarDeclListMultiple:V1 VarDeclList:V2 {: RESULT=new VarDeclListMultiple_recursion(V1, V2); RESULT.setLine(V1left); :}
+							|
+							(VarDeclListMultiple_epsilon) {: RESULT=new VarDeclListMultiple_epsilon(); :} /* e */
+							;
+
+VarDeclList ::= (VarDeclList) Type:T1 VarList:V2 SCL {: RESULT=new VarDeclList(T1, V2); RESULT.setLine(T1left); :};
+
+VarList ::= (VarList_recursion) VarList:V1 COM VarDecl:V2 {: RESULT=new VarList_recursion(V1, V2); RESULT.setLine(V1left); :}
+				|
+				(VarList_single) VarDecl:V1 {: RESULT=new VarList_single(V1); RESULT.setLine(V1left); :}
+				;
+			
+VarDecl ::= (VarDecl_array) IDT:I1 MOB MCB {: RESULT=new VarDecl_array(I1); RESULT.setLine(I1left); :}
+				|
+				(VarDecl_single) IDT:I1 {: RESULT=new VarDecl_single(I1); RESULT.setLine(I1left); :}
+				;
+
+/* EnumDecl */
+
+EnumDeclList ::= (EnumDeclList) ENM IDT:I1 LOB EnumIDT:E2 AdditionalEnumIDT:A3 LCB {: RESULT=new EnumDeclList(I1, E2, A3); RESULT.setLine(I1left); :};
+
+EnumIDT ::= (EnumIDTList) IDT:I1 AsgNumOpt:A2 {: RESULT=new EnumIDTList(I1, A2); RESULT.setLine(I1left); :};
+
+AsgNumOpt ::= (AsgNumOpt_exists) ASG NUM:N1 {: RESULT=new AsgNumOpt_exists(N1); RESULT.setLine(N1left); :}
+				|
+				(AsgNumOpt_epsilon) {: RESULT=new AsgNumOpt_epsilon(); :} /* e */
+				;
+
+AdditionalEnumIDT ::= (AdditionalEnumIDT_recursion) COM EnumIDT:E1 AdditionalEnumIDT:A2 {: RESULT=new AdditionalEnumIDT_recursion(E1, A2); RESULT.setLine(E1left); :}
+						|
+						(AdditionalEnumIDT_epsilon) {: RESULT=new AdditionalEnumIDT_epsilon(); :} /* e */
+						;
+
+/* ClassDecl */
+
+ClassDecl ::= (ClassDecl) CLS IDT:I1 ExtendsOpt:E2 LOB VarDeclListMultiple:V3 MethodDeclListOpt:M4 LCB {: RESULT=new ClassDecl(I1, E2, V3, M4); RESULT.setLine(I1left); :};
+
+ExtendsOpt ::= (ExtendsOpt_exists) EXT Type:T1 {: RESULT=new ExtendsOpt_exists(T1); RESULT.setLine(T1left); :}
+				|
+				(ExtendsOpt_epsilon) {: RESULT=new ExtendsOpt_epsilon(); :} /* e */
+				;
+
+MethodDeclListOpt ::= (MethodDeclListOpt_exists) LOB MethodDeclList:M1 LCB {: RESULT=new MethodDeclListOpt_exists(M1); RESULT.setLine(M1left); :}
+						|
+						(MethodDeclListOpt_epsilon) {: RESULT=new MethodDeclListOpt_epsilon(); :} /* e */
+						;
+
+/* AbstractClassDecl */
+
+AbstractClassDecl ::= (AbstractClassDecl) ABS CLS IDT:I1 ExtendsOpt:E2 LOB AbstractMethodDeclListOpt:A3 LCB {: RESULT=new AbstractClassDecl(I1, E2, A3); RESULT.setLine(I1left); :};
+
+AbstractMethodDeclListOpt ::= (AbstractMethodDeclListOpt_exists) LOB AbstractMethodDeclList:A1 LCB {: RESULT=new AbstractMethodDeclListOpt_exists(A1); RESULT.setLine(A1left); :}
+								|
+								(AbstractMethodDeclListOpt_epsilon) {: RESULT=new AbstractMethodDeclListOpt_epsilon(); :} /* e */
+								;
+
+AbstractMethodDeclList ::= (AbstractMethodDeclList_recursion_abs) AbstractMethodDeclList:A1 AbstractMethodDecl:A2 {: RESULT=new AbstractMethodDeclList_recursion_abs(A1, A2); RESULT.setLine(A1left); :}
+							|
+							(AbstractMethodDeclList_recursion_normal) AbstractMethodDeclList:A1 MethodDecl:M2 {: RESULT=new AbstractMethodDeclList_recursion_normal(A1, M2); RESULT.setLine(A1left); :}
+							|
+							(AbstractMethodDeclList_single_abs) AbstractMethodDecl:A1 {: RESULT=new AbstractMethodDeclList_single_abs(A1); RESULT.setLine(A1left); :}
+							|
+							(AbstractMethodDeclList_single_normal) MethodDecl:M1 {: RESULT=new AbstractMethodDeclList_single_normal(M1); RESULT.setLine(M1left); :}
+							;
+
+/* AbstractMethodDecl */
+
+AbstractMethodDecl ::= (AbstractMethodDecl) ABS MethodTypeAndName:M1 SOB FormParsList:F2 SCB SCL {: RESULT=new AbstractMethodDecl(M1, F2); RESULT.setLine(M1left); :};
+
+/* MethodDecl */
+
+MethodDeclListPrgOpt ::= (MethodDeclListPrgOpt_exists) MethodDeclList:M1 {: RESULT=new MethodDeclListPrgOpt_exists(M1); RESULT.setLine(M1left); :} 
+						|
+						(MethodDeclListPrgOpt_epsilon) {: RESULT=new MethodDeclListPrgOpt_epsilon(); :} /* e */
+						;
+
+MethodDeclList ::= (MethodDeclList_recursion) MethodDeclList:M1 MethodDecl:M2 {: RESULT=new MethodDeclList_recursion(M1, M2); RESULT.setLine(M1left); :}
+					|
+					(MethodDeclList_single) MethodDecl:M1 {: RESULT=new MethodDeclList_single(M1); RESULT.setLine(M1left); :}
+					;
+
+MethodDecl ::= (MethodDecl) MethodTypeAndName:M1 SOB FormParsList:F2 SCB VarDeclListMultiple:V3 LOB StatementListOpt:S4 LCB {: RESULT=new MethodDecl(M1, F2, V3, S4); RESULT.setLine(M1left); :};
+
+MethodTypeAndName ::= (MethodTypeAndName_void) VOI IDT:I1 {: RESULT=new MethodTypeAndName_void(I1); RESULT.setLine(I1left); :}
+						|
+						(MethodTypeAndName_type) Type:T1 IDT:I2 {: RESULT=new MethodTypeAndName_type(T1, I2); RESULT.setLine(T1left); :}
+						;
+
+StatementListOpt ::= (StatementListOpt_exists) StatementList:S1 {: RESULT=new StatementListOpt_exists(S1); RESULT.setLine(S1left); :}
+					|
+					(StatementListOpt_epsilon) {: RESULT=new StatementListOpt_epsilon(); :} /* e */
+					;
+
+StatementList ::= (StatementList_recursion) StatementList:S1 Statement:S2 {: RESULT=new StatementList_recursion(S1, S2); RESULT.setLine(S1left); :}
+					|
+					(StatementList_single) Statement:S1 {: RESULT=new StatementList_single(S1); RESULT.setLine(S1left); :}
+					;
+
+/* FormPars */
+
+FormParsList ::= (FormParsList) FormParOpt:F1 FormParsAdditional:F2 {: RESULT=new FormParsList(F1, F2); RESULT.setLine(F1left); :};
+
+FormParsAdditional ::= (FormParsAdditional_recursion) COM FormPar:F1 FormParsAdditional:F2 {: RESULT=new FormParsAdditional_recursion(F1, F2); RESULT.setLine(F1left); :}
+						|
+						(FormParsAdditional_epsilon) {: RESULT=new FormParsAdditional_epsilon(); :} /* e */
+						;
+
+FormParOpt ::= (FormParOpt_exists) FormPar:F1 {: RESULT=new FormParOpt_exists(F1); RESULT.setLine(F1left); :}
+			|
+			(FormParOpt_epsilon) {: RESULT=new FormParOpt_epsilon(); :} /* e */
+			;
+
+FormPar ::= (FormPar_array) Type:T1 IDT:I2 MOB MCB {: RESULT=new FormPar_array(T1, I2); RESULT.setLine(T1left); :}
+			|
+			(FormPar_single) Type:T1 IDT:I2 {: RESULT=new FormPar_single(T1, I2); RESULT.setLine(T1left); :}
+			;
+
+/* Type */
+
+Type ::= 	(Type) IDT:I1 {: RESULT=new Type(I1); RESULT.setLine(I1left); :};
+
+/* Statement */
+
+Statement ::= (Statement_designator) DesignatorStatement:D1 SCL {: RESULT=new Statement_designator(D1); RESULT.setLine(D1left); :}
+				|
+				(Statement_if) SIF SOB Condition:C1 SCB Statement:S2 ElseOpt:E3 {: RESULT=new Statement_if(C1, S2, E3); RESULT.setLine(C1left); :}
+				|
+				(Statement_break) BRK SCL {: RESULT=new Statement_break(); :}
+				|
+				(Statement_continue) CON SCL {: RESULT=new Statement_continue(); :}
+				|
+				(Statement_return) RET ExpressionOpt:E1 SCL {: RESULT=new Statement_return(E1); RESULT.setLine(E1left); :}
+				|
+				(Statement_read) RED SOB Designator:D1 SCB SCL {: RESULT=new Statement_read(D1); RESULT.setLine(D1left); :}
+				|
+				(Statement_print) PRT SOB Expression:E1 NumConstOpt:N2 SCB SCL {: RESULT=new Statement_print(E1, N2); RESULT.setLine(E1left); :}
+				|
+				(Statement_switch) SWC SOB Expression:E1 SCB LOB CaseList:C2 LCB {: RESULT=new Statement_switch(E1, C2); RESULT.setLine(E1left); :}
+				|
+				(Statement_for) FOR SOB DesignatorStatementOpt:D1 SCL ConditionOpt:C2 SCL DesignatorStatementOpt:D3 SCB Statement:S4 {: RESULT=new Statement_for(D1, C2, D3, S4); RESULT.setLine(D1left); :}
+				|
+				(Statement_block) LOB StatementList:S1 LCB {: RESULT=new Statement_block(S1); RESULT.setLine(S1left); :}
+				;
+
+ElseOpt ::= (ElseOpt_else) ELS Statement:S1 {: RESULT=new ElseOpt_else(S1); RESULT.setLine(S1left); :}
+				|
+				(ElseOpt_epsilon) {: RESULT=new ElseOpt_epsilon(); :} /* e */
+				;
+
+ExpressionOpt ::= (ExpressionOpt_exists) Expression:E1 {: RESULT=new ExpressionOpt_exists(E1); RESULT.setLine(E1left); :}
+					|
+					(ExpressionOpt_epsilon) {: RESULT=new ExpressionOpt_epsilon(); :} /* e */
+					;
+
+CaseList ::= (CaseList_recursion) CSE NumConst:N1 COL StatementList:S2 CaseList:C3 {: RESULT=new CaseList_recursion(N1, S2, C3); RESULT.setLine(N1left); :}
+				|
+				(CaseList_single) CSE NumConst:N1 COL StatementList:S2 {: RESULT=new CaseList_single(N1, S2); RESULT.setLine(N1left); :}
+				;
+
+NumConstOpt ::= (NumConstOpt_exists) NumConst:N1 {: RESULT=new NumConstOpt_exists(N1); RESULT.setLine(N1left); :}
+					|
+					(NumConstOpt_epsilon) {: RESULT=new NumConstOpt_epsilon(); :} /* e */
+					;
+
+NumConst ::= (NumConst) NUM:N1 {: RESULT=new NumConst(N1); RESULT.setLine(N1left); :};
+
+DesignatorStatementOpt ::= (DesignatorStatementOpt_exists) DesignatorStatement:D1 {: RESULT=new DesignatorStatementOpt_exists(D1); RESULT.setLine(D1left); :}
+								|
+								(DesignatorStatementOpt_epsilon) {: RESULT=new DesignatorStatementOpt_epsilon(); :} /* e */
+								;
+
+ConditionOpt ::= (ConditionOpt_exists) Condition:C1 {: RESULT=new ConditionOpt_exists(C1); RESULT.setLine(C1left); :}
+					|
+					(ConditionOpt_epsilon) {: RESULT=new ConditionOpt_epsilon(); :} /* e */
+					;
+				
+/* DesignatorStatement */
+
+DesignatorStatement ::= (DesignatorStatement_assign) Designator:D1 AssignOp:A2 Expression:E3 {: RESULT=new DesignatorStatement_assign(D1, A2, E3); RESULT.setLine(D1left); :}
+						|
+						(DesignatorStatement_method) Designator:D1 SOB ActPars:A2 SCB {: RESULT=new DesignatorStatement_method(D1, A2); RESULT.setLine(D1left); :}
+						|
+						(DesignatorStatement_inc) Designator:D1 INC {: RESULT=new DesignatorStatement_inc(D1); RESULT.setLine(D1left); :}
+						|
+						(DesignatorStatement_dec) Designator:D1 DEC {: RESULT=new DesignatorStatement_dec(D1); RESULT.setLine(D1left); :}
+						;
+
+/* ActPars */
+
+ActPars ::= (ActPars_recursion) Expression:E1 COM ActPars:A2 {: RESULT=new ActPars_recursion(E1, A2); RESULT.setLine(E1left); :}
+				|
+				(ActPars_single) Expression:E1 {: RESULT=new ActPars_single(E1); RESULT.setLine(E1left); :}
+				|
+				(ActPars_epsilon) {: RESULT=new ActPars_epsilon(); :} /* e */
+				;
+
+/* Condition */
+
+Condition ::= (Condition_single) CondTerm:C1 {: RESULT=new Condition_single(C1); RESULT.setLine(C1left); :}
+				|
+				(Condition_recursion) Condition:C1 LOR CondTerm:C2 {: RESULT=new Condition_recursion(C1, C2); RESULT.setLine(C1left); :}
+				;
+
+/* CondTerm */
+
+CondTerm ::= (CondTerm_single) CondFact:C1 {: RESULT=new CondTerm_single(C1); RESULT.setLine(C1left); :} 
+				|
+				(CondTerm_recursion) CondTerm:C1 AND CondFact:C2 {: RESULT=new CondTerm_recursion(C1, C2); RESULT.setLine(C1left); :}
+				;
+
+/* CondFact */
+
+CondFact ::= (CondFact_relop) SimpleExpression:S1 Relop:R2 SimpleExpression:S3 {: RESULT=new CondFact_relop(S1, R2, S3); RESULT.setLine(S1left); :}
+				|
+				(CondFact_single) SimpleExpression:S1 {: RESULT=new CondFact_single(S1); RESULT.setLine(S1left); :}
+				;
+
+/* Expression */
+
+Expression ::= (Expression_termlist) SimpleExpression:S1 {: RESULT=new Expression_termlist(S1); RESULT.setLine(S1left); :}
+				|
+				(Expression_condition) Condition:C1 QSM Expression:E2 COL Expression:E3 {: RESULT=new Expression_condition(C1, E2, E3); RESULT.setLine(C1left); :}
+				;
+
+SimpleExpression ::= (SimpleExpression) TermList:T1 {: RESULT=new SimpleExpression(T1); RESULT.setLine(T1left); :};
+
+/* Term */
+
+TermList ::= (TermList_recursion) TermList:T1 Addop:A2 Term:T3 {: RESULT=new TermList_recursion(T1, A2, T3); RESULT.setLine(T1left); :}
+				|
+				(TermList_single) Term:T1 {: RESULT=new TermList_single(T1); RESULT.setLine(T1left); :}
+				;
+
+Term ::= (Term) FactorList:F1 {: RESULT=new Term(F1); RESULT.setLine(F1left); :};
+
+/* Factor */
+
+FactorList ::= (FactorList_recursion) FactorList:F1 Mulop:M2 ExtensionFactor:E3 {: RESULT=new FactorList_recursion(F1, M2, E3); RESULT.setLine(F1left); :}
+					|
+					(FactorList_single) ExtensionFactor:E1 {: RESULT=new FactorList_single(E1); RESULT.setLine(E1left); :}
+					;
+
+ExtensionFactor ::= (ExtensionFactor) MinusOpt:M1 Factor:F2 {: RESULT=new ExtensionFactor(M1, F2); RESULT.setLine(M1left); :};
+
+MinusOpt ::= (MinusOpt_minus) MNS {: RESULT=new MinusOpt_minus(); :}
+				|
+				(MinusOpt_epsilon) {: RESULT=new MinusOpt_epsilon(); :} /* e */
+				;
+
+/* Factor */
+
+Factor ::= 	(Factor_designator_base) Designator:D1 {: RESULT=new Factor_designator_base(D1); RESULT.setLine(D1left); :}
+			|
+			(Factor_designator_brackets) Designator:D1 SOB ActPars:A2 SCB {: RESULT=new Factor_designator_brackets(D1, A2); RESULT.setLine(D1left); :}
+			|
+			(Factor_constant) Constant:C1 {: RESULT=new Factor_constant(C1); RESULT.setLine(C1left); :}
+			|
+			(Factor_array) NEW Type:T1 MOB Expression:E2 MCB {: RESULT=new Factor_array(T1, E2); RESULT.setLine(T1left); :}
+			|
+			(Factor_object) NEW Type:T1 {: RESULT=new Factor_object(T1); RESULT.setLine(T1left); :}
+			|
+			(Factor_object_constructor) NEW Type:T1 SOB ActPars:A2 SCB {: RESULT=new Factor_object_constructor(T1, A2); RESULT.setLine(T1left); :}
+			|
+			(Factor_expression) SOB Expression:E1 SCB {: RESULT=new Factor_expression(E1); RESULT.setLine(E1left); :}
+			;
+
+/* Designator */
+
+Designator ::= (Designator) IDT:I1 DesignatorTail:D2 {: RESULT=new Designator(I1, D2); RESULT.setLine(I1left); :};
+
+DesignatorTail ::= (DesignatorTail_array) MOB Expression:E1 MCB DesignatorTail:D2 {: RESULT=new DesignatorTail_array(E1, D2); RESULT.setLine(E1left); :}
+					|
+					(DesignatorTail_field) DOT IDT:I1 DesignatorTail:D2 {: RESULT=new DesignatorTail_field(I1, D2); RESULT.setLine(I1left); :}
+					|
+					(DesignatorTail_length) DOT LEN DesignatorTail:D1 {: RESULT=new DesignatorTail_length(D1); RESULT.setLine(D1left); :}
+					|
+					(DesignatorTail_epsilon) {: RESULT=new DesignatorTail_epsilon(); :} /* e */
+					;
+
+/* AssignOp */
+
+AssignOp ::= (AssignOp) ASG {: RESULT=new AssignOp(); :};
+
+/* Relop */
+
+Relop ::= (Relop_eql) EQL {: RESULT=new Relop_eql(); :}
+			|
+			(Relop_neq) NEQ {: RESULT=new Relop_neq(); :}
+			|
+			(Relop_grt) GRT {: RESULT=new Relop_grt(); :}
+			|
+			(Relop_gre) GRE {: RESULT=new Relop_gre(); :}
+			|
+			(Relop_let) LET {: RESULT=new Relop_let(); :}
+			|
+			(Relop_lte) LTE {: RESULT=new Relop_lte(); :}
+			;
+
+/* Addop */
+
+Addop ::= (Addop_pls) PLS {: RESULT=new Addop_pls(); :}
+			|
+			(Addop_mns) MNS {: RESULT=new Addop_mns(); :}
+			;
+
+/* Mulop */
+
+Mulop ::= (Mulop_mul) MUL {: RESULT=new Mulop_mul(); :}
+			|
+			(Mulop_div) DIV {: RESULT=new Mulop_div(); :}
+			|
+			(Mulop_mod) MOD {: RESULT=new Mulop_mod(); :}
+			;

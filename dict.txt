@@ -1,0 +1,48 @@
+[S in front is for "symbol" if the symbol has less than 3 letters]
+
+PRG - program
+BRK - break
+ENM - enum
+CLS - class
+ABS - abstract
+ELS - else
+CON - const
+SIF - if
+NEW - new
+PRT - print
+RED - read
+RET - return
+VOI - void
+EXT - extends
+CON - continue
+FOR - for
+LEN - length
+SWC - switch
+CSE - case
+
+PLS - + 	(PLUS)
+MNS - - 	(MINUS)
+MUL - * 	(MULTIPLY)
+DIV - / 	(DIVIDE)
+MOD - % 	(MOD)
+EQL - == 	(EQUAL)
+NEQ - != 	(NOT EQUAL)
+GRT - > 	(GREATER THAN)
+GRE - >= 	(GREATER THAN OR EQUAL)
+LET - < 	(LESS THAN)
+LTE - <= 	(LESS THAN OR EQUAL)
+AND - && 	(AND)
+LOR - || 	(LOGICAL OR)
+ASG - = 	(ASSIGN)
+INC - ++ 	(INCREMENT)
+DEC - -- 	(DECREMENT)
+SCL - ; 	(SEMICOLON)
+COL - : 	(COLON)
+COM - , 	(COMMA)
+DOT - . 	(DOT)
+SOB - ( 	(SMALL OPEN BRACKET)
+SCB - ) 	(SMALL CLOSED BRACKET)
+MOB - [ 	(MEDIUM OPEN BRACKET)
+MCB - ] 	(MEDIUM CLOSED BRACKET)
+LOB - { 	(LARGE OPEN BRACKET)
+LCB - } 	(LARGE CLOSED BRACKET)

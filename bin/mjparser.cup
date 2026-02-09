@@ -1,0 +1,418 @@
+package rs.ac.bg.etf.pp1;
+
+import java_cup.runtime.*;
+import org.apache.log4j.*;
+import rs.ac.bg.etf.pp1.ast.*;
+
+parser code {:
+
+	boolean errorDetected;
+	
+	Logger log = Logger.getLogger(getClass());
+	
+	public void report_fatal_error(String message, Object info) throws java.lang.Exception 
+	{
+		done_parsing();
+		report_error(message, info);
+	}
+	
+	public void syntax_error(Symbol cur_token) 
+	{
+		report_error("\nSintaksna greska", cur_token);
+	}
+	
+	public void unrecovered_syntax_error(Symbol cur_token) throws java.lang.Exception
+	{
+		report_fatal_error("Fatalna greska, parsiranje se ne moze nastaviti", cur_token);
+	}
+	
+	public void report_error(String message, Object info)
+	{
+		errorDetected = true;
+		StringBuilder msg = new StringBuilder(message);
+		if (info instanceof Symbol)
+			msg.append(" na liniji ").append(((Symbol)info).left);
+		log.error(msg.toString());
+	}
+
+:}
+
+terminal PRG, CNS;
+terminal String IDT;
+terminal Integer NUM, BOO;
+terminal Character CHR;
+terminal LOB, LCB, MOB, MCB, SCL, ASG, COM, SOB, SCB;
+terminal ENM, CLS, EXT, ABS, VOI;
+terminal SIF, ELS, BRK, CON, RET, RED, PRT, SWC, FOR;
+terminal INC, DEC, LOR, AND, QSM, COL, MNS, PLS, MUL, DIV, MOD;
+terminal NEW, DOT, LEN, CSE;
+terminal EQL, NEQ, GRT, GRE, LET, LTE;
+
+nonterminal Program, ProgramName, DeclList;
+nonterminal ConstDeclList, VarDeclList, ClassDecl, EnumDeclList, AbstractClassDecl, MethodDeclList;
+nonterminal Type, ConstDecl, Constant, AdditionalConstDecl;
+nonterminal VarDecl, VarList, VarDeclListMultiple;
+nonterminal EnumIDT, AdditionalEnumIDT, MethodDeclListOpt, ExtendsOpt, AsgNumOpt;
+nonterminal AbstractMethodDeclListOpt, AbstractMethodDeclList, AbstractMethodDecl, MethodDecl, MethodTypeAndName;
+nonterminal FormParsList, FormParsAdditional, FormPar, FormParOpt, MethodDeclListPrgOpt;
+nonterminal Statement, DesignatorStatement, StatementList, Condition, ElseOpt, ExpressionOpt, Expression;
+nonterminal NumConst;
+nonterminal CaseList, DesignatorStatementOpt, ConditionOpt, NumConstOpt, Designator, StatementListOpt;
+nonterminal ActPars, AssignOp, CondTerm, CondFact, Relop, Addop, Mulop;
+nonterminal TermList, Term, FactorList, Factor, ExtensionFactor, MinusOpt;
+nonterminal SimpleExpression, DesignatorTail;
+
+precedence left ELS;
+
+/* Program */
+
+Program ::= 	(Program) PRG ProgramName DeclList LOB MethodDeclListPrgOpt LCB;
+
+ProgramName ::= (ProgramName) IDT;
+
+DeclList ::= 	(DeclList_const) DeclList ConstDeclList
+				|
+				(DeclList_var) DeclList VarDeclList
+				|
+				(DeclList_class) DeclList ClassDecl
+				|
+				(DeclList_enum) DeclList EnumDeclList
+				|
+				(DeclList_abstract_class) DeclList AbstractClassDecl
+				|
+				(DeclList_epsilon) /* e */
+				; 
+
+/* ConstDecl */
+
+ConstDeclList ::= (ConstDeclList) CNS Type ConstDecl AdditionalConstDecl SCL;
+
+ConstDecl ::= 	(ConstDecl) IDT ASG Constant;
+
+AdditionalConstDecl ::= (AdditionalConstDecl_recursion) COM ConstDecl AdditionalConstDecl
+						|
+						(AdditionalConstDecl_epsilon) /* e */
+						;
+
+Constant ::= 	(Constant_num) NUM
+				|
+				(Constant_chr) CHR
+				|
+				(Constant_boo) BOO
+				;
+
+/* VarDecl */
+
+VarDeclListMultiple ::= (VarDeclListMultiple_recursion) VarDeclListMultiple VarDeclList
+							|
+							(VarDeclListMultiple_epsilon) /* e */
+							;
+
+VarDeclList ::= (VarDeclList) Type VarList SCL;
+
+VarList ::= (VarList_recursion) VarList COM VarDecl
+				|
+				(VarList_single) VarDecl
+				;
+			
+VarDecl ::= (VarDecl_array) IDT MOB MCB
+				|
+				(VarDecl_single) IDT
+				;
+
+/* EnumDecl */
+
+EnumDeclList ::= (EnumDeclList) ENM IDT LOB EnumIDT AdditionalEnumIDT LCB;
+
+EnumIDT ::= (EnumIDTList) IDT AsgNumOpt;
+
+AsgNumOpt ::= (AsgNumOpt_exists) ASG NUM
+				|
+				(AsgNumOpt_epsilon) /* e */
+				;
+
+AdditionalEnumIDT ::= (AdditionalEnumIDT_recursion) COM EnumIDT AdditionalEnumIDT
+						|
+						(AdditionalEnumIDT_epsilon) /* e */
+						;
+
+/* ClassDecl */
+
+ClassDecl ::= (ClassDecl) CLS IDT ExtendsOpt LOB VarDeclListMultiple MethodDeclListOpt LCB;
+
+ExtendsOpt ::= (ExtendsOpt_exists) EXT Type
+				|
+				(ExtendsOpt_epsilon) /* e */
+				;
+
+MethodDeclListOpt ::= (MethodDeclListOpt_exists) LOB MethodDeclList LCB
+						|
+						(MethodDeclListOpt_epsilon) /* e */
+						;
+
+/* AbstractClassDecl */
+
+AbstractClassDecl ::= (AbstractClassDecl) ABS CLS IDT ExtendsOpt LOB AbstractMethodDeclListOpt LCB;
+
+AbstractMethodDeclListOpt ::= (AbstractMethodDeclListOpt_exists) LOB AbstractMethodDeclList LCB
+								|
+								(AbstractMethodDeclListOpt_epsilon) /* e */
+								;
+
+AbstractMethodDeclList ::= (AbstractMethodDeclList_recursion_abs) AbstractMethodDeclList AbstractMethodDecl
+							|
+							(AbstractMethodDeclList_recursion_normal) AbstractMethodDeclList MethodDecl
+							|
+							(AbstractMethodDeclList_single_abs) AbstractMethodDecl
+							|
+							(AbstractMethodDeclList_single_normal) MethodDecl
+							;
+
+/* AbstractMethodDecl */
+
+AbstractMethodDecl ::= (AbstractMethodDecl) ABS MethodTypeAndName SOB FormParsList SCB SCL;
+
+/* MethodDecl */
+
+MethodDeclListPrgOpt ::= (MethodDeclListPrgOpt_exists) MethodDeclList 
+						|
+						(MethodDeclListPrgOpt_epsilon) /* e */
+						;
+
+MethodDeclList ::= (MethodDeclList_recursion) MethodDeclList MethodDecl
+					|
+					(MethodDeclList_single) MethodDecl
+					;
+
+MethodDecl ::= (MethodDecl) MethodTypeAndName SOB FormParsList SCB VarDeclListMultiple LOB StatementListOpt LCB;
+
+MethodTypeAndName ::= (MethodTypeAndName_void) VOI IDT
+						|
+						(MethodTypeAndName_type) Type IDT
+						;
+
+StatementListOpt ::= (StatementListOpt_exists) StatementList
+					|
+					(StatementListOpt_epsilon) /* e */
+					;
+
+StatementList ::= (StatementList_recursion) StatementList Statement
+					|
+					(StatementList_single) Statement
+					;
+
+/* FormPars */
+
+FormParsList ::= (FormParsList) FormParOpt FormParsAdditional;
+
+FormParsAdditional ::= (FormParsAdditional_recursion) COM FormPar FormParsAdditional
+						|
+						(FormParsAdditional_epsilon) /* e */
+						;
+
+FormParOpt ::= (FormParOpt_exists) FormPar
+			|
+			(FormParOpt_epsilon) /* e */
+			;
+
+FormPar ::= (FormPar_array) Type IDT MOB MCB
+			|
+			(FormPar_single) Type IDT
+			;
+
+/* Type */
+
+Type ::= 	(Type) IDT;
+
+/* Statement */
+
+Statement ::= (Statement_designator) DesignatorStatement SCL
+				|
+				(Statement_if) SIF SOB Condition SCB Statement ElseOpt
+				|
+				(Statement_break) BRK SCL
+				|
+				(Statement_continue) CON SCL
+				|
+				(Statement_return) RET ExpressionOpt SCL
+				|
+				(Statement_read) RED SOB Designator SCB SCL
+				|
+				(Statement_print) PRT SOB Expression NumConstOpt SCB SCL
+				|
+				(Statement_switch) SWC SOB Expression SCB LOB CaseList LCB
+				|
+				(Statement_for) FOR SOB DesignatorStatementOpt SCL ConditionOpt SCL DesignatorStatementOpt SCB Statement
+				|
+				(Statement_block) LOB StatementList LCB
+				;
+
+ElseOpt ::= (ElseOpt_else) ELS Statement
+				|
+				(ElseOpt_epsilon) /* e */
+				;
+
+ExpressionOpt ::= (ExpressionOpt_exists) Expression
+					|
+					(ExpressionOpt_epsilon) /* e */
+					;
+
+CaseList ::= (CaseList_recursion) CSE NumConst COL StatementList CaseList
+				|
+				(CaseList_single) CSE NumConst COL StatementList
+				;
+
+NumConstOpt ::= (NumConstOpt_exists) NumConst
+					|
+					(NumConstOpt_epsilon) /* e */
+					;
+
+NumConst ::= (NumConst) NUM;
+
+DesignatorStatementOpt ::= (DesignatorStatementOpt_exists) DesignatorStatement
+								|
+								(DesignatorStatementOpt_epsilon) /* e */
+								;
+
+ConditionOpt ::= (ConditionOpt_exists) Condition
+					|
+					(ConditionOpt_epsilon) /* e */
+					;
+				
+/* DesignatorStatement */
+
+DesignatorStatement ::= (DesignatorStatement_assign) Designator AssignOp Expression
+						|
+						(DesignatorStatement_method) Designator SOB ActPars SCB
+						|
+						(DesignatorStatement_inc) Designator INC
+						|
+						(DesignatorStatement_dec) Designator DEC
+						;
+
+/* ActPars */
+
+ActPars ::= (ActPars_recursion) Expression COM ActPars
+				|
+				(ActPars_single) Expression
+				|
+				(ActPars_epsilon) /* e */
+				;
+
+/* Condition */
+
+Condition ::= (Condition_single) CondTerm
+				|
+				(Condition_recursion) Condition LOR CondTerm
+				;
+
+/* CondTerm */
+
+CondTerm ::= (CondTerm_single) CondFact 
+				|
+				(CondTerm_recursion) CondTerm AND CondFact
+				;
+
+/* CondFact */
+
+CondFact ::= (CondFact_relop) SimpleExpression Relop SimpleExpression
+				|
+				(CondFact_single) SimpleExpression
+				;
+
+/* Expression */
+
+Expression ::= (Expression_termlist) SimpleExpression
+				|
+				(Expression_condition) Condition QSM Expression COL Expression
+				;
+
+SimpleExpression ::= (SimpleExpression) TermList;
+
+/* Term */
+
+TermList ::= (TermList_recursion) TermList Addop Term
+				|
+				(TermList_single) Term
+				;
+
+Term ::= (Term) FactorList;
+
+/* Factor */
+
+FactorList ::= (FactorList_recursion) FactorList Mulop ExtensionFactor
+					|
+					(FactorList_single) ExtensionFactor
+					;
+
+ExtensionFactor ::= (ExtensionFactor) MinusOpt Factor;
+
+MinusOpt ::= (MinusOpt_minus) MNS
+				|
+				(MinusOpt_epsilon) /* e */
+				;
+
+/* Factor */
+
+Factor ::= 	(Factor_designator_base) Designator
+			|
+			(Factor_designator_brackets) Designator SOB ActPars SCB
+			|
+			(Factor_constant) Constant
+			|
+			(Factor_array) NEW Type MOB Expression MCB
+			|
+			(Factor_object) NEW Type
+			|
+			(Factor_object_constructor) NEW Type SOB ActPars SCB
+			|
+			(Factor_expression) SOB Expression SCB
+			;
+
+/* Designator */
+
+Designator ::= (Designator) IDT DesignatorTail;
+
+DesignatorTail ::= (DesignatorTail_array) MOB Expression MCB DesignatorTail
+					|
+					(DesignatorTail_field) DOT IDT DesignatorTail
+					|
+					(DesignatorTail_length) DOT LEN DesignatorTail
+					|
+					(DesignatorTail_epsilon) /* e */
+					;
+
+/* AssignOp */
+
+AssignOp ::= (AssignOp) ASG;
+
+/* Relop */
+
+Relop ::= (Relop_eql) EQL
+			|
+			(Relop_neq) NEQ
+			|
+			(Relop_grt) GRT
+			|
+			(Relop_gre) GRE
+			|
+			(Relop_let) LET
+			|
+			(Relop_lte) LTE
+			;
+
+/* Addop */
+
+Addop ::= (Addop_pls) PLS
+			|
+			(Addop_mns) MNS
+			;
+
+/* Mulop */
+
+Mulop ::= (Mulop_mul) MUL
+			|
+			(Mulop_div) DIV
+			|
+			(Mulop_mod) MOD
+			;

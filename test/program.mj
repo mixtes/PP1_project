@@ -1,0 +1,24 @@
+program Kita
+
+const int pi = 33, g = 22;
+
+int x, y[];
+
+{
+	
+	void main() int x[], c; char z;
+	{
+	
+	}
+	
+	int m1(int i[], bool j) int x[], c; char z;
+	{
+	
+	}
+	
+	char m2() int x[], c; char z;
+	{
+	
+	}
+
+}
