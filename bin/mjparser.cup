@@ -52,7 +52,7 @@ nonterminal Program, ProgramName, DeclList;
 nonterminal ConstDeclList, VarDeclList, ClassDecl, EnumDeclList, AbstractClassDecl, MethodDeclList;
 nonterminal Type, ConstDecl, Constant, AdditionalConstDecl;
 nonterminal VarDecl, VarList, VarDeclListMultiple;
-nonterminal EnumIDT, AdditionalEnumIDT, MethodDeclListOpt, ExtendsOpt, AsgNumOpt;
+nonterminal EnumIDT, EnumName, AdditionalEnumIDT, MethodDeclListOpt, ExtendsOpt;
 nonterminal AbstractMethodDeclListOpt, AbstractMethodDeclList, AbstractMethodDecl, MethodDecl, MethodTypeAndName;
 nonterminal FormParsList, FormParsAdditional, FormPar, FormParOpt, MethodDeclListPrgOpt;
 nonterminal Statement, DesignatorStatement, StatementList, Condition, ElseOpt, ExpressionOpt, Expression;
@@ -122,14 +122,14 @@ VarDecl ::= (VarDecl_array) IDT MOB MCB
 
 /* EnumDecl */
 
-EnumDeclList ::= (EnumDeclList) ENM IDT LOB EnumIDT AdditionalEnumIDT LCB;
+EnumDeclList ::= (EnumDeclList) ENM EnumName LOB EnumIDT AdditionalEnumIDT LCB;
 
-EnumIDT ::= (EnumIDTList) IDT AsgNumOpt;
+EnumName ::= (EnumName) IDT;
 
-AsgNumOpt ::= (AsgNumOpt_exists) ASG NUM
-				|
-				(AsgNumOpt_epsilon) /* e */
-				;
+EnumIDT ::= (EnumIDT_asg) IDT ASG NUM
+			|
+			(EnumIDT_no_asg) IDT
+			;
 
 AdditionalEnumIDT ::= (AdditionalEnumIDT_recursion) COM EnumIDT AdditionalEnumIDT
 						|

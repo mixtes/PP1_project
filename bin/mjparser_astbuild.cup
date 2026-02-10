@@ -65,10 +65,10 @@ nonterminal VarDecl VarDecl;
 nonterminal VarList VarList;
 nonterminal VarDeclListMultiple VarDeclListMultiple;
 nonterminal EnumIDT EnumIDT;
+nonterminal EnumName EnumName;
 nonterminal AdditionalEnumIDT AdditionalEnumIDT;
 nonterminal MethodDeclListOpt MethodDeclListOpt;
 nonterminal ExtendsOpt ExtendsOpt;
-nonterminal AsgNumOpt AsgNumOpt;
 nonterminal AbstractMethodDeclListOpt AbstractMethodDeclListOpt;
 nonterminal AbstractMethodDeclList AbstractMethodDeclList;
 nonterminal AbstractMethodDecl AbstractMethodDecl;
@@ -169,14 +169,14 @@ VarDecl ::= (VarDecl_array) IDT:I1 MOB MCB {: RESULT=new VarDecl_array(I1); RESU
 
 /* EnumDecl */
 
-EnumDeclList ::= (EnumDeclList) ENM IDT:I1 LOB EnumIDT:E2 AdditionalEnumIDT:A3 LCB {: RESULT=new EnumDeclList(I1, E2, A3); RESULT.setLine(I1left); :};
+EnumDeclList ::= (EnumDeclList) ENM EnumName:E1 LOB EnumIDT:E2 AdditionalEnumIDT:A3 LCB {: RESULT=new EnumDeclList(E1, E2, A3); RESULT.setLine(E1left); :};
 
-EnumIDT ::= (EnumIDTList) IDT:I1 AsgNumOpt:A2 {: RESULT=new EnumIDTList(I1, A2); RESULT.setLine(I1left); :};
+EnumName ::= (EnumName) IDT:I1 {: RESULT=new EnumName(I1); RESULT.setLine(I1left); :};
 
-AsgNumOpt ::= (AsgNumOpt_exists) ASG NUM:N1 {: RESULT=new AsgNumOpt_exists(N1); RESULT.setLine(N1left); :}
-				|
-				(AsgNumOpt_epsilon) {: RESULT=new AsgNumOpt_epsilon(); :} /* e */
-				;
+EnumIDT ::= (EnumIDT_asg) IDT:I1 ASG NUM:N2 {: RESULT=new EnumIDT_asg(I1, N2); RESULT.setLine(I1left); :}
+			|
+			(EnumIDT_no_asg) IDT:I1 {: RESULT=new EnumIDT_no_asg(I1); RESULT.setLine(I1left); :}
+			;
 
 AdditionalEnumIDT ::= (AdditionalEnumIDT_recursion) COM EnumIDT:E1 AdditionalEnumIDT:A2 {: RESULT=new AdditionalEnumIDT_recursion(E1, A2); RESULT.setLine(E1left); :}
 						|

@@ -1,5 +1,7 @@
 package rs.ac.bg.etf.pp1;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 
 import rs.ac.bg.etf.pp1.ast.*;
@@ -16,7 +18,12 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	private Obj myProgram;
 	private Obj currentMethod;
 	private Struct currentType;
-	
+
+	private Obj currentEnum;
+	private Struct currentEnumType;
+	private int previousEnumValue;
+	private ArrayList<Integer> currentEnumValues;
+
 	private int c_val;
 	private Struct c_type;
 	private Struct boolType = Tab.find("bool").getType();
@@ -245,5 +252,103 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		
 		this.currentMethod = null; 
 	}
+
+	/* EnumDecl */
 	
+	@Override
+	public void visit(EnumName enumName)
+	{
+		Obj enumType = Tab.find(enumName.getI1());
+		if (enumType != Tab.noObj)
+		{
+			report_error("Multiple definitions of enum type: " + enumName.getI1(), enumName);
+			this.currentEnumType = new Struct(Struct.Enum);
+          	this.currentEnum = new Obj(Obj.Type, enumName.getI1(), this.currentEnumType);
+		}
+		else
+		{
+			this.currentEnumType = new Struct(Struct.Enum);
+			this.currentEnum = Tab.insert(Obj.Type, enumName.getI1(), this.currentEnumType);
+		}
+		Tab.openScope();
+		this.currentEnumValues = new ArrayList<>();
+		this.previousEnumValue = -1;
+	}
+
+	@Override
+	public void visit(EnumDeclList enumDeclList)
+	{
+		Tab.chainLocalSymbols(this.currentEnum);
+		Tab.closeScope();
+		
+		this.currentEnumValues = null;
+		this.currentEnum = null;
+		this.currentEnumType = null;
+	}
+
+	private boolean isEnumMemberValueUnique(int value)
+	{
+		for (int i = 0; i < this.currentEnumValues.size(); i++)
+		{
+			if (this.currentEnumValues.get(i) == value)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void visit(EnumIDT_asg enumMember)
+	{
+		int enumMemberValue = enumMember.getN2();
+		String enumMemberName = enumMember.getI1();
+
+		boolean valueUnique = isEnumMemberValueUnique(enumMemberValue);
+
+		if (Tab.currentScope().findSymbol(enumMemberName) != null)
+		{
+			report_error("Multiple definitions of enum member: " + enumMemberName, enumMember);
+			return;
+		}
+		else if (!valueUnique)
+		{
+			report_error("Enum members must be unique.", enumMember);
+			return;
+		}
+		else
+		{
+			Obj newEnumMember = Tab.insert(Obj.Con, enumMemberName, Tab.intType);
+			newEnumMember.setAdr(enumMemberValue);
+			this.previousEnumValue = enumMemberValue;
+			this.currentEnumValues.add(enumMemberValue);
+		}
+	}
+
+	@Override
+	public void visit(EnumIDT_no_asg enumMember)
+	{
+		String enumMemberName = enumMember.getI1();
+		int enumMemberValue = this.previousEnumValue + 1;
+
+		if (Tab.currentScope().findSymbol(enumMemberName) != null)
+		{
+			report_error("Multiple definitions of enum member: " + enumMemberName, enumMember);
+			return;
+		}
+		else
+		{
+			boolean valueUnique = isEnumMemberValueUnique(enumMemberValue);
+			if (!valueUnique)
+			{
+				report_error("Enum members must be unique.", enumMember);
+				return;
+			}
+
+			Obj newEnumMember = Tab.insert(Obj.Con, enumMemberName, Tab.intType);
+			newEnumMember.setAdr(enumMemberValue);
+			this.previousEnumValue = enumMemberValue;
+			this.currentEnumValues.add(enumMemberValue);
+		}
+	}
 }

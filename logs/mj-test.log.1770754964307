@@ -1,0 +1,2144 @@
+INFO  21:22:24,739 - Compiling source file: D:\Mihajlo\Desktop\Stvari za faks\PP1\Projekat\pp_eclipse_workspace\MJCompiler\test\program.mj
+INFO  21:22:24,787 - Program(
+  ProgramName(
+   test301
+  ) [ProgramName]
+  DeclList_var(
+    DeclList_var(
+      DeclList_var(
+        DeclList_const(
+          DeclList_const(
+            DeclList_const(
+              DeclList_enum(
+                DeclList_enum(
+                  DeclList_epsilon(
+                  ) [DeclList_epsilon]
+                  EnumDeclList(
+                    EnumName(
+                     Broj
+                    ) [EnumName]
+                    EnumIDT_no_asg(
+                     NULA
+                    ) [EnumIDT_no_asg]
+                    AdditionalEnumIDT_recursion(
+                      EnumIDT_no_asg(
+                       JEDAN
+                      ) [EnumIDT_no_asg]
+                      AdditionalEnumIDT_recursion(
+                        EnumIDT_asg(
+                         PET
+                         5
+                        ) [EnumIDT_asg]
+                        AdditionalEnumIDT_recursion(
+                          EnumIDT_asg(
+                           DESET
+                           10
+                          ) [EnumIDT_asg]
+                          AdditionalEnumIDT_epsilon(
+                          ) [AdditionalEnumIDT_epsilon]
+                        ) [AdditionalEnumIDT_recursion]
+                      ) [AdditionalEnumIDT_recursion]
+                    ) [AdditionalEnumIDT_recursion]
+                  ) [EnumDeclList]
+                ) [DeclList_enum]
+                EnumDeclList(
+                  EnumName(
+                   Pesmica
+                  ) [EnumName]
+                  EnumIDT_asg(
+                   ECI
+                   4
+                  ) [EnumIDT_asg]
+                  AdditionalEnumIDT_recursion(
+                    EnumIDT_asg(
+                     PECI
+                     3
+                    ) [EnumIDT_asg]
+                    AdditionalEnumIDT_recursion(
+                      EnumIDT_no_asg(
+                       PEC
+                      ) [EnumIDT_no_asg]
+                      AdditionalEnumIDT_epsilon(
+                      ) [AdditionalEnumIDT_epsilon]
+                    ) [AdditionalEnumIDT_recursion]
+                  ) [AdditionalEnumIDT_recursion]
+                ) [EnumDeclList]
+              ) [DeclList_enum]
+              ConstDeclList(
+                Type(
+                 int
+                ) [Type]
+                ConstDecl(
+                 nula
+                  Constant_num(
+                   0
+                  ) [Constant_num]
+                ) [ConstDecl]
+                AdditionalConstDecl_epsilon(
+                ) [AdditionalConstDecl_epsilon]
+              ) [ConstDeclList]
+            ) [DeclList_const]
+            ConstDeclList(
+              Type(
+               int
+              ) [Type]
+              ConstDecl(
+               jedan
+                Constant_num(
+                 1
+                ) [Constant_num]
+              ) [ConstDecl]
+              AdditionalConstDecl_epsilon(
+              ) [AdditionalConstDecl_epsilon]
+            ) [ConstDeclList]
+          ) [DeclList_const]
+          ConstDeclList(
+            Type(
+             int
+            ) [Type]
+            ConstDecl(
+             pet
+              Constant_num(
+               5
+              ) [Constant_num]
+            ) [ConstDecl]
+            AdditionalConstDecl_epsilon(
+            ) [AdditionalConstDecl_epsilon]
+          ) [ConstDeclList]
+        ) [DeclList_const]
+        VarDeclList(
+          Type(
+           int
+          ) [Type]
+          VarList_single(
+            VarDecl_array(
+             niz
+            ) [VarDecl_array]
+          ) [VarList_single]
+        ) [VarDeclList]
+      ) [DeclList_var]
+      VarDeclList(
+        Type(
+         char
+        ) [Type]
+        VarList_single(
+          VarDecl_array(
+           nizch
+          ) [VarDecl_array]
+        ) [VarList_single]
+      ) [VarDeclList]
+    ) [DeclList_var]
+    VarDeclList(
+      Type(
+       int
+      ) [Type]
+      VarList_single(
+        VarDecl_single(
+         a
+        ) [VarDecl_single]
+      ) [VarList_single]
+    ) [VarDeclList]
+  ) [DeclList_var]
+  MethodDeclListPrgOpt_exists(
+    MethodDeclList_single(
+      MethodDecl(
+        MethodTypeAndName_void(
+         main
+        ) [MethodTypeAndName_void]
+        FormParsList(
+          FormParOpt_epsilon(
+          ) [FormParOpt_epsilon]
+          FormParsAdditional_epsilon(
+          ) [FormParsAdditional_epsilon]
+        ) [FormParsList]
+        VarDeclListMultiple_recursion(
+          VarDeclListMultiple_recursion(
+            VarDeclListMultiple_recursion(
+              VarDeclListMultiple_recursion(
+                VarDeclListMultiple_epsilon(
+                ) [VarDeclListMultiple_epsilon]
+                VarDeclList(
+                  Type(
+                   int
+                  ) [Type]
+                  VarList_single(
+                    VarDecl_single(
+                     bodovi
+                    ) [VarDecl_single]
+                  ) [VarList_single]
+                ) [VarDeclList]
+              ) [VarDeclListMultiple_recursion]
+              VarDeclList(
+                Type(
+                 int
+                ) [Type]
+                VarList_single(
+                  VarDecl_single(
+                   temp
+                  ) [VarDecl_single]
+                ) [VarList_single]
+              ) [VarDeclList]
+            ) [VarDeclListMultiple_recursion]
+            VarDeclList(
+              Type(
+               Broj
+              ) [Type]
+              VarList_recursion(
+                VarList_single(
+                  VarDecl_single(
+                   nula
+                  ) [VarDecl_single]
+                ) [VarList_single]
+                VarDecl_single(
+                 jedan
+                ) [VarDecl_single]
+              ) [VarList_recursion]
+            ) [VarDeclList]
+          ) [VarDeclListMultiple_recursion]
+          VarDeclList(
+            Type(
+             bool
+            ) [Type]
+            VarList_single(
+              VarDecl_single(
+               bt
+              ) [VarDecl_single]
+            ) [VarList_single]
+          ) [VarDeclList]
+        ) [VarDeclListMultiple_recursion]
+        StatementListOpt_exists(
+          StatementList_recursion(
+            StatementList_recursion(
+              StatementList_recursion(
+                StatementList_recursion(
+                  StatementList_recursion(
+                    StatementList_recursion(
+                      StatementList_recursion(
+                        StatementList_recursion(
+                          StatementList_recursion(
+                            StatementList_recursion(
+                              StatementList_recursion(
+                                StatementList_recursion(
+                                  StatementList_recursion(
+                                    StatementList_recursion(
+                                      StatementList_recursion(
+                                        StatementList_recursion(
+                                          StatementList_recursion(
+                                            StatementList_recursion(
+                                              StatementList_recursion(
+                                                StatementList_recursion(
+                                                  StatementList_recursion(
+                                                    StatementList_recursion(
+                                                      StatementList_recursion(
+                                                        StatementList_recursion(
+                                                          StatementList_recursion(
+                                                            StatementList_recursion(
+                                                              StatementList_recursion(
+                                                                StatementList_recursion(
+                                                                  StatementList_recursion(
+                                                                    StatementList_recursion(
+                                                                      StatementList_recursion(
+                                                                        StatementList_recursion(
+                                                                          StatementList_recursion(
+                                                                            StatementList_recursion(
+                                                                              StatementList_recursion(
+                                                                                StatementList_recursion(
+                                                                                  StatementList_recursion(
+                                                                                    StatementList_single(
+                                                                                      Statement_designator(
+                                                                                        DesignatorStatement_assign(
+                                                                                          Designator(
+                                                                                           nula
+                                                                                            DesignatorTail_epsilon(
+                                                                                            ) [DesignatorTail_epsilon]
+                                                                                          ) [Designator]
+                                                                                          AssignOp(
+                                                                                          ) [AssignOp]
+                                                                                          Expression_termlist(
+                                                                                            SimpleExpression(
+                                                                                              TermList_single(
+                                                                                                Term(
+                                                                                                  FactorList_single(
+                                                                                                    ExtensionFactor(
+                                                                                                      MinusOpt_epsilon(
+                                                                                                      ) [MinusOpt_epsilon]
+                                                                                                      Factor_designator_base(
+                                                                                                        Designator(
+                                                                                                         Broj
+                                                                                                          DesignatorTail_field(
+                                                                                                           NULA
+                                                                                                            DesignatorTail_epsilon(
+                                                                                                            ) [DesignatorTail_epsilon]
+                                                                                                          ) [DesignatorTail_field]
+                                                                                                        ) [Designator]
+                                                                                                      ) [Factor_designator_base]
+                                                                                                    ) [ExtensionFactor]
+                                                                                                  ) [FactorList_single]
+                                                                                                ) [Term]
+                                                                                              ) [TermList_single]
+                                                                                            ) [SimpleExpression]
+                                                                                          ) [Expression_termlist]
+                                                                                        ) [DesignatorStatement_assign]
+                                                                                      ) [Statement_designator]
+                                                                                    ) [StatementList_single]
+                                                                                    Statement_designator(
+                                                                                      DesignatorStatement_assign(
+                                                                                        Designator(
+                                                                                         jedan
+                                                                                          DesignatorTail_epsilon(
+                                                                                          ) [DesignatorTail_epsilon]
+                                                                                        ) [Designator]
+                                                                                        AssignOp(
+                                                                                        ) [AssignOp]
+                                                                                        Expression_termlist(
+                                                                                          SimpleExpression(
+                                                                                            TermList_single(
+                                                                                              Term(
+                                                                                                FactorList_single(
+                                                                                                  ExtensionFactor(
+                                                                                                    MinusOpt_epsilon(
+                                                                                                    ) [MinusOpt_epsilon]
+                                                                                                    Factor_designator_base(
+                                                                                                      Designator(
+                                                                                                       Broj
+                                                                                                        DesignatorTail_field(
+                                                                                                         JEDAN
+                                                                                                          DesignatorTail_epsilon(
+                                                                                                          ) [DesignatorTail_epsilon]
+                                                                                                        ) [DesignatorTail_field]
+                                                                                                      ) [Designator]
+                                                                                                    ) [Factor_designator_base]
+                                                                                                  ) [ExtensionFactor]
+                                                                                                ) [FactorList_single]
+                                                                                              ) [Term]
+                                                                                            ) [TermList_single]
+                                                                                          ) [SimpleExpression]
+                                                                                        ) [Expression_termlist]
+                                                                                      ) [DesignatorStatement_assign]
+                                                                                    ) [Statement_designator]
+                                                                                  ) [StatementList_recursion]
+                                                                                  Statement_designator(
+                                                                                    DesignatorStatement_assign(
+                                                                                      Designator(
+                                                                                       bodovi
+                                                                                        DesignatorTail_epsilon(
+                                                                                        ) [DesignatorTail_epsilon]
+                                                                                      ) [Designator]
+                                                                                      AssignOp(
+                                                                                      ) [AssignOp]
+                                                                                      Expression_termlist(
+                                                                                        SimpleExpression(
+                                                                                          TermList_single(
+                                                                                            Term(
+                                                                                              FactorList_single(
+                                                                                                ExtensionFactor(
+                                                                                                  MinusOpt_epsilon(
+                                                                                                  ) [MinusOpt_epsilon]
+                                                                                                  Factor_constant(
+                                                                                                    Constant_num(
+                                                                                                     0
+                                                                                                    ) [Constant_num]
+                                                                                                  ) [Factor_constant]
+                                                                                                ) [ExtensionFactor]
+                                                                                              ) [FactorList_single]
+                                                                                            ) [Term]
+                                                                                          ) [TermList_single]
+                                                                                        ) [SimpleExpression]
+                                                                                      ) [Expression_termlist]
+                                                                                    ) [DesignatorStatement_assign]
+                                                                                  ) [Statement_designator]
+                                                                                ) [StatementList_recursion]
+                                                                                Statement_designator(
+                                                                                  DesignatorStatement_inc(
+                                                                                    Designator(
+                                                                                     bodovi
+                                                                                      DesignatorTail_epsilon(
+                                                                                      ) [DesignatorTail_epsilon]
+                                                                                    ) [Designator]
+                                                                                  ) [DesignatorStatement_inc]
+                                                                                ) [Statement_designator]
+                                                                              ) [StatementList_recursion]
+                                                                              Statement_designator(
+                                                                                DesignatorStatement_assign(
+                                                                                  Designator(
+                                                                                   bodovi
+                                                                                    DesignatorTail_epsilon(
+                                                                                    ) [DesignatorTail_epsilon]
+                                                                                  ) [Designator]
+                                                                                  AssignOp(
+                                                                                  ) [AssignOp]
+                                                                                  Expression_termlist(
+                                                                                    SimpleExpression(
+                                                                                      TermList_recursion(
+                                                                                        TermList_single(
+                                                                                          Term(
+                                                                                            FactorList_single(
+                                                                                              ExtensionFactor(
+                                                                                                MinusOpt_epsilon(
+                                                                                                ) [MinusOpt_epsilon]
+                                                                                                Factor_designator_base(
+                                                                                                  Designator(
+                                                                                                   bodovi
+                                                                                                    DesignatorTail_epsilon(
+                                                                                                    ) [DesignatorTail_epsilon]
+                                                                                                  ) [Designator]
+                                                                                                ) [Factor_designator_base]
+                                                                                              ) [ExtensionFactor]
+                                                                                            ) [FactorList_single]
+                                                                                          ) [Term]
+                                                                                        ) [TermList_single]
+                                                                                        Addop_pls(
+                                                                                        ) [Addop_pls]
+                                                                                        Term(
+                                                                                          FactorList_single(
+                                                                                            ExtensionFactor(
+                                                                                              MinusOpt_epsilon(
+                                                                                              ) [MinusOpt_epsilon]
+                                                                                              Factor_designator_base(
+                                                                                                Designator(
+                                                                                                 jedan
+                                                                                                  DesignatorTail_epsilon(
+                                                                                                  ) [DesignatorTail_epsilon]
+                                                                                                ) [Designator]
+                                                                                              ) [Factor_designator_base]
+                                                                                            ) [ExtensionFactor]
+                                                                                          ) [FactorList_single]
+                                                                                        ) [Term]
+                                                                                      ) [TermList_recursion]
+                                                                                    ) [SimpleExpression]
+                                                                                  ) [Expression_termlist]
+                                                                                ) [DesignatorStatement_assign]
+                                                                              ) [Statement_designator]
+                                                                            ) [StatementList_recursion]
+                                                                            Statement_designator(
+                                                                              DesignatorStatement_assign(
+                                                                                Designator(
+                                                                                 bodovi
+                                                                                  DesignatorTail_epsilon(
+                                                                                  ) [DesignatorTail_epsilon]
+                                                                                ) [Designator]
+                                                                                AssignOp(
+                                                                                ) [AssignOp]
+                                                                                Expression_termlist(
+                                                                                  SimpleExpression(
+                                                                                    TermList_single(
+                                                                                      Term(
+                                                                                        FactorList_recursion(
+                                                                                          FactorList_single(
+                                                                                            ExtensionFactor(
+                                                                                              MinusOpt_epsilon(
+                                                                                              ) [MinusOpt_epsilon]
+                                                                                              Factor_designator_base(
+                                                                                                Designator(
+                                                                                                 bodovi
+                                                                                                  DesignatorTail_epsilon(
+                                                                                                  ) [DesignatorTail_epsilon]
+                                                                                                ) [Designator]
+                                                                                              ) [Factor_designator_base]
+                                                                                            ) [ExtensionFactor]
+                                                                                          ) [FactorList_single]
+                                                                                          Mulop_mul(
+                                                                                          ) [Mulop_mul]
+                                                                                          ExtensionFactor(
+                                                                                            MinusOpt_epsilon(
+                                                                                            ) [MinusOpt_epsilon]
+                                                                                            Factor_designator_base(
+                                                                                              Designator(
+                                                                                               pet
+                                                                                                DesignatorTail_epsilon(
+                                                                                                ) [DesignatorTail_epsilon]
+                                                                                              ) [Designator]
+                                                                                            ) [Factor_designator_base]
+                                                                                          ) [ExtensionFactor]
+                                                                                        ) [FactorList_recursion]
+                                                                                      ) [Term]
+                                                                                    ) [TermList_single]
+                                                                                  ) [SimpleExpression]
+                                                                                ) [Expression_termlist]
+                                                                              ) [DesignatorStatement_assign]
+                                                                            ) [Statement_designator]
+                                                                          ) [StatementList_recursion]
+                                                                          Statement_designator(
+                                                                            DesignatorStatement_dec(
+                                                                              Designator(
+                                                                               bodovi
+                                                                                DesignatorTail_epsilon(
+                                                                                ) [DesignatorTail_epsilon]
+                                                                              ) [Designator]
+                                                                            ) [DesignatorStatement_dec]
+                                                                          ) [Statement_designator]
+                                                                        ) [StatementList_recursion]
+                                                                        Statement_print(
+                                                                          Expression_termlist(
+                                                                            SimpleExpression(
+                                                                              TermList_single(
+                                                                                Term(
+                                                                                  FactorList_single(
+                                                                                    ExtensionFactor(
+                                                                                      MinusOpt_epsilon(
+                                                                                      ) [MinusOpt_epsilon]
+                                                                                      Factor_designator_base(
+                                                                                        Designator(
+                                                                                         bodovi
+                                                                                          DesignatorTail_epsilon(
+                                                                                          ) [DesignatorTail_epsilon]
+                                                                                        ) [Designator]
+                                                                                      ) [Factor_designator_base]
+                                                                                    ) [ExtensionFactor]
+                                                                                  ) [FactorList_single]
+                                                                                ) [Term]
+                                                                              ) [TermList_single]
+                                                                            ) [SimpleExpression]
+                                                                          ) [Expression_termlist]
+                                                                          NumConstOpt_epsilon(
+                                                                          ) [NumConstOpt_epsilon]
+                                                                        ) [Statement_print]
+                                                                      ) [StatementList_recursion]
+                                                                      Statement_print(
+                                                                        Expression_termlist(
+                                                                          SimpleExpression(
+                                                                            TermList_single(
+                                                                              Term(
+                                                                                FactorList_single(
+                                                                                  ExtensionFactor(
+                                                                                    MinusOpt_epsilon(
+                                                                                    ) [MinusOpt_epsilon]
+                                                                                    Factor_designator_base(
+                                                                                      Designator(
+                                                                                       eol
+                                                                                        DesignatorTail_epsilon(
+                                                                                        ) [DesignatorTail_epsilon]
+                                                                                      ) [Designator]
+                                                                                    ) [Factor_designator_base]
+                                                                                  ) [ExtensionFactor]
+                                                                                ) [FactorList_single]
+                                                                              ) [Term]
+                                                                            ) [TermList_single]
+                                                                          ) [SimpleExpression]
+                                                                        ) [Expression_termlist]
+                                                                        NumConstOpt_epsilon(
+                                                                        ) [NumConstOpt_epsilon]
+                                                                      ) [Statement_print]
+                                                                    ) [StatementList_recursion]
+                                                                    Statement_designator(
+                                                                      DesignatorStatement_assign(
+                                                                        Designator(
+                                                                         niz
+                                                                          DesignatorTail_epsilon(
+                                                                          ) [DesignatorTail_epsilon]
+                                                                        ) [Designator]
+                                                                        AssignOp(
+                                                                        ) [AssignOp]
+                                                                        Expression_termlist(
+                                                                          SimpleExpression(
+                                                                            TermList_single(
+                                                                              Term(
+                                                                                FactorList_single(
+                                                                                  ExtensionFactor(
+                                                                                    MinusOpt_epsilon(
+                                                                                    ) [MinusOpt_epsilon]
+                                                                                    Factor_array(
+                                                                                      Type(
+                                                                                       int
+                                                                                      ) [Type]
+                                                                                      Expression_termlist(
+                                                                                        SimpleExpression(
+                                                                                          TermList_single(
+                                                                                            Term(
+                                                                                              FactorList_single(
+                                                                                                ExtensionFactor(
+                                                                                                  MinusOpt_epsilon(
+                                                                                                  ) [MinusOpt_epsilon]
+                                                                                                  Factor_constant(
+                                                                                                    Constant_num(
+                                                                                                     3
+                                                                                                    ) [Constant_num]
+                                                                                                  ) [Factor_constant]
+                                                                                                ) [ExtensionFactor]
+                                                                                              ) [FactorList_single]
+                                                                                            ) [Term]
+                                                                                          ) [TermList_single]
+                                                                                        ) [SimpleExpression]
+                                                                                      ) [Expression_termlist]
+                                                                                    ) [Factor_array]
+                                                                                  ) [ExtensionFactor]
+                                                                                ) [FactorList_single]
+                                                                              ) [Term]
+                                                                            ) [TermList_single]
+                                                                          ) [SimpleExpression]
+                                                                        ) [Expression_termlist]
+                                                                      ) [DesignatorStatement_assign]
+                                                                    ) [Statement_designator]
+                                                                  ) [StatementList_recursion]
+                                                                  Statement_designator(
+                                                                    DesignatorStatement_assign(
+                                                                      Designator(
+                                                                       niz
+                                                                        DesignatorTail_array(
+                                                                          Expression_termlist(
+                                                                            SimpleExpression(
+                                                                              TermList_single(
+                                                                                Term(
+                                                                                  FactorList_single(
+                                                                                    ExtensionFactor(
+                                                                                      MinusOpt_epsilon(
+                                                                                      ) [MinusOpt_epsilon]
+                                                                                      Factor_designator_base(
+                                                                                        Designator(
+                                                                                         nula
+                                                                                          DesignatorTail_epsilon(
+                                                                                          ) [DesignatorTail_epsilon]
+                                                                                        ) [Designator]
+                                                                                      ) [Factor_designator_base]
+                                                                                    ) [ExtensionFactor]
+                                                                                  ) [FactorList_single]
+                                                                                ) [Term]
+                                                                              ) [TermList_single]
+                                                                            ) [SimpleExpression]
+                                                                          ) [Expression_termlist]
+                                                                          DesignatorTail_epsilon(
+                                                                          ) [DesignatorTail_epsilon]
+                                                                        ) [DesignatorTail_array]
+                                                                      ) [Designator]
+                                                                      AssignOp(
+                                                                      ) [AssignOp]
+                                                                      Expression_termlist(
+                                                                        SimpleExpression(
+                                                                          TermList_single(
+                                                                            Term(
+                                                                              FactorList_single(
+                                                                                ExtensionFactor(
+                                                                                  MinusOpt_epsilon(
+                                                                                  ) [MinusOpt_epsilon]
+                                                                                  Factor_constant(
+                                                                                    Constant_num(
+                                                                                     2
+                                                                                    ) [Constant_num]
+                                                                                  ) [Factor_constant]
+                                                                                ) [ExtensionFactor]
+                                                                              ) [FactorList_single]
+                                                                            ) [Term]
+                                                                          ) [TermList_single]
+                                                                        ) [SimpleExpression]
+                                                                      ) [Expression_termlist]
+                                                                    ) [DesignatorStatement_assign]
+                                                                  ) [Statement_designator]
+                                                                ) [StatementList_recursion]
+                                                                Statement_designator(
+                                                                  DesignatorStatement_assign(
+                                                                    Designator(
+                                                                     niz
+                                                                      DesignatorTail_array(
+                                                                        Expression_termlist(
+                                                                          SimpleExpression(
+                                                                            TermList_single(
+                                                                              Term(
+                                                                                FactorList_single(
+                                                                                  ExtensionFactor(
+                                                                                    MinusOpt_epsilon(
+                                                                                    ) [MinusOpt_epsilon]
+                                                                                    Factor_designator_base(
+                                                                                      Designator(
+                                                                                       jedan
+                                                                                        DesignatorTail_epsilon(
+                                                                                        ) [DesignatorTail_epsilon]
+                                                                                      ) [Designator]
+                                                                                    ) [Factor_designator_base]
+                                                                                  ) [ExtensionFactor]
+                                                                                ) [FactorList_single]
+                                                                              ) [Term]
+                                                                            ) [TermList_single]
+                                                                          ) [SimpleExpression]
+                                                                        ) [Expression_termlist]
+                                                                        DesignatorTail_epsilon(
+                                                                        ) [DesignatorTail_epsilon]
+                                                                      ) [DesignatorTail_array]
+                                                                    ) [Designator]
+                                                                    AssignOp(
+                                                                    ) [AssignOp]
+                                                                    Expression_termlist(
+                                                                      SimpleExpression(
+                                                                        TermList_single(
+                                                                          Term(
+                                                                            FactorList_single(
+                                                                              ExtensionFactor(
+                                                                                MinusOpt_epsilon(
+                                                                                ) [MinusOpt_epsilon]
+                                                                                Factor_constant(
+                                                                                  Constant_num(
+                                                                                   3
+                                                                                  ) [Constant_num]
+                                                                                ) [Factor_constant]
+                                                                              ) [ExtensionFactor]
+                                                                            ) [FactorList_single]
+                                                                          ) [Term]
+                                                                        ) [TermList_single]
+                                                                      ) [SimpleExpression]
+                                                                    ) [Expression_termlist]
+                                                                  ) [DesignatorStatement_assign]
+                                                                ) [Statement_designator]
+                                                              ) [StatementList_recursion]
+                                                              Statement_designator(
+                                                                DesignatorStatement_assign(
+                                                                  Designator(
+                                                                   niz
+                                                                    DesignatorTail_array(
+                                                                      Expression_termlist(
+                                                                        SimpleExpression(
+                                                                          TermList_single(
+                                                                            Term(
+                                                                              FactorList_single(
+                                                                                ExtensionFactor(
+                                                                                  MinusOpt_epsilon(
+                                                                                  ) [MinusOpt_epsilon]
+                                                                                  Factor_designator_base(
+                                                                                    Designator(
+                                                                                     niz
+                                                                                      DesignatorTail_array(
+                                                                                        Expression_termlist(
+                                                                                          SimpleExpression(
+                                                                                            TermList_single(
+                                                                                              Term(
+                                                                                                FactorList_single(
+                                                                                                  ExtensionFactor(
+                                                                                                    MinusOpt_epsilon(
+                                                                                                    ) [MinusOpt_epsilon]
+                                                                                                    Factor_designator_base(
+                                                                                                      Designator(
+                                                                                                       nula
+                                                                                                        DesignatorTail_epsilon(
+                                                                                                        ) [DesignatorTail_epsilon]
+                                                                                                      ) [Designator]
+                                                                                                    ) [Factor_designator_base]
+                                                                                                  ) [ExtensionFactor]
+                                                                                                ) [FactorList_single]
+                                                                                              ) [Term]
+                                                                                            ) [TermList_single]
+                                                                                          ) [SimpleExpression]
+                                                                                        ) [Expression_termlist]
+                                                                                        DesignatorTail_epsilon(
+                                                                                        ) [DesignatorTail_epsilon]
+                                                                                      ) [DesignatorTail_array]
+                                                                                    ) [Designator]
+                                                                                  ) [Factor_designator_base]
+                                                                                ) [ExtensionFactor]
+                                                                              ) [FactorList_single]
+                                                                            ) [Term]
+                                                                          ) [TermList_single]
+                                                                        ) [SimpleExpression]
+                                                                      ) [Expression_termlist]
+                                                                      DesignatorTail_epsilon(
+                                                                      ) [DesignatorTail_epsilon]
+                                                                    ) [DesignatorTail_array]
+                                                                  ) [Designator]
+                                                                  AssignOp(
+                                                                  ) [AssignOp]
+                                                                  Expression_termlist(
+                                                                    SimpleExpression(
+                                                                      TermList_single(
+                                                                        Term(
+                                                                          FactorList_recursion(
+                                                                            FactorList_single(
+                                                                              ExtensionFactor(
+                                                                                MinusOpt_epsilon(
+                                                                                ) [MinusOpt_epsilon]
+                                                                                Factor_designator_base(
+                                                                                  Designator(
+                                                                                   niz
+                                                                                    DesignatorTail_array(
+                                                                                      Expression_termlist(
+                                                                                        SimpleExpression(
+                                                                                          TermList_single(
+                                                                                            Term(
+                                                                                              FactorList_single(
+                                                                                                ExtensionFactor(
+                                                                                                  MinusOpt_epsilon(
+                                                                                                  ) [MinusOpt_epsilon]
+                                                                                                  Factor_constant(
+                                                                                                    Constant_num(
+                                                                                                     1
+                                                                                                    ) [Constant_num]
+                                                                                                  ) [Factor_constant]
+                                                                                                ) [ExtensionFactor]
+                                                                                              ) [FactorList_single]
+                                                                                            ) [Term]
+                                                                                          ) [TermList_single]
+                                                                                        ) [SimpleExpression]
+                                                                                      ) [Expression_termlist]
+                                                                                      DesignatorTail_epsilon(
+                                                                                      ) [DesignatorTail_epsilon]
+                                                                                    ) [DesignatorTail_array]
+                                                                                  ) [Designator]
+                                                                                ) [Factor_designator_base]
+                                                                              ) [ExtensionFactor]
+                                                                            ) [FactorList_single]
+                                                                            Mulop_mul(
+                                                                            ) [Mulop_mul]
+                                                                            ExtensionFactor(
+                                                                              MinusOpt_epsilon(
+                                                                              ) [MinusOpt_epsilon]
+                                                                              Factor_constant(
+                                                                                Constant_num(
+                                                                                 4
+                                                                                ) [Constant_num]
+                                                                              ) [Factor_constant]
+                                                                            ) [ExtensionFactor]
+                                                                          ) [FactorList_recursion]
+                                                                        ) [Term]
+                                                                      ) [TermList_single]
+                                                                    ) [SimpleExpression]
+                                                                  ) [Expression_termlist]
+                                                                ) [DesignatorStatement_assign]
+                                                              ) [Statement_designator]
+                                                            ) [StatementList_recursion]
+                                                            Statement_designator(
+                                                              DesignatorStatement_assign(
+                                                                Designator(
+                                                                 bodovi
+                                                                  DesignatorTail_epsilon(
+                                                                  ) [DesignatorTail_epsilon]
+                                                                ) [Designator]
+                                                                AssignOp(
+                                                                ) [AssignOp]
+                                                                Expression_termlist(
+                                                                  SimpleExpression(
+                                                                    TermList_single(
+                                                                      Term(
+                                                                        FactorList_recursion(
+                                                                          FactorList_single(
+                                                                            ExtensionFactor(
+                                                                              MinusOpt_epsilon(
+                                                                              ) [MinusOpt_epsilon]
+                                                                              Factor_designator_base(
+                                                                                Designator(
+                                                                                 niz
+                                                                                  DesignatorTail_array(
+                                                                                    Expression_termlist(
+                                                                                      SimpleExpression(
+                                                                                        TermList_single(
+                                                                                          Term(
+                                                                                            FactorList_single(
+                                                                                              ExtensionFactor(
+                                                                                                MinusOpt_epsilon(
+                                                                                                ) [MinusOpt_epsilon]
+                                                                                                Factor_constant(
+                                                                                                  Constant_num(
+                                                                                                   2
+                                                                                                  ) [Constant_num]
+                                                                                                ) [Factor_constant]
+                                                                                              ) [ExtensionFactor]
+                                                                                            ) [FactorList_single]
+                                                                                          ) [Term]
+                                                                                        ) [TermList_single]
+                                                                                      ) [SimpleExpression]
+                                                                                    ) [Expression_termlist]
+                                                                                    DesignatorTail_epsilon(
+                                                                                    ) [DesignatorTail_epsilon]
+                                                                                  ) [DesignatorTail_array]
+                                                                                ) [Designator]
+                                                                              ) [Factor_designator_base]
+                                                                            ) [ExtensionFactor]
+                                                                          ) [FactorList_single]
+                                                                          Mulop_div(
+                                                                          ) [Mulop_div]
+                                                                          ExtensionFactor(
+                                                                            MinusOpt_epsilon(
+                                                                            ) [MinusOpt_epsilon]
+                                                                            Factor_designator_base(
+                                                                              Designator(
+                                                                               niz
+                                                                                DesignatorTail_array(
+                                                                                  Expression_termlist(
+                                                                                    SimpleExpression(
+                                                                                      TermList_single(
+                                                                                        Term(
+                                                                                          FactorList_single(
+                                                                                            ExtensionFactor(
+                                                                                              MinusOpt_epsilon(
+                                                                                              ) [MinusOpt_epsilon]
+                                                                                              Factor_constant(
+                                                                                                Constant_num(
+                                                                                                 0
+                                                                                                ) [Constant_num]
+                                                                                              ) [Factor_constant]
+                                                                                            ) [ExtensionFactor]
+                                                                                          ) [FactorList_single]
+                                                                                        ) [Term]
+                                                                                      ) [TermList_single]
+                                                                                    ) [SimpleExpression]
+                                                                                  ) [Expression_termlist]
+                                                                                  DesignatorTail_epsilon(
+                                                                                  ) [DesignatorTail_epsilon]
+                                                                                ) [DesignatorTail_array]
+                                                                              ) [Designator]
+                                                                            ) [Factor_designator_base]
+                                                                          ) [ExtensionFactor]
+                                                                        ) [FactorList_recursion]
+                                                                      ) [Term]
+                                                                    ) [TermList_single]
+                                                                  ) [SimpleExpression]
+                                                                ) [Expression_termlist]
+                                                              ) [DesignatorStatement_assign]
+                                                            ) [Statement_designator]
+                                                          ) [StatementList_recursion]
+                                                          Statement_print(
+                                                            Expression_termlist(
+                                                              SimpleExpression(
+                                                                TermList_single(
+                                                                  Term(
+                                                                    FactorList_single(
+                                                                      ExtensionFactor(
+                                                                        MinusOpt_epsilon(
+                                                                        ) [MinusOpt_epsilon]
+                                                                        Factor_designator_base(
+                                                                          Designator(
+                                                                           bodovi
+                                                                            DesignatorTail_epsilon(
+                                                                            ) [DesignatorTail_epsilon]
+                                                                          ) [Designator]
+                                                                        ) [Factor_designator_base]
+                                                                      ) [ExtensionFactor]
+                                                                    ) [FactorList_single]
+                                                                  ) [Term]
+                                                                ) [TermList_single]
+                                                              ) [SimpleExpression]
+                                                            ) [Expression_termlist]
+                                                            NumConstOpt_epsilon(
+                                                            ) [NumConstOpt_epsilon]
+                                                          ) [Statement_print]
+                                                        ) [StatementList_recursion]
+                                                        Statement_print(
+                                                          Expression_termlist(
+                                                            SimpleExpression(
+                                                              TermList_single(
+                                                                Term(
+                                                                  FactorList_single(
+                                                                    ExtensionFactor(
+                                                                      MinusOpt_epsilon(
+                                                                      ) [MinusOpt_epsilon]
+                                                                      Factor_designator_base(
+                                                                        Designator(
+                                                                         eol
+                                                                          DesignatorTail_epsilon(
+                                                                          ) [DesignatorTail_epsilon]
+                                                                        ) [Designator]
+                                                                      ) [Factor_designator_base]
+                                                                    ) [ExtensionFactor]
+                                                                  ) [FactorList_single]
+                                                                ) [Term]
+                                                              ) [TermList_single]
+                                                            ) [SimpleExpression]
+                                                          ) [Expression_termlist]
+                                                          NumConstOpt_epsilon(
+                                                          ) [NumConstOpt_epsilon]
+                                                        ) [Statement_print]
+                                                      ) [StatementList_recursion]
+                                                      Statement_print(
+                                                        Expression_termlist(
+                                                          SimpleExpression(
+                                                            TermList_single(
+                                                              Term(
+                                                                FactorList_single(
+                                                                  ExtensionFactor(
+                                                                    MinusOpt_epsilon(
+                                                                    ) [MinusOpt_epsilon]
+                                                                    Factor_designator_base(
+                                                                      Designator(
+                                                                       niz
+                                                                        DesignatorTail_array(
+                                                                          Expression_termlist(
+                                                                            SimpleExpression(
+                                                                              TermList_single(
+                                                                                Term(
+                                                                                  FactorList_single(
+                                                                                    ExtensionFactor(
+                                                                                      MinusOpt_epsilon(
+                                                                                      ) [MinusOpt_epsilon]
+                                                                                      Factor_constant(
+                                                                                        Constant_num(
+                                                                                         2
+                                                                                        ) [Constant_num]
+                                                                                      ) [Factor_constant]
+                                                                                    ) [ExtensionFactor]
+                                                                                  ) [FactorList_single]
+                                                                                ) [Term]
+                                                                              ) [TermList_single]
+                                                                            ) [SimpleExpression]
+                                                                          ) [Expression_termlist]
+                                                                          DesignatorTail_epsilon(
+                                                                          ) [DesignatorTail_epsilon]
+                                                                        ) [DesignatorTail_array]
+                                                                      ) [Designator]
+                                                                    ) [Factor_designator_base]
+                                                                  ) [ExtensionFactor]
+                                                                ) [FactorList_single]
+                                                              ) [Term]
+                                                            ) [TermList_single]
+                                                          ) [SimpleExpression]
+                                                        ) [Expression_termlist]
+                                                        NumConstOpt_epsilon(
+                                                        ) [NumConstOpt_epsilon]
+                                                      ) [Statement_print]
+                                                    ) [StatementList_recursion]
+                                                    Statement_print(
+                                                      Expression_termlist(
+                                                        SimpleExpression(
+                                                          TermList_single(
+                                                            Term(
+                                                              FactorList_single(
+                                                                ExtensionFactor(
+                                                                  MinusOpt_epsilon(
+                                                                  ) [MinusOpt_epsilon]
+                                                                  Factor_designator_base(
+                                                                    Designator(
+                                                                     eol
+                                                                      DesignatorTail_epsilon(
+                                                                      ) [DesignatorTail_epsilon]
+                                                                    ) [Designator]
+                                                                  ) [Factor_designator_base]
+                                                                ) [ExtensionFactor]
+                                                              ) [FactorList_single]
+                                                            ) [Term]
+                                                          ) [TermList_single]
+                                                        ) [SimpleExpression]
+                                                      ) [Expression_termlist]
+                                                      NumConstOpt_epsilon(
+                                                      ) [NumConstOpt_epsilon]
+                                                    ) [Statement_print]
+                                                  ) [StatementList_recursion]
+                                                  Statement_designator(
+                                                    DesignatorStatement_assign(
+                                                      Designator(
+                                                       nizch
+                                                        DesignatorTail_epsilon(
+                                                        ) [DesignatorTail_epsilon]
+                                                      ) [Designator]
+                                                      AssignOp(
+                                                      ) [AssignOp]
+                                                      Expression_termlist(
+                                                        SimpleExpression(
+                                                          TermList_single(
+                                                            Term(
+                                                              FactorList_single(
+                                                                ExtensionFactor(
+                                                                  MinusOpt_epsilon(
+                                                                  ) [MinusOpt_epsilon]
+                                                                  Factor_array(
+                                                                    Type(
+                                                                     char
+                                                                    ) [Type]
+                                                                    Expression_termlist(
+                                                                      SimpleExpression(
+                                                                        TermList_single(
+                                                                          Term(
+                                                                            FactorList_single(
+                                                                              ExtensionFactor(
+                                                                                MinusOpt_epsilon(
+                                                                                ) [MinusOpt_epsilon]
+                                                                                Factor_constant(
+                                                                                  Constant_num(
+                                                                                   3
+                                                                                  ) [Constant_num]
+                                                                                ) [Factor_constant]
+                                                                              ) [ExtensionFactor]
+                                                                            ) [FactorList_single]
+                                                                          ) [Term]
+                                                                        ) [TermList_single]
+                                                                      ) [SimpleExpression]
+                                                                    ) [Expression_termlist]
+                                                                  ) [Factor_array]
+                                                                ) [ExtensionFactor]
+                                                              ) [FactorList_single]
+                                                            ) [Term]
+                                                          ) [TermList_single]
+                                                        ) [SimpleExpression]
+                                                      ) [Expression_termlist]
+                                                    ) [DesignatorStatement_assign]
+                                                  ) [Statement_designator]
+                                                ) [StatementList_recursion]
+                                                Statement_designator(
+                                                  DesignatorStatement_assign(
+                                                    Designator(
+                                                     nizch
+                                                      DesignatorTail_array(
+                                                        Expression_termlist(
+                                                          SimpleExpression(
+                                                            TermList_single(
+                                                              Term(
+                                                                FactorList_single(
+                                                                  ExtensionFactor(
+                                                                    MinusOpt_epsilon(
+                                                                    ) [MinusOpt_epsilon]
+                                                                    Factor_constant(
+                                                                      Constant_num(
+                                                                       0
+                                                                      ) [Constant_num]
+                                                                    ) [Factor_constant]
+                                                                  ) [ExtensionFactor]
+                                                                ) [FactorList_single]
+                                                              ) [Term]
+                                                            ) [TermList_single]
+                                                          ) [SimpleExpression]
+                                                        ) [Expression_termlist]
+                                                        DesignatorTail_epsilon(
+                                                        ) [DesignatorTail_epsilon]
+                                                      ) [DesignatorTail_array]
+                                                    ) [Designator]
+                                                    AssignOp(
+                                                    ) [AssignOp]
+                                                    Expression_termlist(
+                                                      SimpleExpression(
+                                                        TermList_single(
+                                                          Term(
+                                                            FactorList_single(
+                                                              ExtensionFactor(
+                                                                MinusOpt_epsilon(
+                                                                ) [MinusOpt_epsilon]
+                                                                Factor_constant(
+                                                                  Constant_chr(
+                                                                   a
+                                                                  ) [Constant_chr]
+                                                                ) [Factor_constant]
+                                                              ) [ExtensionFactor]
+                                                            ) [FactorList_single]
+                                                          ) [Term]
+                                                        ) [TermList_single]
+                                                      ) [SimpleExpression]
+                                                    ) [Expression_termlist]
+                                                  ) [DesignatorStatement_assign]
+                                                ) [Statement_designator]
+                                              ) [StatementList_recursion]
+                                              Statement_designator(
+                                                DesignatorStatement_assign(
+                                                  Designator(
+                                                   nizch
+                                                    DesignatorTail_array(
+                                                      Expression_termlist(
+                                                        SimpleExpression(
+                                                          TermList_single(
+                                                            Term(
+                                                              FactorList_single(
+                                                                ExtensionFactor(
+                                                                  MinusOpt_epsilon(
+                                                                  ) [MinusOpt_epsilon]
+                                                                  Factor_designator_base(
+                                                                    Designator(
+                                                                     jedan
+                                                                      DesignatorTail_epsilon(
+                                                                      ) [DesignatorTail_epsilon]
+                                                                    ) [Designator]
+                                                                  ) [Factor_designator_base]
+                                                                ) [ExtensionFactor]
+                                                              ) [FactorList_single]
+                                                            ) [Term]
+                                                          ) [TermList_single]
+                                                        ) [SimpleExpression]
+                                                      ) [Expression_termlist]
+                                                      DesignatorTail_epsilon(
+                                                      ) [DesignatorTail_epsilon]
+                                                    ) [DesignatorTail_array]
+                                                  ) [Designator]
+                                                  AssignOp(
+                                                  ) [AssignOp]
+                                                  Expression_termlist(
+                                                    SimpleExpression(
+                                                      TermList_single(
+                                                        Term(
+                                                          FactorList_single(
+                                                            ExtensionFactor(
+                                                              MinusOpt_epsilon(
+                                                              ) [MinusOpt_epsilon]
+                                                              Factor_constant(
+                                                                Constant_chr(
+                                                                 b
+                                                                ) [Constant_chr]
+                                                              ) [Factor_constant]
+                                                            ) [ExtensionFactor]
+                                                          ) [FactorList_single]
+                                                        ) [Term]
+                                                      ) [TermList_single]
+                                                    ) [SimpleExpression]
+                                                  ) [Expression_termlist]
+                                                ) [DesignatorStatement_assign]
+                                              ) [Statement_designator]
+                                            ) [StatementList_recursion]
+                                            Statement_designator(
+                                              DesignatorStatement_assign(
+                                                Designator(
+                                                 nizch
+                                                  DesignatorTail_array(
+                                                    Expression_termlist(
+                                                      SimpleExpression(
+                                                        TermList_recursion(
+                                                          TermList_single(
+                                                            Term(
+                                                              FactorList_single(
+                                                                ExtensionFactor(
+                                                                  MinusOpt_epsilon(
+                                                                  ) [MinusOpt_epsilon]
+                                                                  Factor_designator_base(
+                                                                    Designator(
+                                                                     pet
+                                                                      DesignatorTail_epsilon(
+                                                                      ) [DesignatorTail_epsilon]
+                                                                    ) [Designator]
+                                                                  ) [Factor_designator_base]
+                                                                ) [ExtensionFactor]
+                                                              ) [FactorList_single]
+                                                            ) [Term]
+                                                          ) [TermList_single]
+                                                          Addop_mns(
+                                                          ) [Addop_mns]
+                                                          Term(
+                                                            FactorList_single(
+                                                              ExtensionFactor(
+                                                                MinusOpt_epsilon(
+                                                                ) [MinusOpt_epsilon]
+                                                                Factor_constant(
+                                                                  Constant_num(
+                                                                   3
+                                                                  ) [Constant_num]
+                                                                ) [Factor_constant]
+                                                              ) [ExtensionFactor]
+                                                            ) [FactorList_single]
+                                                          ) [Term]
+                                                        ) [TermList_recursion]
+                                                      ) [SimpleExpression]
+                                                    ) [Expression_termlist]
+                                                    DesignatorTail_epsilon(
+                                                    ) [DesignatorTail_epsilon]
+                                                  ) [DesignatorTail_array]
+                                                ) [Designator]
+                                                AssignOp(
+                                                ) [AssignOp]
+                                                Expression_termlist(
+                                                  SimpleExpression(
+                                                    TermList_single(
+                                                      Term(
+                                                        FactorList_single(
+                                                          ExtensionFactor(
+                                                            MinusOpt_epsilon(
+                                                            ) [MinusOpt_epsilon]
+                                                            Factor_constant(
+                                                              Constant_chr(
+                                                               c
+                                                              ) [Constant_chr]
+                                                            ) [Factor_constant]
+                                                          ) [ExtensionFactor]
+                                                        ) [FactorList_single]
+                                                      ) [Term]
+                                                    ) [TermList_single]
+                                                  ) [SimpleExpression]
+                                                ) [Expression_termlist]
+                                              ) [DesignatorStatement_assign]
+                                            ) [Statement_designator]
+                                          ) [StatementList_recursion]
+                                          Statement_print(
+                                            Expression_termlist(
+                                              SimpleExpression(
+                                                TermList_single(
+                                                  Term(
+                                                    FactorList_single(
+                                                      ExtensionFactor(
+                                                        MinusOpt_epsilon(
+                                                        ) [MinusOpt_epsilon]
+                                                        Factor_designator_base(
+                                                          Designator(
+                                                           nizch
+                                                            DesignatorTail_array(
+                                                              Expression_termlist(
+                                                                SimpleExpression(
+                                                                  TermList_single(
+                                                                    Term(
+                                                                      FactorList_single(
+                                                                        ExtensionFactor(
+                                                                          MinusOpt_epsilon(
+                                                                          ) [MinusOpt_epsilon]
+                                                                          Factor_constant(
+                                                                            Constant_num(
+                                                                             1
+                                                                            ) [Constant_num]
+                                                                          ) [Factor_constant]
+                                                                        ) [ExtensionFactor]
+                                                                      ) [FactorList_single]
+                                                                    ) [Term]
+                                                                  ) [TermList_single]
+                                                                ) [SimpleExpression]
+                                                              ) [Expression_termlist]
+                                                              DesignatorTail_epsilon(
+                                                              ) [DesignatorTail_epsilon]
+                                                            ) [DesignatorTail_array]
+                                                          ) [Designator]
+                                                        ) [Factor_designator_base]
+                                                      ) [ExtensionFactor]
+                                                    ) [FactorList_single]
+                                                  ) [Term]
+                                                ) [TermList_single]
+                                              ) [SimpleExpression]
+                                            ) [Expression_termlist]
+                                            NumConstOpt_epsilon(
+                                            ) [NumConstOpt_epsilon]
+                                          ) [Statement_print]
+                                        ) [StatementList_recursion]
+                                        Statement_print(
+                                          Expression_termlist(
+                                            SimpleExpression(
+                                              TermList_single(
+                                                Term(
+                                                  FactorList_single(
+                                                    ExtensionFactor(
+                                                      MinusOpt_epsilon(
+                                                      ) [MinusOpt_epsilon]
+                                                      Factor_designator_base(
+                                                        Designator(
+                                                         eol
+                                                          DesignatorTail_epsilon(
+                                                          ) [DesignatorTail_epsilon]
+                                                        ) [Designator]
+                                                      ) [Factor_designator_base]
+                                                    ) [ExtensionFactor]
+                                                  ) [FactorList_single]
+                                                ) [Term]
+                                              ) [TermList_single]
+                                            ) [SimpleExpression]
+                                          ) [Expression_termlist]
+                                          NumConstOpt_epsilon(
+                                          ) [NumConstOpt_epsilon]
+                                        ) [Statement_print]
+                                      ) [StatementList_recursion]
+                                      Statement_print(
+                                        Expression_termlist(
+                                          SimpleExpression(
+                                            TermList_single(
+                                              Term(
+                                                FactorList_single(
+                                                  ExtensionFactor(
+                                                    MinusOpt_epsilon(
+                                                    ) [MinusOpt_epsilon]
+                                                    Factor_designator_base(
+                                                      Designator(
+                                                       nizch
+                                                        DesignatorTail_array(
+                                                          Expression_termlist(
+                                                            SimpleExpression(
+                                                              TermList_single(
+                                                                Term(
+                                                                  FactorList_recursion(
+                                                                    FactorList_single(
+                                                                      ExtensionFactor(
+                                                                        MinusOpt_epsilon(
+                                                                        ) [MinusOpt_epsilon]
+                                                                        Factor_designator_base(
+                                                                          Designator(
+                                                                           jedan
+                                                                            DesignatorTail_epsilon(
+                                                                            ) [DesignatorTail_epsilon]
+                                                                          ) [Designator]
+                                                                        ) [Factor_designator_base]
+                                                                      ) [ExtensionFactor]
+                                                                    ) [FactorList_single]
+                                                                    Mulop_mul(
+                                                                    ) [Mulop_mul]
+                                                                    ExtensionFactor(
+                                                                      MinusOpt_epsilon(
+                                                                      ) [MinusOpt_epsilon]
+                                                                      Factor_constant(
+                                                                        Constant_num(
+                                                                         2
+                                                                        ) [Constant_num]
+                                                                      ) [Factor_constant]
+                                                                    ) [ExtensionFactor]
+                                                                  ) [FactorList_recursion]
+                                                                ) [Term]
+                                                              ) [TermList_single]
+                                                            ) [SimpleExpression]
+                                                          ) [Expression_termlist]
+                                                          DesignatorTail_epsilon(
+                                                          ) [DesignatorTail_epsilon]
+                                                        ) [DesignatorTail_array]
+                                                      ) [Designator]
+                                                    ) [Factor_designator_base]
+                                                  ) [ExtensionFactor]
+                                                ) [FactorList_single]
+                                              ) [Term]
+                                            ) [TermList_single]
+                                          ) [SimpleExpression]
+                                        ) [Expression_termlist]
+                                        NumConstOpt_epsilon(
+                                        ) [NumConstOpt_epsilon]
+                                      ) [Statement_print]
+                                    ) [StatementList_recursion]
+                                    Statement_print(
+                                      Expression_termlist(
+                                        SimpleExpression(
+                                          TermList_single(
+                                            Term(
+                                              FactorList_single(
+                                                ExtensionFactor(
+                                                  MinusOpt_epsilon(
+                                                  ) [MinusOpt_epsilon]
+                                                  Factor_designator_base(
+                                                    Designator(
+                                                     eol
+                                                      DesignatorTail_epsilon(
+                                                      ) [DesignatorTail_epsilon]
+                                                    ) [Designator]
+                                                  ) [Factor_designator_base]
+                                                ) [ExtensionFactor]
+                                              ) [FactorList_single]
+                                            ) [Term]
+                                          ) [TermList_single]
+                                        ) [SimpleExpression]
+                                      ) [Expression_termlist]
+                                      NumConstOpt_epsilon(
+                                      ) [NumConstOpt_epsilon]
+                                    ) [Statement_print]
+                                  ) [StatementList_recursion]
+                                  Statement_print(
+                                    Expression_termlist(
+                                      SimpleExpression(
+                                        TermList_single(
+                                          Term(
+                                            FactorList_single(
+                                              ExtensionFactor(
+                                                MinusOpt_epsilon(
+                                                ) [MinusOpt_epsilon]
+                                                Factor_designator_brackets(
+                                                  Designator(
+                                                   ord
+                                                    DesignatorTail_epsilon(
+                                                    ) [DesignatorTail_epsilon]
+                                                  ) [Designator]
+                                                  ActPars_single(
+                                                    Expression_termlist(
+                                                      SimpleExpression(
+                                                        TermList_single(
+                                                          Term(
+                                                            FactorList_single(
+                                                              ExtensionFactor(
+                                                                MinusOpt_epsilon(
+                                                                ) [MinusOpt_epsilon]
+                                                                Factor_designator_base(
+                                                                  Designator(
+                                                                   nizch
+                                                                    DesignatorTail_array(
+                                                                      Expression_termlist(
+                                                                        SimpleExpression(
+                                                                          TermList_single(
+                                                                            Term(
+                                                                              FactorList_single(
+                                                                                ExtensionFactor(
+                                                                                  MinusOpt_epsilon(
+                                                                                  ) [MinusOpt_epsilon]
+                                                                                  Factor_constant(
+                                                                                    Constant_num(
+                                                                                     0
+                                                                                    ) [Constant_num]
+                                                                                  ) [Factor_constant]
+                                                                                ) [ExtensionFactor]
+                                                                              ) [FactorList_single]
+                                                                            ) [Term]
+                                                                          ) [TermList_single]
+                                                                        ) [SimpleExpression]
+                                                                      ) [Expression_termlist]
+                                                                      DesignatorTail_epsilon(
+                                                                      ) [DesignatorTail_epsilon]
+                                                                    ) [DesignatorTail_array]
+                                                                  ) [Designator]
+                                                                ) [Factor_designator_base]
+                                                              ) [ExtensionFactor]
+                                                            ) [FactorList_single]
+                                                          ) [Term]
+                                                        ) [TermList_single]
+                                                      ) [SimpleExpression]
+                                                    ) [Expression_termlist]
+                                                  ) [ActPars_single]
+                                                ) [Factor_designator_brackets]
+                                              ) [ExtensionFactor]
+                                            ) [FactorList_single]
+                                          ) [Term]
+                                        ) [TermList_single]
+                                      ) [SimpleExpression]
+                                    ) [Expression_termlist]
+                                    NumConstOpt_epsilon(
+                                    ) [NumConstOpt_epsilon]
+                                  ) [Statement_print]
+                                ) [StatementList_recursion]
+                                Statement_print(
+                                  Expression_termlist(
+                                    SimpleExpression(
+                                      TermList_single(
+                                        Term(
+                                          FactorList_single(
+                                            ExtensionFactor(
+                                              MinusOpt_epsilon(
+                                              ) [MinusOpt_epsilon]
+                                              Factor_designator_base(
+                                                Designator(
+                                                 nizch
+                                                  DesignatorTail_length(
+                                                    DesignatorTail_epsilon(
+                                                    ) [DesignatorTail_epsilon]
+                                                  ) [DesignatorTail_length]
+                                                ) [Designator]
+                                              ) [Factor_designator_base]
+                                            ) [ExtensionFactor]
+                                          ) [FactorList_single]
+                                        ) [Term]
+                                      ) [TermList_single]
+                                    ) [SimpleExpression]
+                                  ) [Expression_termlist]
+                                  NumConstOpt_epsilon(
+                                  ) [NumConstOpt_epsilon]
+                                ) [Statement_print]
+                              ) [StatementList_recursion]
+                              Statement_print(
+                                Expression_termlist(
+                                  SimpleExpression(
+                                    TermList_single(
+                                      Term(
+                                        FactorList_single(
+                                          ExtensionFactor(
+                                            MinusOpt_epsilon(
+                                            ) [MinusOpt_epsilon]
+                                            Factor_designator_base(
+                                              Designator(
+                                               niz
+                                                DesignatorTail_length(
+                                                  DesignatorTail_epsilon(
+                                                  ) [DesignatorTail_epsilon]
+                                                ) [DesignatorTail_length]
+                                              ) [Designator]
+                                            ) [Factor_designator_base]
+                                          ) [ExtensionFactor]
+                                        ) [FactorList_single]
+                                      ) [Term]
+                                    ) [TermList_single]
+                                  ) [SimpleExpression]
+                                ) [Expression_termlist]
+                                NumConstOpt_epsilon(
+                                ) [NumConstOpt_epsilon]
+                              ) [Statement_print]
+                            ) [StatementList_recursion]
+                            Statement_designator(
+                              DesignatorStatement_assign(
+                                Designator(
+                                 a
+                                  DesignatorTail_epsilon(
+                                  ) [DesignatorTail_epsilon]
+                                ) [Designator]
+                                AssignOp(
+                                ) [AssignOp]
+                                Expression_termlist(
+                                  SimpleExpression(
+                                    TermList_single(
+                                      Term(
+                                        FactorList_single(
+                                          ExtensionFactor(
+                                            MinusOpt_epsilon(
+                                            ) [MinusOpt_epsilon]
+                                            Factor_constant(
+                                              Constant_num(
+                                               1
+                                              ) [Constant_num]
+                                            ) [Factor_constant]
+                                          ) [ExtensionFactor]
+                                        ) [FactorList_single]
+                                      ) [Term]
+                                    ) [TermList_single]
+                                  ) [SimpleExpression]
+                                ) [Expression_termlist]
+                              ) [DesignatorStatement_assign]
+                            ) [Statement_designator]
+                          ) [StatementList_recursion]
+                          Statement_read(
+                            Designator(
+                             bodovi
+                              DesignatorTail_epsilon(
+                              ) [DesignatorTail_epsilon]
+                            ) [Designator]
+                          ) [Statement_read]
+                        ) [StatementList_recursion]
+                        Statement_designator(
+                          DesignatorStatement_assign(
+                            Designator(
+                             bodovi
+                              DesignatorTail_epsilon(
+                              ) [DesignatorTail_epsilon]
+                            ) [Designator]
+                            AssignOp(
+                            ) [AssignOp]
+                            Expression_termlist(
+                              SimpleExpression(
+                                TermList_recursion(
+                                  TermList_recursion(
+                                    TermList_single(
+                                      Term(
+                                        FactorList_single(
+                                          ExtensionFactor(
+                                            MinusOpt_minus(
+                                            ) [MinusOpt_minus]
+                                            Factor_designator_base(
+                                              Designator(
+                                               bodovi
+                                                DesignatorTail_epsilon(
+                                                ) [DesignatorTail_epsilon]
+                                              ) [Designator]
+                                            ) [Factor_designator_base]
+                                          ) [ExtensionFactor]
+                                        ) [FactorList_single]
+                                      ) [Term]
+                                    ) [TermList_single]
+                                    Addop_pls(
+                                    ) [Addop_pls]
+                                    Term(
+                                      FactorList_recursion(
+                                        FactorList_single(
+                                          ExtensionFactor(
+                                            MinusOpt_epsilon(
+                                            ) [MinusOpt_epsilon]
+                                            Factor_expression(
+                                              Expression_termlist(
+                                                SimpleExpression(
+                                                  TermList_recursion(
+                                                    TermList_single(
+                                                      Term(
+                                                        FactorList_recursion(
+                                                          FactorList_recursion(
+                                                            FactorList_single(
+                                                              ExtensionFactor(
+                                                                MinusOpt_epsilon(
+                                                                ) [MinusOpt_epsilon]
+                                                                Factor_designator_base(
+                                                                  Designator(
+                                                                   pet
+                                                                    DesignatorTail_epsilon(
+                                                                    ) [DesignatorTail_epsilon]
+                                                                  ) [Designator]
+                                                                ) [Factor_designator_base]
+                                                              ) [ExtensionFactor]
+                                                            ) [FactorList_single]
+                                                            Mulop_mul(
+                                                            ) [Mulop_mul]
+                                                            ExtensionFactor(
+                                                              MinusOpt_epsilon(
+                                                              ) [MinusOpt_epsilon]
+                                                              Factor_designator_base(
+                                                                Designator(
+                                                                 a
+                                                                  DesignatorTail_epsilon(
+                                                                  ) [DesignatorTail_epsilon]
+                                                                ) [Designator]
+                                                              ) [Factor_designator_base]
+                                                            ) [ExtensionFactor]
+                                                          ) [FactorList_recursion]
+                                                          Mulop_div(
+                                                          ) [Mulop_div]
+                                                          ExtensionFactor(
+                                                            MinusOpt_epsilon(
+                                                            ) [MinusOpt_epsilon]
+                                                            Factor_constant(
+                                                              Constant_num(
+                                                               2
+                                                              ) [Constant_num]
+                                                            ) [Factor_constant]
+                                                          ) [ExtensionFactor]
+                                                        ) [FactorList_recursion]
+                                                      ) [Term]
+                                                    ) [TermList_single]
+                                                    Addop_mns(
+                                                    ) [Addop_mns]
+                                                    Term(
+                                                      FactorList_single(
+                                                        ExtensionFactor(
+                                                          MinusOpt_epsilon(
+                                                          ) [MinusOpt_epsilon]
+                                                          Factor_designator_base(
+                                                            Designator(
+                                                             nula
+                                                              DesignatorTail_epsilon(
+                                                              ) [DesignatorTail_epsilon]
+                                                            ) [Designator]
+                                                          ) [Factor_designator_base]
+                                                        ) [ExtensionFactor]
+                                                      ) [FactorList_single]
+                                                    ) [Term]
+                                                  ) [TermList_recursion]
+                                                ) [SimpleExpression]
+                                              ) [Expression_termlist]
+                                            ) [Factor_expression]
+                                          ) [ExtensionFactor]
+                                        ) [FactorList_single]
+                                        Mulop_mul(
+                                        ) [Mulop_mul]
+                                        ExtensionFactor(
+                                          MinusOpt_epsilon(
+                                          ) [MinusOpt_epsilon]
+                                          Factor_designator_base(
+                                            Designator(
+                                             bodovi
+                                              DesignatorTail_epsilon(
+                                              ) [DesignatorTail_epsilon]
+                                            ) [Designator]
+                                          ) [Factor_designator_base]
+                                        ) [ExtensionFactor]
+                                      ) [FactorList_recursion]
+                                    ) [Term]
+                                  ) [TermList_recursion]
+                                  Addop_mns(
+                                  ) [Addop_mns]
+                                  Term(
+                                    FactorList_single(
+                                      ExtensionFactor(
+                                        MinusOpt_epsilon(
+                                        ) [MinusOpt_epsilon]
+                                        Factor_expression(
+                                          Expression_termlist(
+                                            SimpleExpression(
+                                              TermList_recursion(
+                                                TermList_recursion(
+                                                  TermList_single(
+                                                    Term(
+                                                      FactorList_recursion(
+                                                        FactorList_single(
+                                                          ExtensionFactor(
+                                                            MinusOpt_epsilon(
+                                                            ) [MinusOpt_epsilon]
+                                                            Factor_constant(
+                                                              Constant_num(
+                                                               3
+                                                              ) [Constant_num]
+                                                            ) [Factor_constant]
+                                                          ) [ExtensionFactor]
+                                                        ) [FactorList_single]
+                                                        Mulop_mod(
+                                                        ) [Mulop_mod]
+                                                        ExtensionFactor(
+                                                          MinusOpt_epsilon(
+                                                          ) [MinusOpt_epsilon]
+                                                          Factor_constant(
+                                                            Constant_num(
+                                                             2
+                                                            ) [Constant_num]
+                                                          ) [Factor_constant]
+                                                        ) [ExtensionFactor]
+                                                      ) [FactorList_recursion]
+                                                    ) [Term]
+                                                  ) [TermList_single]
+                                                  Addop_pls(
+                                                  ) [Addop_pls]
+                                                  Term(
+                                                    FactorList_recursion(
+                                                      FactorList_single(
+                                                        ExtensionFactor(
+                                                          MinusOpt_epsilon(
+                                                          ) [MinusOpt_epsilon]
+                                                          Factor_constant(
+                                                            Constant_num(
+                                                             3
+                                                            ) [Constant_num]
+                                                          ) [Factor_constant]
+                                                        ) [ExtensionFactor]
+                                                      ) [FactorList_single]
+                                                      Mulop_mul(
+                                                      ) [Mulop_mul]
+                                                      ExtensionFactor(
+                                                        MinusOpt_epsilon(
+                                                        ) [MinusOpt_epsilon]
+                                                        Factor_constant(
+                                                          Constant_num(
+                                                           2
+                                                          ) [Constant_num]
+                                                        ) [Factor_constant]
+                                                      ) [ExtensionFactor]
+                                                    ) [FactorList_recursion]
+                                                  ) [Term]
+                                                ) [TermList_recursion]
+                                                Addop_mns(
+                                                ) [Addop_mns]
+                                                Term(
+                                                  FactorList_single(
+                                                    ExtensionFactor(
+                                                      MinusOpt_epsilon(
+                                                      ) [MinusOpt_epsilon]
+                                                      Factor_constant(
+                                                        Constant_num(
+                                                         7
+                                                        ) [Constant_num]
+                                                      ) [Factor_constant]
+                                                    ) [ExtensionFactor]
+                                                  ) [FactorList_single]
+                                                ) [Term]
+                                              ) [TermList_recursion]
+                                            ) [SimpleExpression]
+                                          ) [Expression_termlist]
+                                        ) [Factor_expression]
+                                      ) [ExtensionFactor]
+                                    ) [FactorList_single]
+                                  ) [Term]
+                                ) [TermList_recursion]
+                              ) [SimpleExpression]
+                            ) [Expression_termlist]
+                          ) [DesignatorStatement_assign]
+                        ) [Statement_designator]
+                      ) [StatementList_recursion]
+                      Statement_print(
+                        Expression_termlist(
+                          SimpleExpression(
+                            TermList_single(
+                              Term(
+                                FactorList_single(
+                                  ExtensionFactor(
+                                    MinusOpt_epsilon(
+                                    ) [MinusOpt_epsilon]
+                                    Factor_designator_base(
+                                      Designator(
+                                       bodovi
+                                        DesignatorTail_epsilon(
+                                        ) [DesignatorTail_epsilon]
+                                      ) [Designator]
+                                    ) [Factor_designator_base]
+                                  ) [ExtensionFactor]
+                                ) [FactorList_single]
+                              ) [Term]
+                            ) [TermList_single]
+                          ) [SimpleExpression]
+                        ) [Expression_termlist]
+                        NumConstOpt_epsilon(
+                        ) [NumConstOpt_epsilon]
+                      ) [Statement_print]
+                    ) [StatementList_recursion]
+                    Statement_read(
+                      Designator(
+                       bodovi
+                        DesignatorTail_epsilon(
+                        ) [DesignatorTail_epsilon]
+                      ) [Designator]
+                    ) [Statement_read]
+                  ) [StatementList_recursion]
+                  Statement_designator(
+                    DesignatorStatement_assign(
+                      Designator(
+                       bt
+                        DesignatorTail_epsilon(
+                        ) [DesignatorTail_epsilon]
+                      ) [Designator]
+                      AssignOp(
+                      ) [AssignOp]
+                      Expression_termlist(
+                        SimpleExpression(
+                          TermList_single(
+                            Term(
+                              FactorList_single(
+                                ExtensionFactor(
+                                  MinusOpt_epsilon(
+                                  ) [MinusOpt_epsilon]
+                                  Factor_constant(
+                                    Constant_boo(
+                                     1
+                                    ) [Constant_boo]
+                                  ) [Factor_constant]
+                                ) [ExtensionFactor]
+                              ) [FactorList_single]
+                            ) [Term]
+                          ) [TermList_single]
+                        ) [SimpleExpression]
+                      ) [Expression_termlist]
+                    ) [DesignatorStatement_assign]
+                  ) [Statement_designator]
+                ) [StatementList_recursion]
+                Statement_print(
+                  Expression_condition(
+                    Condition_single(
+                      CondTerm_single(
+                        CondFact_single(
+                          SimpleExpression(
+                            TermList_single(
+                              Term(
+                                FactorList_single(
+                                  ExtensionFactor(
+                                    MinusOpt_epsilon(
+                                    ) [MinusOpt_epsilon]
+                                    Factor_designator_base(
+                                      Designator(
+                                       bt
+                                        DesignatorTail_epsilon(
+                                        ) [DesignatorTail_epsilon]
+                                      ) [Designator]
+                                    ) [Factor_designator_base]
+                                  ) [ExtensionFactor]
+                                ) [FactorList_single]
+                              ) [Term]
+                            ) [TermList_single]
+                          ) [SimpleExpression]
+                        ) [CondFact_single]
+                      ) [CondTerm_single]
+                    ) [Condition_single]
+                    Expression_termlist(
+                      SimpleExpression(
+                        TermList_single(
+                          Term(
+                            FactorList_single(
+                              ExtensionFactor(
+                                MinusOpt_epsilon(
+                                ) [MinusOpt_epsilon]
+                                Factor_designator_base(
+                                  Designator(
+                                   bodovi
+                                    DesignatorTail_epsilon(
+                                    ) [DesignatorTail_epsilon]
+                                  ) [Designator]
+                                ) [Factor_designator_base]
+                              ) [ExtensionFactor]
+                            ) [FactorList_single]
+                          ) [Term]
+                        ) [TermList_single]
+                      ) [SimpleExpression]
+                    ) [Expression_termlist]
+                    Expression_termlist(
+                      SimpleExpression(
+                        TermList_recursion(
+                          TermList_single(
+                            Term(
+                              FactorList_single(
+                                ExtensionFactor(
+                                  MinusOpt_epsilon(
+                                  ) [MinusOpt_epsilon]
+                                  Factor_designator_base(
+                                    Designator(
+                                     bodovi
+                                      DesignatorTail_epsilon(
+                                      ) [DesignatorTail_epsilon]
+                                    ) [Designator]
+                                  ) [Factor_designator_base]
+                                ) [ExtensionFactor]
+                              ) [FactorList_single]
+                            ) [Term]
+                          ) [TermList_single]
+                          Addop_pls(
+                          ) [Addop_pls]
+                          Term(
+                            FactorList_single(
+                              ExtensionFactor(
+                                MinusOpt_epsilon(
+                                ) [MinusOpt_epsilon]
+                                Factor_constant(
+                                  Constant_num(
+                                   10
+                                  ) [Constant_num]
+                                ) [Factor_constant]
+                              ) [ExtensionFactor]
+                            ) [FactorList_single]
+                          ) [Term]
+                        ) [TermList_recursion]
+                      ) [SimpleExpression]
+                    ) [Expression_termlist]
+                  ) [Expression_condition]
+                  NumConstOpt_epsilon(
+                  ) [NumConstOpt_epsilon]
+                ) [Statement_print]
+              ) [StatementList_recursion]
+              Statement_print(
+                Expression_condition(
+                  Condition_single(
+                    CondTerm_single(
+                      CondFact_single(
+                        SimpleExpression(
+                          TermList_single(
+                            Term(
+                              FactorList_single(
+                                ExtensionFactor(
+                                  MinusOpt_epsilon(
+                                  ) [MinusOpt_epsilon]
+                                  Factor_constant(
+                                    Constant_boo(
+                                     0
+                                    ) [Constant_boo]
+                                  ) [Factor_constant]
+                                ) [ExtensionFactor]
+                              ) [FactorList_single]
+                            ) [Term]
+                          ) [TermList_single]
+                        ) [SimpleExpression]
+                      ) [CondFact_single]
+                    ) [CondTerm_single]
+                  ) [Condition_single]
+                  Expression_termlist(
+                    SimpleExpression(
+                      TermList_recursion(
+                        TermList_single(
+                          Term(
+                            FactorList_single(
+                              ExtensionFactor(
+                                MinusOpt_epsilon(
+                                ) [MinusOpt_epsilon]
+                                Factor_designator_base(
+                                  Designator(
+                                   bodovi
+                                    DesignatorTail_epsilon(
+                                    ) [DesignatorTail_epsilon]
+                                  ) [Designator]
+                                ) [Factor_designator_base]
+                              ) [ExtensionFactor]
+                            ) [FactorList_single]
+                          ) [Term]
+                        ) [TermList_single]
+                        Addop_pls(
+                        ) [Addop_pls]
+                        Term(
+                          FactorList_single(
+                            ExtensionFactor(
+                              MinusOpt_epsilon(
+                              ) [MinusOpt_epsilon]
+                              Factor_constant(
+                                Constant_num(
+                                 20
+                                ) [Constant_num]
+                              ) [Factor_constant]
+                            ) [ExtensionFactor]
+                          ) [FactorList_single]
+                        ) [Term]
+                      ) [TermList_recursion]
+                    ) [SimpleExpression]
+                  ) [Expression_termlist]
+                  Expression_termlist(
+                    SimpleExpression(
+                      TermList_recursion(
+                        TermList_single(
+                          Term(
+                            FactorList_single(
+                              ExtensionFactor(
+                                MinusOpt_epsilon(
+                                ) [MinusOpt_epsilon]
+                                Factor_designator_base(
+                                  Designator(
+                                   bodovi
+                                    DesignatorTail_epsilon(
+                                    ) [DesignatorTail_epsilon]
+                                  ) [Designator]
+                                ) [Factor_designator_base]
+                              ) [ExtensionFactor]
+                            ) [FactorList_single]
+                          ) [Term]
+                        ) [TermList_single]
+                        Addop_pls(
+                        ) [Addop_pls]
+                        Term(
+                          FactorList_single(
+                            ExtensionFactor(
+                              MinusOpt_epsilon(
+                              ) [MinusOpt_epsilon]
+                              Factor_constant(
+                                Constant_num(
+                                 30
+                                ) [Constant_num]
+                              ) [Factor_constant]
+                            ) [ExtensionFactor]
+                          ) [FactorList_single]
+                        ) [Term]
+                      ) [TermList_recursion]
+                    ) [SimpleExpression]
+                  ) [Expression_termlist]
+                ) [Expression_condition]
+                NumConstOpt_epsilon(
+                ) [NumConstOpt_epsilon]
+              ) [Statement_print]
+            ) [StatementList_recursion]
+            Statement_print(
+              Expression_condition(
+                Condition_single(
+                  CondTerm_single(
+                    CondFact_relop(
+                      SimpleExpression(
+                        TermList_single(
+                          Term(
+                            FactorList_single(
+                              ExtensionFactor(
+                                MinusOpt_epsilon(
+                                ) [MinusOpt_epsilon]
+                                Factor_designator_base(
+                                  Designator(
+                                   bodovi
+                                    DesignatorTail_epsilon(
+                                    ) [DesignatorTail_epsilon]
+                                  ) [Designator]
+                                ) [Factor_designator_base]
+                              ) [ExtensionFactor]
+                            ) [FactorList_single]
+                          ) [Term]
+                        ) [TermList_single]
+                      ) [SimpleExpression]
+                      Relop_grt(
+                      ) [Relop_grt]
+                      SimpleExpression(
+                        TermList_single(
+                          Term(
+                            FactorList_single(
+                              ExtensionFactor(
+                                MinusOpt_epsilon(
+                                ) [MinusOpt_epsilon]
+                                Factor_constant(
+                                  Constant_num(
+                                   10
+                                  ) [Constant_num]
+                                ) [Factor_constant]
+                              ) [ExtensionFactor]
+                            ) [FactorList_single]
+                          ) [Term]
+                        ) [TermList_single]
+                      ) [SimpleExpression]
+                    ) [CondFact_relop]
+                  ) [CondTerm_single]
+                ) [Condition_single]
+                Expression_termlist(
+                  SimpleExpression(
+                    TermList_single(
+                      Term(
+                        FactorList_single(
+                          ExtensionFactor(
+                            MinusOpt_epsilon(
+                            ) [MinusOpt_epsilon]
+                            Factor_constant(
+                              Constant_chr(
+                               +
+                              ) [Constant_chr]
+                            ) [Factor_constant]
+                          ) [ExtensionFactor]
+                        ) [FactorList_single]
+                      ) [Term]
+                    ) [TermList_single]
+                  ) [SimpleExpression]
+                ) [Expression_termlist]
+                Expression_termlist(
+                  SimpleExpression(
+                    TermList_single(
+                      Term(
+                        FactorList_single(
+                          ExtensionFactor(
+                            MinusOpt_epsilon(
+                            ) [MinusOpt_epsilon]
+                            Factor_constant(
+                              Constant_chr(
+                               -
+                              ) [Constant_chr]
+                            ) [Factor_constant]
+                          ) [ExtensionFactor]
+                        ) [FactorList_single]
+                      ) [Term]
+                    ) [TermList_single]
+                  ) [SimpleExpression]
+                ) [Expression_termlist]
+              ) [Expression_condition]
+              NumConstOpt_epsilon(
+              ) [NumConstOpt_epsilon]
+            ) [Statement_print]
+          ) [StatementList_recursion]
+        ) [StatementListOpt_exists]
+      ) [MethodDecl]
+    ) [MethodDeclList_single]
+  ) [MethodDeclListPrgOpt_exists]
+) [Program]
+INFO  21:22:24,881 - ====================================================================
+ERROR 21:22:24,884 - Enum members must be unique. On line number 7
+INFO  21:22:24,885 - ====================================================================
+ERROR 21:22:24,887 - Parsing failed!

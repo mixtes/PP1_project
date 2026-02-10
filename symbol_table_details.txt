@@ -1,0 +1,54 @@
+1. Scope node
+	Parent (ref. Scope): - pokazivac na Scope oca, okruzujuci ospeg
+	Locals (ref. Obj): - pokazivac na listu Object cvorova koji se nalaze u istom opsegu
+	nVars  (int): - broj Var promenljivih u scope-u
+	
+2. Obj node
+	Kind:
+		Var		(int a, c[])
+		Meth	(void main() {})
+		Con		(const int b = 5)
+		Type	(int)
+		Field	(rec a { int b; })
+		Prog	(program Test)
+		Elem	(c[5]) // ne ide u tabelu simbola
+	Name:
+		... // ne sme da se ponovi u jednom opsegu
+	Type (ref. Struct):
+		Var,Con,Field,Elem - tip promenljive (prost ili slozen)
+		Meth - povratni tip metode
+		Type - structurni cvor za taj tip
+	Next (ref. Object):
+		... ulancavanje u listu
+	Adr:
+		Var, Field - offset od pocetka scope-a (inc)
+		Con - vrednost konstante
+		#4 Meth - adresa pocetka metode (trenutni PC)
+	Level:
+		Var, Con - 0 (globalna) ili 1 (lokalna)
+		Field - 2
+		Meth - broj formalnih parametara
+	fpPos:
+		Var - 1 (formalni parametar metode - ili nesto drugo u zavisnosti od implementacije)
+	Locals (ref. Obj):
+		pokazivac na sve objektne cvorove ovog scope-a
+		Prog, Meth
+		
+3. Struct node
+	Kind:
+		None (void)
+		Int
+		Char
+		Bool
+		Array
+		Class
+		Enum
+		Interface
+	Elem type (ref. Struct):
+		pozivac na structurni cvor odredjenog tipa elementa niza
+	N:
+		broj polja klase
+	Fields(Members) (ref. Obj):
+		Locals za klasu
+		Type
+		
