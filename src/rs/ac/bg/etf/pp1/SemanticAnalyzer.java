@@ -9,7 +9,7 @@ import rs.etf.pp1.symboltable.concepts.Struct;
 
 public class SemanticAnalyzer extends VisitorAdaptor {
 	
-	private boolean mainExists = false;
+	private Obj mainMethod = null;
 	
 	private boolean errorDetected = false;	
 	Logger log = Logger.getLogger(getClass());
@@ -68,8 +68,10 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		
 		this.myProgram = null;
 		
-		if (!this.mainExists)
+		if (this.mainMethod == null)
 			report_error("Program is missing entry point (method main).", program);
+		else if (this.mainMethod.getLevel() > 0)
+			report_error("Main method can't have formal parameters.", program);
 	}
 	
 	/* ConstDecl */
@@ -185,11 +187,12 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	
 	@Override
 	public void visit(MethodTypeAndName_void methodTypeAndName)
-	{
-		if (methodTypeAndName.getI1().equalsIgnoreCase("main")) 
-			this.mainExists = true;
-		
+	{	
 		this.currentMethod = Tab.insert(Obj.Meth, methodTypeAndName.getI1(), Tab.noType);
+		
+		if (methodTypeAndName.getI1().equalsIgnoreCase("main")) 
+			this.mainMethod = this.currentMethod;
+		
 		Tab.openScope();
 	}
 	
@@ -212,6 +215,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		else
 		{
 			parameter = Tab.insert(Obj.Var, formPar.getI2(), this.currentType);
+			parameter.setFpPos(1);
+			currentMethod.setLevel(currentMethod.getLevel() + 1);
 		}
 	}
 	
@@ -227,6 +232,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		else
 		{
 			parameter = Tab.insert(Obj.Var, formPar.getI2(), new Struct(Struct.Array, this.currentType));
+			parameter.setFpPos(1);
+			currentMethod.setLevel(currentMethod.getLevel() + 1);
 		}
 	}
 	

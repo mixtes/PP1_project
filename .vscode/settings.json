@@ -1,0 +1,9 @@
+{
+    "claudeCode.useTerminal": true,
+    "java.project.referencedLibraries": [
+        "lib/log4j-1.2.17.jar",
+        "lib/cup_v10k.jar",
+        "lib/JFlex.jar",
+        "lib/symboltable-1-1.jar"
+    ]
+}
