@@ -50,6 +50,7 @@ terminal EQL, NEQ, GRT, GRE, LET, LTE;
 
 nonterminal Program, ProgramName, DeclList;
 nonterminal ConstDeclList, VarDeclList, ClassDecl, EnumDeclList, AbstractClassDecl, MethodDeclList;
+nonterminal ClassName, AbsClassName;
 nonterminal Type, ConstDecl, Constant, AdditionalConstDecl;
 nonterminal VarDecl, VarList, VarDeclListMultiple;
 nonterminal EnumIDT, EnumName, AdditionalEnumIDT, MethodDeclListOpt, ExtendsOpt;
@@ -59,8 +60,9 @@ nonterminal Statement, DesignatorStatement, StatementList, Condition, ElseOpt, E
 nonterminal NumConst;
 nonterminal CaseList, DesignatorStatementOpt, ConditionOpt, NumConstOpt, Designator, StatementListOpt;
 nonterminal ActPars, AssignOp, CondTerm, CondFact, Relop, Addop, Mulop;
-nonterminal TermList, Term, FactorList, Factor, ExtensionFactor, MinusOpt;
+nonterminal TermList, Term, FactorList, MinusOpt;
 nonterminal SimpleExpression, DesignatorTail;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct ExtensionFactor, Factor;
 
 precedence left ELS;
 
@@ -138,7 +140,9 @@ AdditionalEnumIDT ::= (AdditionalEnumIDT_recursion) COM EnumIDT AdditionalEnumID
 
 /* ClassDecl */
 
-ClassDecl ::= (ClassDecl) CLS IDT ExtendsOpt LOB VarDeclListMultiple MethodDeclListOpt LCB;
+ClassDecl ::= (ClassDecl) CLS ClassName ExtendsOpt LOB VarDeclListMultiple MethodDeclListOpt LCB;
+
+ClassName ::= (ClassName) IDT;
 
 ExtendsOpt ::= (ExtendsOpt_exists) EXT Type
 				|
@@ -152,7 +156,9 @@ MethodDeclListOpt ::= (MethodDeclListOpt_exists) LOB MethodDeclList LCB
 
 /* AbstractClassDecl */
 
-AbstractClassDecl ::= (AbstractClassDecl) ABS CLS IDT ExtendsOpt LOB AbstractMethodDeclListOpt LCB;
+AbstractClassDecl ::= (AbstractClassDecl) ABS CLS AbsClassName ExtendsOpt LOB AbstractMethodDeclListOpt LCB;
+
+AbsClassName ::= (AbsClassName) IDT;
 
 AbstractMethodDeclListOpt ::= (AbstractMethodDeclListOpt_exists) LOB AbstractMethodDeclList LCB
 								|
@@ -203,17 +209,17 @@ StatementList ::= (StatementList_recursion) StatementList Statement
 
 /* FormPars */
 
-FormParsList ::= (FormParsList) FormParOpt FormParsAdditional;
+FormParsList ::= (FormParsList) FormParOpt;
+
+FormParOpt ::= (FormParOpt_exists) FormPar FormParsAdditional
+				|
+				(FormParOpt_epsilon) /* e */
+				;
 
 FormParsAdditional ::= (FormParsAdditional_recursion) COM FormPar FormParsAdditional
 						|
 						(FormParsAdditional_epsilon) /* e */
 						;
-
-FormParOpt ::= (FormParOpt_exists) FormPar
-			|
-			(FormParOpt_epsilon) /* e */
-			;
 
 FormPar ::= (FormPar_array) Type IDT MOB MCB
 			|

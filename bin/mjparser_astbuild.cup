@@ -57,6 +57,8 @@ nonterminal ClassDecl ClassDecl;
 nonterminal EnumDeclList EnumDeclList;
 nonterminal AbstractClassDecl AbstractClassDecl;
 nonterminal MethodDeclList MethodDeclList;
+nonterminal ClassName ClassName;
+nonterminal AbsClassName AbsClassName;
 nonterminal Type Type;
 nonterminal ConstDecl ConstDecl;
 nonterminal Constant Constant;
@@ -103,11 +105,10 @@ nonterminal Mulop Mulop;
 nonterminal TermList TermList;
 nonterminal Term Term;
 nonterminal FactorList FactorList;
-nonterminal Factor Factor;
-nonterminal ExtensionFactor ExtensionFactor;
 nonterminal MinusOpt MinusOpt;
 nonterminal SimpleExpression SimpleExpression;
 nonterminal DesignatorTail DesignatorTail;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct ExtensionFactor, Factor;
 
 precedence left ELS;
 
@@ -185,7 +186,9 @@ AdditionalEnumIDT ::= (AdditionalEnumIDT_recursion) COM EnumIDT:E1 AdditionalEnu
 
 /* ClassDecl */
 
-ClassDecl ::= (ClassDecl) CLS IDT:I1 ExtendsOpt:E2 LOB VarDeclListMultiple:V3 MethodDeclListOpt:M4 LCB {: RESULT=new ClassDecl(I1, E2, V3, M4); RESULT.setLine(I1left); :};
+ClassDecl ::= (ClassDecl) CLS ClassName:C1 ExtendsOpt:E2 LOB VarDeclListMultiple:V3 MethodDeclListOpt:M4 LCB {: RESULT=new ClassDecl(C1, E2, V3, M4); RESULT.setLine(C1left); :};
+
+ClassName ::= (ClassName) IDT:I1 {: RESULT=new ClassName(I1); RESULT.setLine(I1left); :};
 
 ExtendsOpt ::= (ExtendsOpt_exists) EXT Type:T1 {: RESULT=new ExtendsOpt_exists(T1); RESULT.setLine(T1left); :}
 				|
@@ -199,7 +202,9 @@ MethodDeclListOpt ::= (MethodDeclListOpt_exists) LOB MethodDeclList:M1 LCB {: RE
 
 /* AbstractClassDecl */
 
-AbstractClassDecl ::= (AbstractClassDecl) ABS CLS IDT:I1 ExtendsOpt:E2 LOB AbstractMethodDeclListOpt:A3 LCB {: RESULT=new AbstractClassDecl(I1, E2, A3); RESULT.setLine(I1left); :};
+AbstractClassDecl ::= (AbstractClassDecl) ABS CLS AbsClassName:A1 ExtendsOpt:E2 LOB AbstractMethodDeclListOpt:A3 LCB {: RESULT=new AbstractClassDecl(A1, E2, A3); RESULT.setLine(A1left); :};
+
+AbsClassName ::= (AbsClassName) IDT:I1 {: RESULT=new AbsClassName(I1); RESULT.setLine(I1left); :};
 
 AbstractMethodDeclListOpt ::= (AbstractMethodDeclListOpt_exists) LOB AbstractMethodDeclList:A1 LCB {: RESULT=new AbstractMethodDeclListOpt_exists(A1); RESULT.setLine(A1left); :}
 								|
@@ -250,17 +255,17 @@ StatementList ::= (StatementList_recursion) StatementList:S1 Statement:S2 {: RES
 
 /* FormPars */
 
-FormParsList ::= (FormParsList) FormParOpt:F1 FormParsAdditional:F2 {: RESULT=new FormParsList(F1, F2); RESULT.setLine(F1left); :};
+FormParsList ::= (FormParsList) FormParOpt:F1 {: RESULT=new FormParsList(F1); RESULT.setLine(F1left); :};
+
+FormParOpt ::= (FormParOpt_exists) FormPar:F1 FormParsAdditional:F2 {: RESULT=new FormParOpt_exists(F1, F2); RESULT.setLine(F1left); :}
+				|
+				(FormParOpt_epsilon) {: RESULT=new FormParOpt_epsilon(); :} /* e */
+				;
 
 FormParsAdditional ::= (FormParsAdditional_recursion) COM FormPar:F1 FormParsAdditional:F2 {: RESULT=new FormParsAdditional_recursion(F1, F2); RESULT.setLine(F1left); :}
 						|
 						(FormParsAdditional_epsilon) {: RESULT=new FormParsAdditional_epsilon(); :} /* e */
 						;
-
-FormParOpt ::= (FormParOpt_exists) FormPar:F1 {: RESULT=new FormParOpt_exists(F1); RESULT.setLine(F1left); :}
-			|
-			(FormParOpt_epsilon) {: RESULT=new FormParOpt_epsilon(); :} /* e */
-			;
 
 FormPar ::= (FormPar_array) Type:T1 IDT:I2 MOB MCB {: RESULT=new FormPar_array(T1, I2); RESULT.setLine(T1left); :}
 			|

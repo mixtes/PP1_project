@@ -1,0 +1,51 @@
+INFO  13:25:34,315 - Compiling source file: D:\Mihajlo\Desktop\Stvari za faks\PP1\Projekat\pp_eclipse_workspace\MJCompiler\test\program.mj
+INFO  13:25:34,347 - Program(
+  ProgramName(
+   prg
+  ) [ProgramName]
+  DeclList_epsilon(
+  ) [DeclList_epsilon]
+  MethodDeclListPrgOpt_exists(
+    MethodDeclList_recursion(
+      MethodDeclList_single(
+        MethodDecl(
+          MethodTypeAndName_void(
+           kita
+          ) [MethodTypeAndName_void]
+          FormParsList(
+            FormParOpt_exists(
+              FormPar_single(
+                Type(
+                 int
+                ) [Type]
+               fp2
+              ) [FormPar_single]
+              FormParsAdditional_epsilon(
+              ) [FormParsAdditional_epsilon]
+            ) [FormParOpt_exists]
+          ) [FormParsList]
+          VarDeclListMultiple_epsilon(
+          ) [VarDeclListMultiple_epsilon]
+          StatementListOpt_epsilon(
+          ) [StatementListOpt_epsilon]
+        ) [MethodDecl]
+      ) [MethodDeclList_single]
+      MethodDecl(
+        MethodTypeAndName_void(
+         main
+        ) [MethodTypeAndName_void]
+        FormParsList(
+          FormParOpt_epsilon(
+          ) [FormParOpt_epsilon]
+        ) [FormParsList]
+        VarDeclListMultiple_epsilon(
+        ) [VarDeclListMultiple_epsilon]
+        StatementListOpt_epsilon(
+        ) [StatementListOpt_epsilon]
+      ) [MethodDecl]
+    ) [MethodDeclList_recursion]
+  ) [MethodDeclListPrgOpt_exists]
+) [Program]
+INFO  13:25:34,354 - ====================================================================
+INFO  13:25:34,357 - ====================================================================
+INFO  13:25:34,358 - Parsing successful!

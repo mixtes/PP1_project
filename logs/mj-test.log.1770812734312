@@ -1,0 +1,4 @@
+INFO  13:25:19,323 - Compiling source file: D:\Mihajlo\Desktop\Stvari za faks\PP1\Projekat\pp_eclipse_workspace\MJCompiler\test\program.mj
+ERROR 13:25:19,348 - 
+Sintaksna greska na liniji 5
+ERROR 13:25:19,348 - Fatalna greska, parsiranje se ne moze nastaviti na liniji 5

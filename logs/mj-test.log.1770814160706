@@ -1,0 +1,251 @@
+INFO  13:48:56,637 - Compiling source file: D:\Mihajlo\Desktop\Stvari za faks\PP1\Projekat\pp_eclipse_workspace\MJCompiler\test\program.mj
+INFO  13:48:56,676 - Program(
+  ProgramName(
+   test_303
+  ) [ProgramName]
+  DeclList_var(
+    DeclList_var(
+      DeclList_class(
+        DeclList_abstract_class(
+          DeclList_const(
+            DeclList_epsilon(
+            ) [DeclList_epsilon]
+            ConstDeclList(
+              Type(
+               int
+              ) [Type]
+              ConstDecl(
+               cinilac
+                Constant_num(
+                 4
+                ) [Constant_num]
+              ) [ConstDecl]
+              AdditionalConstDecl_recursion(
+                ConstDecl(
+                 delilac
+                  Constant_num(
+                   3
+                  ) [Constant_num]
+                ) [ConstDecl]
+                AdditionalConstDecl_epsilon(
+                ) [AdditionalConstDecl_epsilon]
+              ) [AdditionalConstDecl_recursion]
+            ) [ConstDeclList]
+          ) [DeclList_const]
+          AbstractClassDecl(
+            AbsClassName(
+             AbsPredmet
+            ) [AbsClassName]
+            ExtendsOpt_epsilon(
+            ) [ExtendsOpt_epsilon]
+            AbstractMethodDeclListOpt_exists(
+              AbstractMethodDeclList_recursion_abs(
+                AbstractMethodDeclList_single_abs(
+                  AbstractMethodDecl(
+                    MethodTypeAndName_type(
+                      Type(
+                       int
+                      ) [Type]
+                     zapremina
+                    ) [MethodTypeAndName_type]
+                    FormParsList(
+                      FormParOpt_epsilon(
+                      ) [FormParOpt_epsilon]
+                    ) [FormParsList]
+                  ) [AbstractMethodDecl]
+                ) [AbstractMethodDeclList_single_abs]
+                AbstractMethodDecl(
+                  MethodTypeAndName_type(
+                    Type(
+                     int
+                    ) [Type]
+                   Q
+                  ) [MethodTypeAndName_type]
+                  FormParsList(
+                    FormParOpt_epsilon(
+                    ) [FormParOpt_epsilon]
+                  ) [FormParsList]
+                ) [AbstractMethodDecl]
+              ) [AbstractMethodDeclList_recursion_abs]
+            ) [AbstractMethodDeclListOpt_exists]
+          ) [AbstractClassDecl]
+        ) [DeclList_abstract_class]
+        ClassDecl(
+          ClassName(
+           Predmet
+          ) [ClassName]
+          ExtendsOpt_exists(
+            Type(
+             AbsPredmet
+            ) [Type]
+          ) [ExtendsOpt_exists]
+          VarDeclListMultiple_recursion(
+            VarDeclListMultiple_recursion(
+              VarDeclListMultiple_epsilon(
+              ) [VarDeclListMultiple_epsilon]
+              VarDeclList(
+                Type(
+                 int
+                ) [Type]
+                VarList_single(
+                  VarDecl_single(
+                   tezina
+                  ) [VarDecl_single]
+                ) [VarList_single]
+              ) [VarDeclList]
+            ) [VarDeclListMultiple_recursion]
+            VarDeclList(
+              Type(
+               char
+              ) [Type]
+              VarList_single(
+                VarDecl_single(
+                 vrsta
+                ) [VarDecl_single]
+              ) [VarList_single]
+            ) [VarDeclList]
+          ) [VarDeclListMultiple_recursion]
+          MethodDeclListOpt_exists(
+            MethodDeclList_single(
+              MethodDecl(
+                MethodTypeAndName_type(
+                  Type(
+                   int
+                  ) [Type]
+                 Q
+                ) [MethodTypeAndName_type]
+                FormParsList(
+                  FormParOpt_epsilon(
+                  ) [FormParOpt_epsilon]
+                ) [FormParsList]
+                VarDeclListMultiple_epsilon(
+                ) [VarDeclListMultiple_epsilon]
+                StatementListOpt_exists(
+                  StatementList_single(
+                    Statement_return(
+                      ExpressionOpt_exists(
+                        Expression_termlist(
+                          SimpleExpression(
+                            TermList_single(
+                              Term(
+                                FactorList_recursion(
+                                  FactorList_single(
+                                    ExtensionFactor(
+                                      MinusOpt_epsilon(
+                                      ) [MinusOpt_epsilon]
+                                      Factor_designator_brackets(
+                                        Designator(
+                                         zapremina
+                                          DesignatorTail_epsilon(
+                                          ) [DesignatorTail_epsilon]
+                                        ) [Designator]
+                                        ActPars_epsilon(
+                                        ) [ActPars_epsilon]
+                                      ) [Factor_designator_brackets]
+                                    ) [ExtensionFactor]
+                                  ) [FactorList_single]
+                                  Mulop_mul(
+                                  ) [Mulop_mul]
+                                  ExtensionFactor(
+                                    MinusOpt_epsilon(
+                                    ) [MinusOpt_epsilon]
+                                    Factor_designator_base(
+                                      Designator(
+                                       tezina
+                                        DesignatorTail_epsilon(
+                                        ) [DesignatorTail_epsilon]
+                                      ) [Designator]
+                                    ) [Factor_designator_base]
+                                  ) [ExtensionFactor]
+                                ) [FactorList_recursion]
+                              ) [Term]
+                            ) [TermList_single]
+                          ) [SimpleExpression]
+                        ) [Expression_termlist]
+                      ) [ExpressionOpt_exists]
+                    ) [Statement_return]
+                  ) [StatementList_single]
+                ) [StatementListOpt_exists]
+              ) [MethodDecl]
+            ) [MethodDeclList_single]
+          ) [MethodDeclListOpt_exists]
+        ) [ClassDecl]
+      ) [DeclList_class]
+      VarDeclList(
+        Type(
+         int
+        ) [Type]
+        VarList_recursion(
+          VarList_single(
+            VarDecl_single(
+             zapreminaK
+            ) [VarDecl_single]
+          ) [VarList_single]
+          VarDecl_single(
+           zapreminaS
+          ) [VarDecl_single]
+        ) [VarList_recursion]
+      ) [VarDeclList]
+    ) [DeclList_var]
+    VarDeclList(
+      Type(
+       int
+      ) [Type]
+      VarList_recursion(
+        VarList_single(
+          VarDecl_single(
+           tezinaK
+          ) [VarDecl_single]
+        ) [VarList_single]
+        VarDecl_single(
+         tezinaS
+        ) [VarDecl_single]
+      ) [VarList_recursion]
+    ) [VarDeclList]
+  ) [DeclList_var]
+  MethodDeclListPrgOpt_exists(
+    MethodDeclList_single(
+      MethodDecl(
+        MethodTypeAndName_void(
+         main
+        ) [MethodTypeAndName_void]
+        FormParsList(
+          FormParOpt_epsilon(
+          ) [FormParOpt_epsilon]
+        ) [FormParsList]
+        VarDeclListMultiple_recursion(
+          VarDeclListMultiple_recursion(
+            VarDeclListMultiple_epsilon(
+            ) [VarDeclListMultiple_epsilon]
+            VarDeclList(
+              Type(
+               Predmet
+              ) [Type]
+              VarList_single(
+                VarDecl_array(
+                 predmeti
+                ) [VarDecl_array]
+              ) [VarList_single]
+            ) [VarDeclList]
+          ) [VarDeclListMultiple_recursion]
+          VarDeclList(
+            Type(
+             AbsPredmet
+            ) [Type]
+            VarList_single(
+              VarDecl_array(
+               absPredmeti
+              ) [VarDecl_array]
+            ) [VarList_single]
+          ) [VarDeclList]
+        ) [VarDeclListMultiple_recursion]
+        StatementListOpt_epsilon(
+        ) [StatementListOpt_epsilon]
+      ) [MethodDecl]
+    ) [MethodDeclList_single]
+  ) [MethodDeclListPrgOpt_exists]
+) [Program]
+INFO  13:48:56,687 - ====================================================================
+ERROR 13:48:56,691 - Non-abstract class must implement abstract method: zapremina On line number 13
+INFO  13:48:56,691 - ====================================================================
+ERROR 13:48:56,693 - Parsing failed!
