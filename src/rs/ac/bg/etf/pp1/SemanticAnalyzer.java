@@ -1,6 +1,10 @@
 package rs.ac.bg.etf.pp1;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Stack;
 
 import org.apache.log4j.Logger;
 
@@ -16,22 +20,34 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	private boolean errorDetected = false;	
 	Logger log = Logger.getLogger(getClass());
 	private Obj myProgram;
+
 	private Obj currentMethod;
+	private boolean methodHasReturnStmt = false;
+
 	private Struct currentType;
 
-	private Obj currentEnum;
 	private Struct currentEnumStructNode;
 	private int previousEnumValue;
-	private ArrayList<Integer> currentEnumValues;
+	private HashSet<Integer> currentEnumValues;
 
 	private Obj currentClass;
 	private Struct currentClassStructNode;
 	private int currentFieldAddress;
 
+	private HashSet<Struct> abstractClassStructNodes = new HashSet<>();
+	private HashMap<String, Obj> currentClassMembersMap = null;
+
 	private int c_val;
 	private Struct c_type;
 	private Struct boolType = Tab.find("bool").getType();
 
+	private int loopDepth = 0;
+	private int switchDepth = 0;
+	private HashSet<Integer> caseLabels = null;
+	private Stack<HashSet<Integer>> caseLabelsStack = new Stack<>();
+
+	private ArrayList<Struct> methodCallActualParams = null;
+	private Stack<ArrayList<Struct>> methodCallActualParamsLists = new Stack<>();
 
 	/* log */
 
@@ -59,7 +75,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		return !this.errorDetected;
 	}
 	
-	/* analysis */
+	/* symbol table */
 	
 	/* ProgramName */ 
 	
@@ -177,6 +193,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 				variable = Tab.insert(Obj.Fld, varDecl.getI1(), this.currentType);
 				variable.setAdr(this.currentFieldAddress++);
 				variable.setLevel(1);
+				if (this.currentClassMembersMap != null)
+					this.currentClassMembersMap.put(varDecl.getI1(), variable);
 			}
 			else
 			{
@@ -211,6 +229,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 				variable = Tab.insert(Obj.Fld, varDecl.getI1(), new Struct(Struct.Array, this.currentType));
 				variable.setAdr(this.currentFieldAddress++);
 				variable.setLevel(1);
+				if (this.currentClassMembersMap != null)
+					this.currentClassMembersMap.put(varDecl.getI1(), variable);
 			}
 			else
 			{
@@ -224,7 +244,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			}
 		}
 	}
-	
+
 	/* MethodDecl */
 
 	private boolean isInheritedMethod(String methodName)
@@ -276,9 +296,11 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			thisParam.setLevel(2);
 			thisParam.setFpPos(1);
 			this.currentMethod.setLevel(1);
+			if (this.currentClassMembersMap != null)
+				this.currentClassMembersMap.put(methodName, this.currentMethod);
 		}
 	}
-	
+
 	@Override
 	public void visit(MethodTypeAndName_type methodTypeAndName)
 	{
@@ -310,6 +332,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			thisParam.setLevel(2);
 			thisParam.setFpPos(1);
 			this.currentMethod.setLevel(1);
+			if (this.currentClassMembersMap != null)
+				this.currentClassMembersMap.put(methodName, this.currentMethod);
 		}
 	}
 	
@@ -364,6 +388,12 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		Tab.chainLocalSymbols(this.currentMethod);
 		Tab.closeScope();
 
+		if (this.currentMethod.getType() != Tab.noType && !this.methodHasReturnStmt)
+		{
+			report_error("Non-void method must have a return statement.", methodDecl);
+		}
+		this.methodHasReturnStmt = false;
+
 		this.currentMethod = null;
 	}
 
@@ -387,14 +417,13 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		if (enumType != Tab.noObj)
 		{
 			report_error("Multiple definitions of enum type: " + enumName.getI1(), enumName);
-          	this.currentEnum = new Obj(Obj.Type, enumName.getI1(), this.currentEnumStructNode);
 		}
 		else
 		{
-			this.currentEnum = Tab.insert(Obj.Type, enumName.getI1(), this.currentEnumStructNode);
+			Tab.insert(Obj.Type, enumName.getI1(), this.currentEnumStructNode);
 		}
 		Tab.openScope();
-		this.currentEnumValues = new ArrayList<>();
+		this.currentEnumValues = new HashSet<>();
 		this.previousEnumValue = -1;
 	}
 
@@ -406,14 +435,13 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		
 		this.currentEnumValues = null;
 		this.currentEnumStructNode = null;
-		this.currentEnum = null;
 	}
 
 	private boolean isEnumMemberValueUnique(int value)
 	{
 		for (int i = 0; i < this.currentEnumValues.size(); i++)
 		{
-			if (this.currentEnumValues.get(i) == value)
+			if (this.currentEnumValues.contains(value))
 			{
 				return false;
 			}
@@ -441,7 +469,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 		else
 		{
-			Obj newEnumMember = Tab.insert(Obj.Con, enumMemberName, Tab.intType);
+			Obj newEnumMember = Tab.insert(Obj.Con, enumMemberName, this.currentEnumStructNode);
 			newEnumMember.setAdr(enumMemberValue);
 			this.previousEnumValue = enumMemberValue;
 			this.currentEnumValues.add(enumMemberValue);
@@ -468,7 +496,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 				return;
 			}
 
-			Obj newEnumMember = Tab.insert(Obj.Con, enumMemberName, Tab.intType);
+			Obj newEnumMember = Tab.insert(Obj.Con, enumMemberName, this.currentEnumStructNode);
 			newEnumMember.setAdr(enumMemberValue);
 			this.previousEnumValue = enumMemberValue;
 			this.currentEnumValues.add(enumMemberValue);
@@ -485,14 +513,16 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		if (absClassType != Tab.noObj)
 		{
 			report_error("Multiple definitions of abstract class type: " + absClassName.getI1(), absClassName);
-          	this.currentClass = new Obj(Obj.Type, absClassName.getI1(), this.currentClassStructNode);
+			this.currentClass = new Obj(Obj.Type, absClassName.getI1(), this.currentClassStructNode);
 		}
 		else
 		{
 			this.currentClass = Tab.insert(Obj.Type, absClassName.getI1(), this.currentClassStructNode);
+			this.abstractClassStructNodes.add(this.currentClassStructNode);
 		}
 		Tab.openScope();
 		this.currentFieldAddress = 1;
+		this.currentClassMembersMap = new HashMap<>();
 	}
 
 	@Override
@@ -503,6 +533,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
 		this.currentClass = null;
 		this.currentClassStructNode = null;
+		this.currentClassMembersMap = null;
 	}
 
 	/* ClassDecl */
@@ -523,6 +554,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 		Tab.openScope();
 		this.currentFieldAddress = 1;
+		this.currentClassMembersMap = new HashMap<>();
 	}
 
 	@Override
@@ -540,6 +572,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
 		this.currentClass = null;
 		this.currentClassStructNode = null;
+		this.currentClassMembersMap = null;
 	}
 
 	@Override
@@ -562,7 +595,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			this.currentClassStructNode.setElementType(parentClassObj.getType());
 
 			// copy parent class members into the beginning of the current class scope
-			java.util.Collection<Obj> parentMembers = parentClassObj.getType().getMembers();
+			Collection<Obj> parentMembers = parentClassObj.getType().getMembers();
 			if (parentMembers != null)
 			{
 				for (Obj member : parentMembers)
@@ -575,8 +608,743 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 					{
 						this.currentFieldAddress = member.getAdr() + 1;
 					}
+					if (member.getKind() == Obj.Meth)
+					{
+						Tab.openScope();
+						for (Obj local : member.getLocalSymbols())
+						{
+							Obj localCopy = Tab.insert(local.getKind(), local.getName(), local.getType());
+							localCopy.setAdr(local.getAdr());
+							localCopy.setLevel(local.getLevel());
+							localCopy.setFpPos(local.getFpPos());
+						}
+						Tab.chainLocalSymbols(copy);
+						Tab.closeScope();
+					}
+					if (this.currentClassMembersMap != null)
+						this.currentClassMembersMap.put(member.getName(), copy);
 				}
 			}
 		}
+	}
+
+	/* context conditions */
+
+	private boolean isAssignable_deep(Struct src, Struct dest)
+	{
+		if (src.assignableTo(dest)) return true;
+		// check class inheritance: walk up parent chain
+		if (src.getKind() == Struct.Class && dest.getKind() == Struct.Class)
+		{
+			Struct parent = src.getElemType();
+			while (parent != null && parent != Tab.noType)
+			{
+				if (parent == dest) return true;
+				parent = parent.getElemType();
+			}
+		}
+		return false;
+	}
+
+	/* Factor */
+
+	@Override
+	public void visit(Factor_designator_base factor)
+	{
+		factor.struct = factor.getDesignator().obj.getType();
+	}
+
+	@Override
+	public void visit(Factor_designator_method factor)
+	{
+		Obj methodObj = factor.getDesignator().obj;
+		if (methodObj.getKind() != Obj.Meth)
+		{
+			report_error("'" + methodObj.getName() + "' is not a method.", factor);
+			factor.struct = Tab.noType;
+		}
+		else
+		{
+			ArrayList<Struct> formalParams = new ArrayList<>();
+			int numFormalParams = methodObj.getLevel();
+			int count = 0;
+			for (Obj localSym : methodObj.getLocalSymbols()) {
+				if (count >= numFormalParams) break;
+				if (localSym.getKind() == Obj.Var) {
+					if (!localSym.getName().equals("this")) {
+						formalParams.add(localSym.getType());
+					}
+					count++;
+				}
+			}
+
+			try
+			{
+				if (formalParams.size() != this.methodCallActualParams.size())
+				{
+					throw new Exception("Number of actual parameters doesn't match the number of formal parameters.");
+				}
+
+				for (int i = 0; i < formalParams.size(); i++)
+				{
+					if (!isAssignable_deep(this.methodCallActualParams.get(i), formalParams.get(i)))
+					{
+						throw new Exception("Actual parameter " + (i + 1) + " is not compatible with formal parameter.");
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				report_error("Factor_designator_method exception: " + e.getMessage(), factor);
+				factor.struct = Tab.noType;
+			}
+
+			factor.struct = methodObj.getType();
+		}
+	}
+
+	@Override
+	public void visit(Factor_constant_chr factor)
+	{
+		factor.struct = Tab.charType;
+	}
+
+	@Override
+	public void visit(Factor_constant_num factor)
+	{
+		factor.struct = Tab.intType;
+	}
+
+	@Override
+	public void visit(Factor_constant_boo factor)
+	{
+		factor.struct = this.boolType;
+	}
+
+	@Override
+	public void visit(Factor_array factor)
+	{
+		if (factor.getExpression().struct != Tab.intType && factor.getExpression().struct.getKind() != Struct.Enum)
+		{
+			report_error("Array size must be of int type.", factor);
+		}
+		factor.struct = new Struct(Struct.Array, this.currentType);
+	}
+
+	@Override
+	public void visit(Factor_object factor)
+	{
+		if (this.currentType.getKind() != Struct.Class)
+		{
+			report_error("Can only instantiate class types with 'new'.", factor);
+			factor.struct = Tab.noType;
+		}
+		else if (this.abstractClassStructNodes.contains(this.currentType))
+		{
+			report_error("Cannot instantiate abstract class.", factor);
+			factor.struct = Tab.noType;
+		}
+		else
+		{
+			factor.struct = this.currentType;
+		}
+	}
+
+	@Override
+	public void visit(Factor_expression factor)
+	{
+		factor.struct = factor.getExpression().struct;
+	}
+
+	@Override
+	public void visit(ExtensionFactor extFactor)
+	{
+		if (extFactor.getMinusOpt() instanceof MinusOpt_minus)
+		{
+			if (extFactor.getFactor().struct == Tab.intType || extFactor.getFactor().struct.getKind() == Struct.Enum)
+			{
+				extFactor.struct = Tab.intType;
+			}
+			else
+			{
+				report_error("Unary minus operator can only be applied to int type.", extFactor);
+				extFactor.struct = Tab.noType;
+			}
+		}
+		else
+		{
+			extFactor.struct = extFactor.getFactor().struct;
+		}
+	}
+
+	/* FactorList */
+
+	@Override
+	public void visit(FactorList_single factorList)
+	{
+		factorList.struct = factorList.getExtensionFactor().struct;
+	}
+
+	@Override
+	public void visit(FactorList_recursion factorList)
+	{
+		Struct left = factorList.getFactorList().struct;
+		Struct right = factorList.getExtensionFactor().struct;
+
+		if (left == Tab.intType && right == Tab.intType
+			|| left.getKind() == Struct.Enum && right.getKind() == Struct.Enum
+			|| left == Tab.intType && right.getKind() == Struct.Enum
+			|| left.getKind() == Struct.Enum && right == Tab.intType)
+		{
+			factorList.struct = Tab.intType;
+		}
+		else
+		{
+			report_error("Mulop operands must be of int type.", factorList);
+			factorList.struct = Tab.noType;
+		}
+	}
+
+	/* Term */
+
+	@Override
+	public void visit(Term term)
+	{
+		term.struct = term.getFactorList().struct;
+	}
+
+	/* TermList */
+
+	@Override
+	public void visit(TermList_single termList)
+	{
+		termList.struct = termList.getTerm().struct;
+	}
+
+	@Override
+	public void visit(TermList_recursion termList)
+	{
+		Struct left = termList.getTermList().struct;
+		Struct right = termList.getTerm().struct;
+
+		if (left == Tab.intType && right == Tab.intType
+				|| left.getKind() == Struct.Enum && right.getKind() == Struct.Enum
+				|| left == Tab.intType && right.getKind() == Struct.Enum
+				|| left.getKind() == Struct.Enum && right == Tab.intType)
+		{
+			termList.struct = Tab.intType;
+		}
+		else
+		{
+			report_error("Addop operands must be of int type.", termList);
+			termList.struct = Tab.noType;
+		}
+	}
+
+	/* SimpleExpression */
+
+	@Override
+	public void visit(SimpleExpression simpleExpression)
+	{
+		simpleExpression.struct = simpleExpression.getTermList().struct;
+	}
+
+	/* Expression */
+
+	@Override
+	public void visit(Expression_termlist expression)
+	{
+		expression.struct = expression.getSimpleExpression().struct;
+	}
+
+	@Override
+	public void visit(Expression_condition expression)
+	{
+		Struct trueExpr = expression.getExpression().struct;
+		Struct falseExpr = expression.getExpression1().struct;
+
+		if (trueExpr != null && trueExpr.compatibleWith(falseExpr))
+		{
+			expression.struct = trueExpr;
+		}
+		else
+		{
+			report_error("Ternary expression branches must have compatible types.", expression);
+			expression.struct = Tab.noType;
+		}
+	}
+
+	/* Designator */
+
+	@Override
+	public void visit(Designator designator)
+	{
+		Obj baseObj = Tab.find(designator.getI1());
+		if (baseObj == Tab.noObj)
+		{
+			report_error("Designator: " + designator.getI1() + " doesn't exist.", designator);
+			designator.obj = Tab.noObj;
+			return;
+		}
+
+		// simple designator (no tail) — validate that the symbol is usable
+		if (designator.getDesignatorTail() instanceof DesignatorTail_epsilon)
+		{
+			if (baseObj.getKind() != Obj.Var && baseObj.getKind() != Obj.Con
+					&& baseObj.getKind() != Obj.Fld && baseObj.getKind() != Obj.Meth)
+			{
+				report_error("Designator: " + designator.getI1() + " isn't valid.", designator);
+				designator.obj = Tab.noObj;
+				return;
+			}
+			designator.obj = baseObj;
+			return;
+		}
+
+		// complex designator — walk the tail chain
+		Obj currentObj = baseObj;
+		Struct currentType = baseObj.getType();
+		DesignatorTail tail = designator.getDesignatorTail();
+
+		while (!(tail instanceof DesignatorTail_epsilon))
+		{
+			// handle member access
+			if (tail instanceof DesignatorTail_member)
+			{
+				DesignatorTail_member memberTail = (DesignatorTail_member) tail;
+				String memberName = memberTail.getI1();
+
+				if (currentType.getKind() != Struct.Class && currentType.getKind() != Struct.Enum)
+				{
+					report_error("Cannot access member '" + memberName + "' on non-class type.", designator);
+					designator.obj = Tab.noObj;
+					return;
+				}
+
+				Obj memberObj = null;
+				// if accessing members of the class being currently defined, use the map
+				if (this.currentClassMembersMap != null && currentType == this.currentClassStructNode)
+				{
+					memberObj = this.currentClassMembersMap.get(memberName);
+				}
+				else
+				{
+					// search chained members (works for fully-defined classes)
+					for (Obj member : currentType.getMembers())
+					{
+						if (member.getName().equals(memberName))
+						{
+							memberObj = member;
+							break;
+						}
+					}
+				}
+
+				if (memberObj == null)
+				{
+					report_error("Member '" + memberName + "' not found in class.", designator);
+					designator.obj = Tab.noObj;
+					return;
+				}
+
+				currentObj = memberObj;
+				currentType = memberObj.getType();
+				tail = memberTail.getDesignatorTail();
+			}
+			// handle array indexing
+			else if (tail instanceof DesignatorTail_array)
+			{
+				DesignatorTail_array arrayTail = (DesignatorTail_array) tail;
+
+				if (currentType.getKind() != Struct.Array)
+				{
+					report_error("Cannot index into non-array type.", designator);
+					designator.obj = Tab.noObj;
+					return;
+				}
+
+				if (arrayTail.getExpression().struct != Tab.intType && arrayTail.getExpression().struct.getKind() != Struct.Enum)
+				{
+					report_error("Array index must be of int type.", designator);
+					designator.obj = Tab.noObj;
+					return;
+				}
+
+				Struct elemType = currentType.getElemType();
+				currentObj = new Obj(Obj.Elem, currentObj.getName(), elemType);
+				currentType = elemType;
+				tail = arrayTail.getDesignatorTail();
+			}
+			// handle .length access
+			else if (tail instanceof DesignatorTail_length)
+			{
+				DesignatorTail_length lengthTail = (DesignatorTail_length) tail;
+
+				if (currentType.getKind() != Struct.Array)
+				{
+					report_error("Cannot access .length on non-array type.", designator);
+					designator.obj = Tab.noObj;
+					return;
+				}
+
+				currentObj = new Obj(Obj.Fld, "length", Tab.intType);
+				currentType = Tab.intType;
+				tail = lengthTail.getDesignatorTail();
+			}
+		}
+
+		designator.obj = currentObj;
+	}
+
+	/* Statement */
+
+	/* DesignatorStatement */
+
+	@Override
+	public void visit(DesignatorStatement_assign designatorStatement)
+	{
+		int designatorKind = designatorStatement.getDesignator().obj.getKind();
+		if (designatorKind != Obj.Var && designatorKind != Obj.Elem && designatorKind != Obj.Fld)
+		{
+			report_error("Left-hand side of assignment must be a variable, array element, or field.", designatorStatement);
+		}
+		else if (!isAssignable_deep(designatorStatement.getExpression().struct, designatorStatement.getDesignator().obj.getType()))
+		{
+			report_error("Incompatible types in assignment.", designatorStatement);
+		}
+	}
+
+	@Override 
+	public void visit(DesignatorStatement_method designatorStatement)
+	{
+		if (designatorStatement.getDesignator().obj.getKind() != Obj.Meth)
+		{
+			report_error("Bad call of method: " + designatorStatement.getDesignator().obj.getName(), designatorStatement);
+		}
+		else
+		{
+			Obj methObj = designatorStatement.getDesignator().obj;
+			ArrayList<Struct> formalParams = new ArrayList<>();
+			int numFormalParams = methObj.getLevel();
+			int count = 0;
+			for (Obj localSym : methObj.getLocalSymbols()) {
+				if (count >= numFormalParams) break;
+				if (localSym.getKind() == Obj.Var) {
+					if (!localSym.getName().equals("this")) {
+						formalParams.add(localSym.getType());
+					}
+					count++;
+				}
+			}
+
+			try
+			{
+				if (formalParams.size() != this.methodCallActualParams.size())
+				{
+					throw new Exception("Number of actual parameters doesn't match the number of formal parameters.");
+				}
+
+				for (int i = 0; i < formalParams.size(); i++)
+				{
+					if (!isAssignable_deep(this.methodCallActualParams.get(i), formalParams.get(i)))
+					{
+						throw new Exception("Actual parameter " + (i + 1) + " is not compatible with formal parameter.");
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				report_error("Designator_method exception: " + e.getMessage(), designatorStatement);
+			}
+		}
+	}
+
+	@Override
+	public void visit(DesignatorStatement_inc designatorStatement)
+	{
+		int designatorKind = designatorStatement.getDesignator().obj.getKind();
+		if (designatorKind != Obj.Var && designatorKind != Obj.Elem && designatorKind != Obj.Fld)
+		{
+			report_error("Operand of '++' must be a variable, array element, or field.", designatorStatement);
+		}
+		else if (designatorStatement.getDesignator().obj.getType() != Tab.intType)
+		{
+			report_error("Operand of '++' must be of int type.", designatorStatement);
+		}
+	}
+
+	@Override
+	public void visit(DesignatorStatement_dec designatorStatement)
+	{
+		int designatorKind = designatorStatement.getDesignator().obj.getKind();
+		if (designatorKind != Obj.Var && designatorKind != Obj.Elem && designatorKind != Obj.Fld)
+		{
+			report_error("Operand of '--' must be a variable, array element, or field.", designatorStatement);
+		}
+		else if (designatorStatement.getDesignator().obj.getType() != Tab.intType)
+		{
+			report_error("Operand of '--' must be of int type.", designatorStatement);
+		}
+	}
+
+	/* Statement */
+
+	@Override
+	public void visit(Statement_read statement)
+	{
+		int designatorKind = statement.getDesignator().obj.getKind();
+		if (designatorKind != Obj.Var && designatorKind != Obj.Elem && designatorKind != Obj.Fld)
+		{
+			report_error("Operand of 'read' must be a variable, array element, or field.", statement);
+		}
+		else if (statement.getDesignator().obj.getType() != Tab.intType &&
+				 statement.getDesignator().obj.getType() != Tab.charType &&
+				 statement.getDesignator().obj.getType() != this.boolType)
+		{
+			report_error("Operand of 'read' must be of int, char, or bool type.", statement);
+		}
+	}
+
+	@Override
+	public void visit(Statement_print statement)
+	{
+		if (statement.getExpression().struct != Tab.intType &&
+			statement.getExpression().struct != Tab.charType &&
+			statement.getExpression().struct != this.boolType)
+		{
+			report_error("Operand of 'print' must be of int, char, or bool type.", statement);
+		}
+	}
+
+	@Override
+	public void visit(Statement_return statement)
+	{
+		this.methodHasReturnStmt = true;
+		if (this.currentMethod.getType() == Tab.noType && statement.getExpressionOpt() instanceof ExpressionOpt_exists)
+		{
+			report_error("Void method cannot return a value.", statement);
+		}
+		else if (this.currentMethod.getType() != Tab.noType && statement.getExpressionOpt() instanceof ExpressionOpt_epsilon)
+		{
+			report_error("Non-void method must return a value.", statement);
+		}
+		else if (this.currentMethod.getType() != Tab.noType && statement.getExpressionOpt() instanceof ExpressionOpt_exists)
+		{
+			ExpressionOpt_exists returnExpr = (ExpressionOpt_exists) statement.getExpressionOpt();
+			if (!returnExpr.getExpression().struct.equals(this.currentMethod.getType()))
+			{
+				report_error("Incompatible return type.", statement);
+			}
+		}
+	}
+
+	@Override
+	public void visit(SwitchInit switchInit)
+	{
+		this.switchDepth++;
+		this.caseLabelsStack.push(new HashSet<>());
+	}
+
+	@Override
+	public void visit(Statement_switch statement)
+	{
+		if (statement.getExpression().struct != Tab.intType
+				&& statement.getExpression().struct.getKind() != Struct.Enum) {
+			report_error("Switch expression must be of int type.", statement);
+		}
+		this.switchDepth--;
+		this.caseLabelsStack.pop();
+	}
+	
+	@Override
+	public void visit(CaseList_recursion caseList)
+	{
+		int caseValue = caseList.getNumConst().getN1();
+		HashSet<Integer> currentCaseLabels = this.caseLabelsStack.peek();
+		if (currentCaseLabels.contains(caseValue))
+		{
+			report_error("Duplicate case label: " + caseValue, caseList);
+		}
+		else
+		{
+			currentCaseLabels.add(caseValue);
+		}
+	}
+
+	@Override
+	public void visit(CaseList_single caseList)
+	{
+		int caseValue = caseList.getNumConst().getN1();
+		HashSet<Integer> currentCaseLabels = this.caseLabelsStack.peek();
+		if (currentCaseLabels.contains(caseValue))
+		{
+			report_error("Duplicate case label: " + caseValue, caseList);
+		}
+		else
+		{
+			currentCaseLabels.add(caseValue);
+		}
+	}
+
+	@Override
+	public void visit(ForInit forInit)
+	{
+		loopDepth++;
+	}
+
+	@Override
+	public void visit(Statement_for statement)
+	{
+		loopDepth--;
+	}
+
+	@Override
+	public void visit(Statement_break statement)
+	{
+		if (loopDepth == 0 && switchDepth == 0)
+		{
+			report_error("'break' statement not within a loop or switch.", statement);
+		}
+	}
+
+	@Override
+	public void visit(Statement_continue statement) 
+	{
+		if (loopDepth == 0)
+		{
+			report_error("'continue' statement not within a loop.", statement);
+		}
+	}
+
+	/* Condition */
+
+	@Override
+	public void visit(CondFact_single condFact)
+	{
+		if (condFact.getSimpleExpression().struct != this.boolType)
+		{
+			report_error("Condition must be of type 'bool'.", condFact);
+			condFact.struct = Tab.noType; 
+		}
+		else
+		{
+			condFact.struct = this.boolType;
+		}
+	}
+
+	@Override
+	public void visit(CondFact_relop condFact)
+	{
+		Struct left = condFact.getSimpleExpression().struct;
+		Struct right = condFact.getSimpleExpression1().struct;
+
+		if (!left.compatibleWith(right))
+		{
+			report_error("Incompatible types in condition.", condFact);
+			condFact.struct = Tab.noType;
+		}
+		else if (left.getKind() == Struct.Array && right.getKind() == Struct.Array
+				|| left.getKind() == Struct.Class && right.getKind() == Struct.Class)
+		{
+			if (condFact.getRelop() instanceof Relop_eql || condFact.getRelop() instanceof Relop_neq)
+			{
+				condFact.struct = this.boolType;
+			}
+			else
+			{
+				report_error("Only '==' and '!=' operators can be applied to class or array types in condition.", condFact);
+				condFact.struct = Tab.noType;
+			}
+		}
+		else
+		{
+			condFact.struct = this.boolType;
+		}
+	}
+
+	@Override
+	public void visit(CondTerm_recursion condTerm)
+	{
+		Struct left = condTerm.getCondTerm().struct;
+		Struct right = condTerm.getCondFact().struct;
+		
+		if (left != this.boolType || right != this.boolType)
+		{
+			report_error("Operands of '&&' must be of type 'bool'.", condTerm);
+			condTerm.struct = Tab.noType;
+		}
+		else 
+		{
+			condTerm.struct = this.boolType;
+		}
+	}
+
+	@Override
+	public void visit(CondTerm_single condTerm)
+	{
+		if (condTerm.getCondFact().struct != this.boolType)
+		{
+			condTerm.struct = Tab.noType;
+		}
+		else
+		{
+			condTerm.struct = this.boolType;
+		}
+	}
+
+	@Override
+	public void visit(Condition_recursion condition)
+	{
+		Struct left = condition.getCondition().struct;
+		Struct right = condition.getCondTerm().struct;
+		
+		if (left != this.boolType || right != this.boolType)
+		{
+			report_error("Operands of '||' must be of type 'bool'.", condition);
+			condition.struct = Tab.noType;
+		}
+		else 
+		{
+			condition.struct = this.boolType;
+		}
+	}
+
+	@Override
+	public void visit(Condition_single condition)
+	{
+		if (condition.getCondTerm().struct != this.boolType)
+		{
+			condition.struct = Tab.noType;
+		}
+		else
+		{
+			condition.struct = this.boolType;
+		}
+	}
+
+	/* ActPars */
+
+	@Override
+	public void visit(ActPar actPar)
+	{
+		this.methodCallActualParamsLists.peek().add(actPar.getExpression().struct);
+	}
+
+	@Override
+	public void visit(ActParsListOpener actParsListOpener)
+	{
+		this.methodCallActualParamsLists.push(new ArrayList<>());
+	}
+
+	@Override
+	public void visit(ActParsOpt_exist actParsOpt)
+	{
+		this.methodCallActualParams = this.methodCallActualParamsLists.pop();
+	}
+
+	@Override
+	public void visit(ActParsOpt_epsilon actParsOpt)
+	{
+		this.methodCallActualParams = this.methodCallActualParamsLists.pop();
 	}
 }

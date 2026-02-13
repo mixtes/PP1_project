@@ -56,13 +56,14 @@ nonterminal VarDecl, VarList, VarDeclListMultiple;
 nonterminal EnumIDT, EnumName, AdditionalEnumIDT, MethodDeclListOpt, ExtendsOpt;
 nonterminal AbstractMethodDeclListOpt, AbstractMethodDeclList, AbstractMethodDecl, MethodDecl, MethodTypeAndName;
 nonterminal FormParsList, FormParsAdditional, FormPar, FormParOpt, MethodDeclListPrgOpt;
-nonterminal Statement, DesignatorStatement, StatementList, Condition, ElseOpt, ExpressionOpt, Expression;
-nonterminal NumConst;
-nonterminal CaseList, DesignatorStatementOpt, ConditionOpt, NumConstOpt, Designator, StatementListOpt;
-nonterminal ActPars, AssignOp, CondTerm, CondFact, Relop, Addop, Mulop;
-nonterminal TermList, Term, FactorList, MinusOpt;
-nonterminal SimpleExpression, DesignatorTail;
-nonterminal rs.etf.pp1.symboltable.concepts.Struct ExtensionFactor, Factor;
+nonterminal Statement, DesignatorStatement, StatementList, ElseOpt, ExpressionOpt;
+nonterminal NumConst, ForInit, SwitchInit;
+nonterminal CaseList, DesignatorStatementOpt, ConditionOpt, NumConstOpt, StatementListOpt;
+nonterminal ActParsOpt, ActPar, ActParsAdditional, ActParsListOpener, AssignOp, Relop, Addop, Mulop;
+nonterminal MinusOpt;
+nonterminal DesignatorTail;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct ExtensionFactor, Factor, FactorList, Term, TermList, SimpleExpression, Expression, Condition, CondFact, CondTerm;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator;
 
 precedence left ELS;
 
@@ -246,12 +247,16 @@ Statement ::= (Statement_designator) DesignatorStatement SCL
 				|
 				(Statement_print) PRT SOB Expression NumConstOpt SCB SCL
 				|
-				(Statement_switch) SWC SOB Expression SCB LOB CaseList LCB
+				(Statement_switch) SwitchInit SOB Expression SCB LOB CaseList LCB
 				|
-				(Statement_for) FOR SOB DesignatorStatementOpt SCL ConditionOpt SCL DesignatorStatementOpt SCB Statement
+				(Statement_for) ForInit SOB DesignatorStatementOpt SCL ConditionOpt SCL DesignatorStatementOpt SCB Statement
 				|
 				(Statement_block) LOB StatementList LCB
 				;
+
+SwitchInit ::= (SwitchInit) SWC;
+
+ForInit ::= (ForInit) FOR;
 
 ElseOpt ::= (ElseOpt_else) ELS Statement
 				|
@@ -268,7 +273,7 @@ CaseList ::= (CaseList_recursion) CSE NumConst COL StatementList CaseList
 				(CaseList_single) CSE NumConst COL StatementList
 				;
 
-NumConstOpt ::= (NumConstOpt_exists) NumConst
+NumConstOpt ::= (NumConstOpt_exists) COM NumConst
 					|
 					(NumConstOpt_epsilon) /* e */
 					;
@@ -289,7 +294,7 @@ ConditionOpt ::= (ConditionOpt_exists) Condition
 
 DesignatorStatement ::= (DesignatorStatement_assign) Designator AssignOp Expression
 						|
-						(DesignatorStatement_method) Designator SOB ActPars SCB
+						(DesignatorStatement_method) Designator SOB ActParsOpt SCB
 						|
 						(DesignatorStatement_inc) Designator INC
 						|
@@ -298,12 +303,19 @@ DesignatorStatement ::= (DesignatorStatement_assign) Designator AssignOp Express
 
 /* ActPars */
 
-ActPars ::= (ActPars_recursion) Expression COM ActPars
+ActParsOpt ::= (ActParsOpt_exist) ActParsListOpener ActPar ActParsAdditional
 				|
-				(ActPars_single) Expression
-				|
-				(ActPars_epsilon) /* e */
+				(ActParsOpt_epsilon) ActParsListOpener
 				;
+
+ActParsListOpener ::= (ActParsListOpener) /* e */;
+
+ActParsAdditional ::= (ActParsAdditional_recursion) COM ActPar ActParsAdditional
+						|
+						(ActParsAdditional_epsilon) /* e */ 
+						;
+
+ActPar ::= (ActPar) Expression;
 
 /* Condition */
 
@@ -358,19 +370,19 @@ MinusOpt ::= (MinusOpt_minus) MNS
 				(MinusOpt_epsilon) /* e */
 				;
 
-/* Factor */
-
 Factor ::= 	(Factor_designator_base) Designator
 			|
-			(Factor_designator_brackets) Designator SOB ActPars SCB
+			(Factor_designator_method) Designator SOB ActParsOpt SCB
 			|
-			(Factor_constant) Constant
+			(Factor_constant_num) NUM
+			|
+			(Factor_constant_chr) CHR
+			|
+			(Factor_constant_boo) BOO
 			|
 			(Factor_array) NEW Type MOB Expression MCB
 			|
 			(Factor_object) NEW Type
-			|
-			(Factor_object_constructor) NEW Type SOB ActPars SCB
 			|
 			(Factor_expression) SOB Expression SCB
 			;
@@ -381,7 +393,7 @@ Designator ::= (Designator) IDT DesignatorTail;
 
 DesignatorTail ::= (DesignatorTail_array) MOB Expression MCB DesignatorTail
 					|
-					(DesignatorTail_field) DOT IDT DesignatorTail
+					(DesignatorTail_member) DOT IDT DesignatorTail
 					|
 					(DesignatorTail_length) DOT LEN DesignatorTail
 					|

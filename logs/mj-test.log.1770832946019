@@ -1,0 +1,313 @@
+INFO  18:59:38,267 - Compiling source file: D:\Mihajlo\Desktop\Stvari za faks\PP1\Projekat\pp_eclipse_workspace\MJCompiler\test\program.mj
+INFO  18:59:38,305 - Program(
+  ProgramName(
+   test301
+  ) [ProgramName]
+  DeclList_var(
+    DeclList_var(
+      DeclList_var(
+        DeclList_const(
+          DeclList_const(
+            DeclList_const(
+              DeclList_enum(
+                DeclList_epsilon(
+                ) [DeclList_epsilon]
+                EnumDeclList(
+                  EnumName(
+                   Broj
+                  ) [EnumName]
+                  EnumIDT_no_asg(
+                   NULA
+                  ) [EnumIDT_no_asg]
+                  AdditionalEnumIDT_recursion(
+                    EnumIDT_no_asg(
+                     JEDAN
+                    ) [EnumIDT_no_asg]
+                    AdditionalEnumIDT_recursion(
+                      EnumIDT_asg(
+                       PET
+                       5
+                      ) [EnumIDT_asg]
+                      AdditionalEnumIDT_recursion(
+                        EnumIDT_asg(
+                         DESET
+                         10
+                        ) [EnumIDT_asg]
+                        AdditionalEnumIDT_epsilon(
+                        ) [AdditionalEnumIDT_epsilon]
+                      ) [AdditionalEnumIDT_recursion]
+                    ) [AdditionalEnumIDT_recursion]
+                  ) [AdditionalEnumIDT_recursion]
+                ) [EnumDeclList]
+              ) [DeclList_enum]
+              ConstDeclList(
+                Type(
+                 int
+                ) [Type]
+                ConstDecl(
+                 nula
+                  Constant_num(
+                   0
+                  ) [Constant_num]
+                ) [ConstDecl]
+                AdditionalConstDecl_epsilon(
+                ) [AdditionalConstDecl_epsilon]
+              ) [ConstDeclList]
+            ) [DeclList_const]
+            ConstDeclList(
+              Type(
+               int
+              ) [Type]
+              ConstDecl(
+               jedan
+                Constant_num(
+                 1
+                ) [Constant_num]
+              ) [ConstDecl]
+              AdditionalConstDecl_epsilon(
+              ) [AdditionalConstDecl_epsilon]
+            ) [ConstDeclList]
+          ) [DeclList_const]
+          ConstDeclList(
+            Type(
+             int
+            ) [Type]
+            ConstDecl(
+             pet
+              Constant_num(
+               5
+              ) [Constant_num]
+            ) [ConstDecl]
+            AdditionalConstDecl_epsilon(
+            ) [AdditionalConstDecl_epsilon]
+          ) [ConstDeclList]
+        ) [DeclList_const]
+        VarDeclList(
+          Type(
+           int
+          ) [Type]
+          VarList_single(
+            VarDecl_array(
+             niz
+            ) [VarDecl_array]
+          ) [VarList_single]
+        ) [VarDeclList]
+      ) [DeclList_var]
+      VarDeclList(
+        Type(
+         char
+        ) [Type]
+        VarList_single(
+          VarDecl_array(
+           nizch
+          ) [VarDecl_array]
+        ) [VarList_single]
+      ) [VarDeclList]
+    ) [DeclList_var]
+    VarDeclList(
+      Type(
+       int
+      ) [Type]
+      VarList_single(
+        VarDecl_single(
+         a
+        ) [VarDecl_single]
+      ) [VarList_single]
+    ) [VarDeclList]
+  ) [DeclList_var]
+  MethodDeclListPrgOpt_exists(
+    MethodDeclList_single(
+      MethodDecl(
+        MethodTypeAndName_void(
+         main
+        ) [MethodTypeAndName_void]
+        FormParsList(
+          FormParOpt_epsilon(
+          ) [FormParOpt_epsilon]
+        ) [FormParsList]
+        VarDeclListMultiple_recursion(
+          VarDeclListMultiple_recursion(
+            VarDeclListMultiple_recursion(
+              VarDeclListMultiple_recursion(
+                VarDeclListMultiple_recursion(
+                  VarDeclListMultiple_epsilon(
+                  ) [VarDeclListMultiple_epsilon]
+                  VarDeclList(
+                    Type(
+                     int
+                    ) [Type]
+                    VarList_single(
+                      VarDecl_single(
+                       bodovi
+                      ) [VarDecl_single]
+                    ) [VarList_single]
+                  ) [VarDeclList]
+                ) [VarDeclListMultiple_recursion]
+                VarDeclList(
+                  Type(
+                   int
+                  ) [Type]
+                  VarList_single(
+                    VarDecl_single(
+                     temp
+                    ) [VarDecl_single]
+                  ) [VarList_single]
+                ) [VarDeclList]
+              ) [VarDeclListMultiple_recursion]
+              VarDeclList(
+                Type(
+                 Broj
+                ) [Type]
+                VarList_recursion(
+                  VarList_single(
+                    VarDecl_single(
+                     nula
+                    ) [VarDecl_single]
+                  ) [VarList_single]
+                  VarDecl_single(
+                   jedan
+                  ) [VarDecl_single]
+                ) [VarList_recursion]
+              ) [VarDeclList]
+            ) [VarDeclListMultiple_recursion]
+            VarDeclList(
+              Type(
+               bool
+              ) [Type]
+              VarList_single(
+                VarDecl_single(
+                 bt
+                ) [VarDecl_single]
+              ) [VarList_single]
+            ) [VarDeclList]
+          ) [VarDeclListMultiple_recursion]
+          VarDeclList(
+            Type(
+             int
+            ) [Type]
+            VarList_single(
+              VarDecl_array(
+               b
+              ) [VarDecl_array]
+            ) [VarList_single]
+          ) [VarDeclList]
+        ) [VarDeclListMultiple_recursion]
+        StatementListOpt_exists(
+          StatementList_recursion(
+            StatementList_recursion(
+              StatementList_single(
+                Statement_designator(
+                  DesignatorStatement_assign(
+                    Designator(
+                     b
+                      DesignatorTail_epsilon(
+                      ) [DesignatorTail_epsilon]
+                    ) [Designator]
+                    AssignOp(
+                    ) [AssignOp]
+                    Expression_termlist(
+                      SimpleExpression(
+                        TermList_single(
+                          Term(
+                            FactorList_single(
+                              ExtensionFactor(
+                                MinusOpt_epsilon(
+                                ) [MinusOpt_epsilon]
+                                Factor_designator_base(
+                                  Designator(
+                                   null
+                                    DesignatorTail_epsilon(
+                                    ) [DesignatorTail_epsilon]
+                                  ) [Designator]
+                                ) [Factor_designator_base]
+                              ) [ExtensionFactor]
+                            ) [FactorList_single]
+                          ) [Term]
+                        ) [TermList_single]
+                      ) [SimpleExpression]
+                    ) [Expression_termlist]
+                  ) [DesignatorStatement_assign]
+                ) [Statement_designator]
+              ) [StatementList_single]
+              Statement_designator(
+                DesignatorStatement_assign(
+                  Designator(
+                   nula
+                    DesignatorTail_epsilon(
+                    ) [DesignatorTail_epsilon]
+                  ) [Designator]
+                  AssignOp(
+                  ) [AssignOp]
+                  Expression_termlist(
+                    SimpleExpression(
+                      TermList_single(
+                        Term(
+                          FactorList_single(
+                            ExtensionFactor(
+                              MinusOpt_epsilon(
+                              ) [MinusOpt_epsilon]
+                              Factor_designator_base(
+                                Designator(
+                                 Broj
+                                  DesignatorTail_member(
+                                   NULA
+                                    DesignatorTail_epsilon(
+                                    ) [DesignatorTail_epsilon]
+                                  ) [DesignatorTail_member]
+                                ) [Designator]
+                              ) [Factor_designator_base]
+                            ) [ExtensionFactor]
+                          ) [FactorList_single]
+                        ) [Term]
+                      ) [TermList_single]
+                    ) [SimpleExpression]
+                  ) [Expression_termlist]
+                ) [DesignatorStatement_assign]
+              ) [Statement_designator]
+            ) [StatementList_recursion]
+            Statement_designator(
+              DesignatorStatement_assign(
+                Designator(
+                 jedan
+                  DesignatorTail_epsilon(
+                  ) [DesignatorTail_epsilon]
+                ) [Designator]
+                AssignOp(
+                ) [AssignOp]
+                Expression_termlist(
+                  SimpleExpression(
+                    TermList_single(
+                      Term(
+                        FactorList_single(
+                          ExtensionFactor(
+                            MinusOpt_epsilon(
+                            ) [MinusOpt_epsilon]
+                            Factor_designator_base(
+                              Designator(
+                               Broj
+                                DesignatorTail_member(
+                                 JEDAN
+                                  DesignatorTail_epsilon(
+                                  ) [DesignatorTail_epsilon]
+                                ) [DesignatorTail_member]
+                              ) [Designator]
+                            ) [Factor_designator_base]
+                          ) [ExtensionFactor]
+                        ) [FactorList_single]
+                      ) [Term]
+                    ) [TermList_single]
+                  ) [SimpleExpression]
+                ) [Expression_termlist]
+              ) [DesignatorStatement_assign]
+            ) [Statement_designator]
+          ) [StatementList_recursion]
+        ) [StatementListOpt_exists]
+      ) [MethodDecl]
+    ) [MethodDeclList_single]
+  ) [MethodDeclListPrgOpt_exists]
+) [Program]
+INFO  18:59:38,317 - ====================================================================
+ERROR 18:59:38,321 - Incompatible types in assignment. On line number 25
+ERROR 18:59:38,322 - Incompatible types in assignment. On line number 26
+INFO  18:59:38,322 - ====================================================================
+ERROR 18:59:38,324 - Parsing failed!

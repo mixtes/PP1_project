@@ -1,0 +1,4 @@
+INFO  10:39:02,789 - Compiling source file: D:\Mihajlo\Desktop\Stvari za faks\PP1\Projekat\pp_eclipse_workspace\MJCompiler\test\program.mj
+ERROR 10:39:02,817 - 
+Sintaksna greska na liniji 19
+ERROR 10:39:02,817 - Fatalna greska, parsiranje se ne moze nastaviti na liniji 19

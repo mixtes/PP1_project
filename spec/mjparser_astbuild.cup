@@ -84,31 +84,28 @@ nonterminal MethodDeclListPrgOpt MethodDeclListPrgOpt;
 nonterminal Statement Statement;
 nonterminal DesignatorStatement DesignatorStatement;
 nonterminal StatementList StatementList;
-nonterminal Condition Condition;
 nonterminal ElseOpt ElseOpt;
 nonterminal ExpressionOpt ExpressionOpt;
-nonterminal Expression Expression;
 nonterminal NumConst NumConst;
+nonterminal ForInit ForInit;
+nonterminal SwitchInit SwitchInit;
 nonterminal CaseList CaseList;
 nonterminal DesignatorStatementOpt DesignatorStatementOpt;
 nonterminal ConditionOpt ConditionOpt;
 nonterminal NumConstOpt NumConstOpt;
-nonterminal Designator Designator;
 nonterminal StatementListOpt StatementListOpt;
-nonterminal ActPars ActPars;
+nonterminal ActParsOpt ActParsOpt;
+nonterminal ActPar ActPar;
+nonterminal ActParsAdditional ActParsAdditional;
+nonterminal ActParsListOpener ActParsListOpener;
 nonterminal AssignOp AssignOp;
-nonterminal CondTerm CondTerm;
-nonterminal CondFact CondFact;
 nonterminal Relop Relop;
 nonterminal Addop Addop;
 nonterminal Mulop Mulop;
-nonterminal TermList TermList;
-nonterminal Term Term;
-nonterminal FactorList FactorList;
 nonterminal MinusOpt MinusOpt;
-nonterminal SimpleExpression SimpleExpression;
 nonterminal DesignatorTail DesignatorTail;
-nonterminal rs.etf.pp1.symboltable.concepts.Struct ExtensionFactor, Factor;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct ExtensionFactor, Factor, FactorList, Term, TermList, SimpleExpression, Expression, Condition, CondFact, CondTerm;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator;
 
 precedence left ELS;
 
@@ -292,12 +289,16 @@ Statement ::= (Statement_designator) DesignatorStatement:D1 SCL {: RESULT=new St
 				|
 				(Statement_print) PRT SOB Expression:E1 NumConstOpt:N2 SCB SCL {: RESULT=new Statement_print(E1, N2); RESULT.setLine(E1left); :}
 				|
-				(Statement_switch) SWC SOB Expression:E1 SCB LOB CaseList:C2 LCB {: RESULT=new Statement_switch(E1, C2); RESULT.setLine(E1left); :}
+				(Statement_switch) SwitchInit:S1 SOB Expression:E2 SCB LOB CaseList:C3 LCB {: RESULT=new Statement_switch(S1, E2, C3); RESULT.setLine(S1left); :}
 				|
-				(Statement_for) FOR SOB DesignatorStatementOpt:D1 SCL ConditionOpt:C2 SCL DesignatorStatementOpt:D3 SCB Statement:S4 {: RESULT=new Statement_for(D1, C2, D3, S4); RESULT.setLine(D1left); :}
+				(Statement_for) ForInit:F1 SOB DesignatorStatementOpt:D2 SCL ConditionOpt:C3 SCL DesignatorStatementOpt:D4 SCB Statement:S5 {: RESULT=new Statement_for(F1, D2, C3, D4, S5); RESULT.setLine(F1left); :}
 				|
 				(Statement_block) LOB StatementList:S1 LCB {: RESULT=new Statement_block(S1); RESULT.setLine(S1left); :}
 				;
+
+SwitchInit ::= (SwitchInit) SWC {: RESULT=new SwitchInit(); :};
+
+ForInit ::= (ForInit) FOR {: RESULT=new ForInit(); :};
 
 ElseOpt ::= (ElseOpt_else) ELS Statement:S1 {: RESULT=new ElseOpt_else(S1); RESULT.setLine(S1left); :}
 				|
@@ -314,7 +315,7 @@ CaseList ::= (CaseList_recursion) CSE NumConst:N1 COL StatementList:S2 CaseList:
 				(CaseList_single) CSE NumConst:N1 COL StatementList:S2 {: RESULT=new CaseList_single(N1, S2); RESULT.setLine(N1left); :}
 				;
 
-NumConstOpt ::= (NumConstOpt_exists) NumConst:N1 {: RESULT=new NumConstOpt_exists(N1); RESULT.setLine(N1left); :}
+NumConstOpt ::= (NumConstOpt_exists) COM NumConst:N1 {: RESULT=new NumConstOpt_exists(N1); RESULT.setLine(N1left); :}
 					|
 					(NumConstOpt_epsilon) {: RESULT=new NumConstOpt_epsilon(); :} /* e */
 					;
@@ -335,7 +336,7 @@ ConditionOpt ::= (ConditionOpt_exists) Condition:C1 {: RESULT=new ConditionOpt_e
 
 DesignatorStatement ::= (DesignatorStatement_assign) Designator:D1 AssignOp:A2 Expression:E3 {: RESULT=new DesignatorStatement_assign(D1, A2, E3); RESULT.setLine(D1left); :}
 						|
-						(DesignatorStatement_method) Designator:D1 SOB ActPars:A2 SCB {: RESULT=new DesignatorStatement_method(D1, A2); RESULT.setLine(D1left); :}
+						(DesignatorStatement_method) Designator:D1 SOB ActParsOpt:A2 SCB {: RESULT=new DesignatorStatement_method(D1, A2); RESULT.setLine(D1left); :}
 						|
 						(DesignatorStatement_inc) Designator:D1 INC {: RESULT=new DesignatorStatement_inc(D1); RESULT.setLine(D1left); :}
 						|
@@ -344,12 +345,19 @@ DesignatorStatement ::= (DesignatorStatement_assign) Designator:D1 AssignOp:A2 E
 
 /* ActPars */
 
-ActPars ::= (ActPars_recursion) Expression:E1 COM ActPars:A2 {: RESULT=new ActPars_recursion(E1, A2); RESULT.setLine(E1left); :}
+ActParsOpt ::= (ActParsOpt_exist) ActParsListOpener:A1 ActPar:A2 ActParsAdditional:A3 {: RESULT=new ActParsOpt_exist(A1, A2, A3); RESULT.setLine(A1left); :}
 				|
-				(ActPars_single) Expression:E1 {: RESULT=new ActPars_single(E1); RESULT.setLine(E1left); :}
-				|
-				(ActPars_epsilon) {: RESULT=new ActPars_epsilon(); :} /* e */
+				(ActParsOpt_epsilon) ActParsListOpener:A1 {: RESULT=new ActParsOpt_epsilon(A1); RESULT.setLine(A1left); :}
 				;
+
+ActParsListOpener ::= (ActParsListOpener) {: RESULT=new ActParsListOpener(); :} /* e */;
+
+ActParsAdditional ::= (ActParsAdditional_recursion) COM ActPar:A1 ActParsAdditional:A2 {: RESULT=new ActParsAdditional_recursion(A1, A2); RESULT.setLine(A1left); :}
+						|
+						(ActParsAdditional_epsilon) {: RESULT=new ActParsAdditional_epsilon(); :} /* e */ 
+						;
+
+ActPar ::= (ActPar) Expression:E1 {: RESULT=new ActPar(E1); RESULT.setLine(E1left); :};
 
 /* Condition */
 
@@ -404,19 +412,19 @@ MinusOpt ::= (MinusOpt_minus) MNS {: RESULT=new MinusOpt_minus(); :}
 				(MinusOpt_epsilon) {: RESULT=new MinusOpt_epsilon(); :} /* e */
 				;
 
-/* Factor */
-
 Factor ::= 	(Factor_designator_base) Designator:D1 {: RESULT=new Factor_designator_base(D1); RESULT.setLine(D1left); :}
 			|
-			(Factor_designator_brackets) Designator:D1 SOB ActPars:A2 SCB {: RESULT=new Factor_designator_brackets(D1, A2); RESULT.setLine(D1left); :}
+			(Factor_designator_method) Designator:D1 SOB ActParsOpt:A2 SCB {: RESULT=new Factor_designator_method(D1, A2); RESULT.setLine(D1left); :}
 			|
-			(Factor_constant) Constant:C1 {: RESULT=new Factor_constant(C1); RESULT.setLine(C1left); :}
+			(Factor_constant_num) NUM:N1 {: RESULT=new Factor_constant_num(N1); RESULT.setLine(N1left); :}
+			|
+			(Factor_constant_chr) CHR:C1 {: RESULT=new Factor_constant_chr(C1); RESULT.setLine(C1left); :}
+			|
+			(Factor_constant_boo) BOO:B1 {: RESULT=new Factor_constant_boo(B1); RESULT.setLine(B1left); :}
 			|
 			(Factor_array) NEW Type:T1 MOB Expression:E2 MCB {: RESULT=new Factor_array(T1, E2); RESULT.setLine(T1left); :}
 			|
 			(Factor_object) NEW Type:T1 {: RESULT=new Factor_object(T1); RESULT.setLine(T1left); :}
-			|
-			(Factor_object_constructor) NEW Type:T1 SOB ActPars:A2 SCB {: RESULT=new Factor_object_constructor(T1, A2); RESULT.setLine(T1left); :}
 			|
 			(Factor_expression) SOB Expression:E1 SCB {: RESULT=new Factor_expression(E1); RESULT.setLine(E1left); :}
 			;
@@ -427,7 +435,7 @@ Designator ::= (Designator) IDT:I1 DesignatorTail:D2 {: RESULT=new Designator(I1
 
 DesignatorTail ::= (DesignatorTail_array) MOB Expression:E1 MCB DesignatorTail:D2 {: RESULT=new DesignatorTail_array(E1, D2); RESULT.setLine(E1left); :}
 					|
-					(DesignatorTail_field) DOT IDT:I1 DesignatorTail:D2 {: RESULT=new DesignatorTail_field(I1, D2); RESULT.setLine(I1left); :}
+					(DesignatorTail_member) DOT IDT:I1 DesignatorTail:D2 {: RESULT=new DesignatorTail_member(I1, D2); RESULT.setLine(I1left); :}
 					|
 					(DesignatorTail_length) DOT LEN DesignatorTail:D1 {: RESULT=new DesignatorTail_length(D1); RESULT.setLine(D1left); :}
 					|
