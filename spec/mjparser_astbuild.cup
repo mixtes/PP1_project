@@ -75,7 +75,6 @@ nonterminal AbstractMethodDeclListOpt AbstractMethodDeclListOpt;
 nonterminal AbstractMethodDeclList AbstractMethodDeclList;
 nonterminal AbstractMethodDecl AbstractMethodDecl;
 nonterminal MethodDecl MethodDecl;
-nonterminal MethodTypeAndName MethodTypeAndName;
 nonterminal FormParsList FormParsList;
 nonterminal FormParsAdditional FormParsAdditional;
 nonterminal FormPar FormPar;
@@ -103,9 +102,9 @@ nonterminal Relop Relop;
 nonterminal Addop Addop;
 nonterminal Mulop Mulop;
 nonterminal MinusOpt MinusOpt;
-nonterminal DesignatorTail DesignatorTail;
+nonterminal DesignatorSuffix DesignatorSuffix;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct ExtensionFactor, Factor, FactorList, Term, TermList, SimpleExpression, Expression, Condition, CondFact, CondTerm;
-nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorName, MethodTypeAndName;
 
 precedence left ELS;
 
@@ -431,15 +430,17 @@ Factor ::= 	(Factor_designator_base) Designator:D1 {: RESULT=new Factor_designat
 
 /* Designator */
 
-Designator ::= (Designator) IDT:I1 DesignatorTail:D2 {: RESULT=new Designator(I1, D2); RESULT.setLine(I1left); :};
+Designator ::= (Designator) DesignatorName:D1 DesignatorSuffix:D2 {: RESULT=new Designator(D1, D2); RESULT.setLine(D1left); :};
 
-DesignatorTail ::= (DesignatorTail_array) MOB Expression:E1 MCB DesignatorTail:D2 {: RESULT=new DesignatorTail_array(E1, D2); RESULT.setLine(E1left); :}
+DesignatorName ::= (DesignatorName) IDT:I1 {: RESULT=new DesignatorName(I1); RESULT.setLine(I1left); :};
+
+DesignatorSuffix ::= (DesignatorSuffix_array) DesignatorSuffix:D1 MOB Expression:E2 MCB {: RESULT=new DesignatorSuffix_array(D1, E2); RESULT.setLine(D1left); :}
 					|
-					(DesignatorTail_member) DOT IDT:I1 DesignatorTail:D2 {: RESULT=new DesignatorTail_member(I1, D2); RESULT.setLine(I1left); :}
+					(DesignatorSuffix_member) DesignatorSuffix:D1 DOT IDT:I2 {: RESULT=new DesignatorSuffix_member(D1, I2); RESULT.setLine(D1left); :}
 					|
-					(DesignatorTail_length) DOT LEN DesignatorTail:D1 {: RESULT=new DesignatorTail_length(D1); RESULT.setLine(D1left); :}
+					(DesignatorSuffix_length) DesignatorSuffix:D1 DOT LEN {: RESULT=new DesignatorSuffix_length(D1); RESULT.setLine(D1left); :}
 					|
-					(DesignatorTail_epsilon) {: RESULT=new DesignatorTail_epsilon(); :} /* e */
+					(DesignatorSuffix_epsilon) {: RESULT=new DesignatorSuffix_epsilon(); :} /* e */
 					;
 
 /* AssignOp */

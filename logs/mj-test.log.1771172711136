@@ -1,0 +1,122 @@
+INFO  17:23:57,654 - Compiling source file: D:\Mihajlo\Desktop\Stvari za faks\PP1\Projekat\pp_eclipse_workspace\MJCompiler\test\program.mj
+INFO  17:23:57,688 - Program(
+  ProgramName(
+   tukidid
+  ) [ProgramName]
+  DeclList_var(
+    DeclList_const(
+      DeclList_epsilon(
+      ) [DeclList_epsilon]
+      ConstDeclList(
+        Type(
+         int
+        ) [Type]
+        ConstDecl(
+         pi
+          Constant_num(
+           3
+          ) [Constant_num]
+        ) [ConstDecl]
+        AdditionalConstDecl_epsilon(
+        ) [AdditionalConstDecl_epsilon]
+      ) [ConstDeclList]
+    ) [DeclList_const]
+    VarDeclList(
+      Type(
+       int
+      ) [Type]
+      VarList_recursion(
+        VarList_single(
+          VarDecl_single(
+           x
+          ) [VarDecl_single]
+        ) [VarList_single]
+        VarDecl_array(
+         y
+        ) [VarDecl_array]
+      ) [VarList_recursion]
+    ) [VarDeclList]
+  ) [DeclList_var]
+  MethodDeclListPrgOpt_exists(
+    MethodDeclList_single(
+      MethodDecl(
+        MethodTypeAndName_void(
+         main
+        ) [MethodTypeAndName_void]
+        FormParsList(
+          FormParOpt_epsilon(
+          ) [FormParOpt_epsilon]
+        ) [FormParsList]
+        VarDeclListMultiple_recursion(
+          VarDeclListMultiple_recursion(
+            VarDeclListMultiple_epsilon(
+            ) [VarDeclListMultiple_epsilon]
+            VarDeclList(
+              Type(
+               int
+              ) [Type]
+              VarList_recursion(
+                VarList_single(
+                  VarDecl_single(
+                   a
+                  ) [VarDecl_single]
+                ) [VarList_single]
+                VarDecl_single(
+                 b
+                ) [VarDecl_single]
+              ) [VarList_recursion]
+            ) [VarDeclList]
+          ) [VarDeclListMultiple_recursion]
+          VarDeclList(
+            Type(
+             char
+            ) [Type]
+            VarList_single(
+              VarDecl_array(
+               c
+              ) [VarDecl_array]
+            ) [VarList_single]
+          ) [VarDeclList]
+        ) [VarDeclListMultiple_recursion]
+        StatementListOpt_exists(
+          StatementList_recursion(
+            StatementList_single(
+              Statement_print(
+                Expression_termlist(
+                  SimpleExpression(
+                    TermList_single(
+                      Term(
+                        FactorList_single(
+                          ExtensionFactor(
+                            MinusOpt_epsilon(
+                            ) [MinusOpt_epsilon]
+                            Factor_designator_base(
+                              Designator(
+                               a
+                                DesignatorTail_epsilon(
+                                ) [DesignatorTail_epsilon]
+                              ) [Designator]
+                            ) [Factor_designator_base]
+                          ) [ExtensionFactor]
+                        ) [FactorList_single]
+                      ) [Term]
+                    ) [TermList_single]
+                  ) [SimpleExpression]
+                ) [Expression_termlist]
+                NumConstOpt_epsilon(
+                ) [NumConstOpt_epsilon]
+              ) [Statement_print]
+            ) [StatementList_single]
+            Statement_return(
+              ExpressionOpt_epsilon(
+              ) [ExpressionOpt_epsilon]
+            ) [Statement_return]
+          ) [StatementList_recursion]
+        ) [StatementListOpt_exists]
+      ) [MethodDecl]
+    ) [MethodDeclList_single]
+  ) [MethodDeclListPrgOpt_exists]
+) [Program]
+INFO  17:23:57,695 - ====================================================================
+INFO  17:23:57,700 - ====================================================================
+INFO  17:23:57,703 - Parsing successful!

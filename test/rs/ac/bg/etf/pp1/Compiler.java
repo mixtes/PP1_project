@@ -2,6 +2,7 @@ package rs.ac.bg.etf.pp1;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -16,6 +17,8 @@ import rs.ac.bg.etf.pp1.util.Log4JUtils;
 import rs.etf.pp1.symboltable.*;
 import rs.etf.pp1.symboltable.concepts.Obj;
 import rs.etf.pp1.symboltable.concepts.Struct;
+
+import rs.etf.pp1.mj.runtime.Code;
 
 public class Compiler 
 {
@@ -66,6 +69,17 @@ public class Compiler
 			
 			if(!parser.errorDetected && semanticAnalyzer.success())
 			{
+				// code generation
+				File objFile = new File("test/program.obj");
+				if (objFile.exists())
+					objFile.delete();
+
+				CodeGenerator codeGenerator = new CodeGenerator();
+				program.traverseBottomUp(codeGenerator);
+				Code.dataSize = semanticAnalyzer.nVars;
+				Code.mainPc = codeGenerator.getMainPC();
+				Code.write(new FileOutputStream(objFile));
+
 				log.info("Parsing successful!");
 			}
 			else

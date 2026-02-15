@@ -54,16 +54,16 @@ nonterminal ClassName, AbsClassName;
 nonterminal Type, ConstDecl, Constant, AdditionalConstDecl;
 nonterminal VarDecl, VarList, VarDeclListMultiple;
 nonterminal EnumIDT, EnumName, AdditionalEnumIDT, MethodDeclListOpt, ExtendsOpt;
-nonterminal AbstractMethodDeclListOpt, AbstractMethodDeclList, AbstractMethodDecl, MethodDecl, MethodTypeAndName;
+nonterminal AbstractMethodDeclListOpt, AbstractMethodDeclList, AbstractMethodDecl, MethodDecl;
 nonterminal FormParsList, FormParsAdditional, FormPar, FormParOpt, MethodDeclListPrgOpt;
 nonterminal Statement, DesignatorStatement, StatementList, ElseOpt, ExpressionOpt;
 nonterminal NumConst, ForInit, SwitchInit;
 nonterminal CaseList, DesignatorStatementOpt, ConditionOpt, NumConstOpt, StatementListOpt;
 nonterminal ActParsOpt, ActPar, ActParsAdditional, ActParsListOpener, AssignOp, Relop, Addop, Mulop;
 nonterminal MinusOpt;
-nonterminal DesignatorTail;
+nonterminal DesignatorSuffix;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct ExtensionFactor, Factor, FactorList, Term, TermList, SimpleExpression, Expression, Condition, CondFact, CondTerm;
-nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorName, MethodTypeAndName;
 
 precedence left ELS;
 
@@ -389,15 +389,17 @@ Factor ::= 	(Factor_designator_base) Designator
 
 /* Designator */
 
-Designator ::= (Designator) IDT DesignatorTail;
+Designator ::= (Designator) DesignatorName DesignatorSuffix;
 
-DesignatorTail ::= (DesignatorTail_array) MOB Expression MCB DesignatorTail
+DesignatorName ::= (DesignatorName) IDT;
+
+DesignatorSuffix ::= (DesignatorSuffix_array) DesignatorSuffix MOB Expression MCB
 					|
-					(DesignatorTail_member) DOT IDT DesignatorTail
+					(DesignatorSuffix_member) DesignatorSuffix DOT IDT
 					|
-					(DesignatorTail_length) DOT LEN DesignatorTail
+					(DesignatorSuffix_length) DesignatorSuffix DOT LEN
 					|
-					(DesignatorTail_epsilon) /* e */
+					(DesignatorSuffix_epsilon) /* e */
 					;
 
 /* AssignOp */

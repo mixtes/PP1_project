@@ -20,6 +20,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	private boolean errorDetected = false;	
 	Logger log = Logger.getLogger(getClass());
 	private Obj myProgram;
+	int nVars;
 
 	private Obj currentMethod;
 	private boolean methodHasReturnStmt = false;
@@ -43,7 +44,6 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
 	private int loopDepth = 0;
 	private int switchDepth = 0;
-	private HashSet<Integer> caseLabels = null;
 	private Stack<HashSet<Integer>> caseLabelsStack = new Stack<>();
 
 	private ArrayList<Struct> methodCallActualParams = null;
@@ -91,6 +91,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	@Override
 	public void visit(Program program)
 	{
+		this.nVars = Tab.currentScope().getnVars();
 		Tab.chainLocalSymbols(myProgram);
 		Tab.closeScope();
 		
@@ -284,6 +285,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 
 		this.currentMethod = Tab.insert(Obj.Meth, methodName, Tab.noType);
+		methodTypeAndName.obj = this.currentMethod;
 
 		if (methodName.equalsIgnoreCase("main"))
 			this.mainMethod = this.currentMethod;
@@ -324,6 +326,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 
 		this.currentMethod = Tab.insert(Obj.Meth, methodName, this.currentType);
+		methodTypeAndName.obj = this.currentMethod;
+		
 		Tab.openScope();
 
 		if (this.currentClass != null)
@@ -876,124 +880,156 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
 	/* Designator */
 
+	private Stack<Obj> designatorObjStack = new Stack<>();
+	private Stack<Struct> designatorTypeStack = new Stack<>();
+	private Stack<Boolean> designatorErrorStack = new Stack<>();
+
+	@Override
+	public void visit(DesignatorName designatorName)
+	{
+		// Push new designator context (supports nesting like niz[nula])
+		Obj baseObj = Tab.find(designatorName.getI1());
+		if (baseObj == Tab.noObj)
+		{
+			report_error("Designator: " + designatorName.getI1() + " doesn't exist.", designatorName);
+			designatorObjStack.push(Tab.noObj);
+			designatorTypeStack.push(Tab.noType);
+			designatorErrorStack.push(true);
+			designatorName.obj = Tab.noObj;
+			return;
+		}
+
+		designatorObjStack.push(baseObj);
+		designatorTypeStack.push(baseObj.getType());
+		designatorErrorStack.push(false);
+		designatorName.obj = baseObj;
+	}
+
+	@Override
+	public void visit(DesignatorSuffix_member suffix)
+	{
+		if (designatorErrorStack.peek()) return;
+
+		String memberName = suffix.getI2();
+		Struct curType = designatorTypeStack.peek();
+
+		if (curType.getKind() != Struct.Class && curType.getKind() != Struct.Enum)
+		{
+			report_error("Cannot access member '" + memberName + "' on non-class type.", suffix);
+			designatorObjStack.set(designatorObjStack.size() - 1, Tab.noObj);
+			designatorTypeStack.set(designatorTypeStack.size() - 1, Tab.noType);
+			designatorErrorStack.set(designatorErrorStack.size() - 1, true);
+			return;
+		}
+
+		Obj memberObj = null;
+		if (this.currentClassMembersMap != null && curType == this.currentClassStructNode)
+		{
+			memberObj = this.currentClassMembersMap.get(memberName);
+		}
+		else
+		{
+			for (Obj member : curType.getMembers())
+			{
+				if (member.getName().equals(memberName))
+				{
+					memberObj = member;
+					break;
+				}
+			}
+		}
+
+		if (memberObj == null)
+		{
+			report_error("Member '" + memberName + "' not found in class.", suffix);
+			designatorObjStack.set(designatorObjStack.size() - 1, Tab.noObj);
+			designatorTypeStack.set(designatorTypeStack.size() - 1, Tab.noType);
+			designatorErrorStack.set(designatorErrorStack.size() - 1, true);
+			return;
+		}
+
+		designatorObjStack.set(designatorObjStack.size() - 1, memberObj);
+		designatorTypeStack.set(designatorTypeStack.size() - 1, memberObj.getType());
+	}
+
+	@Override
+	public void visit(DesignatorSuffix_array suffix)
+	{
+		if (designatorErrorStack.peek()) return;
+
+		Struct curType = designatorTypeStack.peek();
+
+		if (curType.getKind() != Struct.Array)
+		{
+			report_error("Cannot index into non-array type.", suffix);
+			designatorObjStack.set(designatorObjStack.size() - 1, Tab.noObj);
+			designatorTypeStack.set(designatorTypeStack.size() - 1, Tab.noType);
+			designatorErrorStack.set(designatorErrorStack.size() - 1, true);
+			return;
+		}
+
+		if (suffix.getExpression().struct != Tab.intType && suffix.getExpression().struct.getKind() != Struct.Enum)
+		{
+			report_error("Array index must be of int type.", suffix);
+			designatorObjStack.set(designatorObjStack.size() - 1, Tab.noObj);
+			designatorTypeStack.set(designatorTypeStack.size() - 1, Tab.noType);
+			designatorErrorStack.set(designatorErrorStack.size() - 1, true);
+			return;
+		}
+
+		Struct elemType = curType.getElemType();
+		Obj curObj = designatorObjStack.peek();
+		designatorObjStack.set(designatorObjStack.size() - 1, new Obj(Obj.Elem, curObj.getName(), elemType));
+		designatorTypeStack.set(designatorTypeStack.size() - 1, elemType);
+	}
+
+	@Override
+	public void visit(DesignatorSuffix_length suffix)
+	{
+		if (designatorErrorStack.peek()) return;
+
+		Struct curType = designatorTypeStack.peek();
+
+		if (curType.getKind() != Struct.Array)
+		{
+			report_error("Cannot access .length on non-array type.", suffix);
+			designatorObjStack.set(designatorObjStack.size() - 1, Tab.noObj);
+			designatorTypeStack.set(designatorTypeStack.size() - 1, Tab.noType);
+			designatorErrorStack.set(designatorErrorStack.size() - 1, true);
+			return;
+		}
+
+		designatorObjStack.set(designatorObjStack.size() - 1, new Obj(Obj.Fld, "length", Tab.intType));
+		designatorTypeStack.set(designatorTypeStack.size() - 1, Tab.intType);
+	}
+
 	@Override
 	public void visit(Designator designator)
 	{
-		Obj baseObj = Tab.find(designator.getI1());
-		if (baseObj == Tab.noObj)
+		boolean hasError = designatorErrorStack.pop();
+		Obj curObj = designatorObjStack.pop();
+		designatorTypeStack.pop();
+
+		if (hasError)
 		{
-			report_error("Designator: " + designator.getI1() + " doesn't exist.", designator);
 			designator.obj = Tab.noObj;
 			return;
 		}
 
-		// simple designator (no tail) — validate that the symbol is usable
-		if (designator.getDesignatorTail() instanceof DesignatorTail_epsilon)
+		// simple designator — validate that the symbol is usable
+		if (designator.getDesignatorSuffix() instanceof DesignatorSuffix_epsilon)
 		{
+			Obj baseObj = curObj;
 			if (baseObj.getKind() != Obj.Var && baseObj.getKind() != Obj.Con
 					&& baseObj.getKind() != Obj.Fld && baseObj.getKind() != Obj.Meth)
 			{
-				report_error("Designator: " + designator.getI1() + " isn't valid.", designator);
+				report_error("Designator: " + designator.getDesignatorName().getI1() + " isn't valid.", designator);
 				designator.obj = Tab.noObj;
 				return;
 			}
-			designator.obj = baseObj;
-			return;
 		}
 
-		// complex designator — walk the tail chain
-		Obj currentObj = baseObj;
-		Struct currentType = baseObj.getType();
-		DesignatorTail tail = designator.getDesignatorTail();
-
-		while (!(tail instanceof DesignatorTail_epsilon))
-		{
-			// handle member access
-			if (tail instanceof DesignatorTail_member)
-			{
-				DesignatorTail_member memberTail = (DesignatorTail_member) tail;
-				String memberName = memberTail.getI1();
-
-				if (currentType.getKind() != Struct.Class && currentType.getKind() != Struct.Enum)
-				{
-					report_error("Cannot access member '" + memberName + "' on non-class type.", designator);
-					designator.obj = Tab.noObj;
-					return;
-				}
-
-				Obj memberObj = null;
-				// if accessing members of the class being currently defined, use the map
-				if (this.currentClassMembersMap != null && currentType == this.currentClassStructNode)
-				{
-					memberObj = this.currentClassMembersMap.get(memberName);
-				}
-				else
-				{
-					// search chained members (works for fully-defined classes)
-					for (Obj member : currentType.getMembers())
-					{
-						if (member.getName().equals(memberName))
-						{
-							memberObj = member;
-							break;
-						}
-					}
-				}
-
-				if (memberObj == null)
-				{
-					report_error("Member '" + memberName + "' not found in class.", designator);
-					designator.obj = Tab.noObj;
-					return;
-				}
-
-				currentObj = memberObj;
-				currentType = memberObj.getType();
-				tail = memberTail.getDesignatorTail();
-			}
-			// handle array indexing
-			else if (tail instanceof DesignatorTail_array)
-			{
-				DesignatorTail_array arrayTail = (DesignatorTail_array) tail;
-
-				if (currentType.getKind() != Struct.Array)
-				{
-					report_error("Cannot index into non-array type.", designator);
-					designator.obj = Tab.noObj;
-					return;
-				}
-
-				if (arrayTail.getExpression().struct != Tab.intType && arrayTail.getExpression().struct.getKind() != Struct.Enum)
-				{
-					report_error("Array index must be of int type.", designator);
-					designator.obj = Tab.noObj;
-					return;
-				}
-
-				Struct elemType = currentType.getElemType();
-				currentObj = new Obj(Obj.Elem, currentObj.getName(), elemType);
-				currentType = elemType;
-				tail = arrayTail.getDesignatorTail();
-			}
-			// handle .length access
-			else if (tail instanceof DesignatorTail_length)
-			{
-				DesignatorTail_length lengthTail = (DesignatorTail_length) tail;
-
-				if (currentType.getKind() != Struct.Array)
-				{
-					report_error("Cannot access .length on non-array type.", designator);
-					designator.obj = Tab.noObj;
-					return;
-				}
-
-				currentObj = new Obj(Obj.Fld, "length", Tab.intType);
-				currentType = Tab.intType;
-				tail = lengthTail.getDesignatorTail();
-			}
-		}
-
-		designator.obj = currentObj;
+		designator.obj = curObj;
 	}
 
 	/* Statement */

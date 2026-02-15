@@ -6,6 +6,7 @@
 			<fileset dir="src/rs/ac/bg/etf/pp1">
 				<exclude name="util/Log4JUtils.java"></exclude>
 				<exclude name="SemanticAnalyzer.java"></exclude>
+				<exclude name="CodeGenerator.java"></exclude>
 			</fileset>
 		</delete>
 	</target>
@@ -42,7 +43,37 @@
 				<pathelement location="lib/cup_v10k.jar"/>
 				<pathelement location="lib/JFlex.jar"/>
 				<pathelement location="lib/symboltable-1-1.jar"/>
+				<pathelement location="lib/mj-runtime-1.1.jar"/>
 			</classpath>
 		</javac>
 	</target>
+
+	<target name="disasm">
+		<java classname="rs.etf.pp1.mj.runtime.disasm">
+			<arg value="test/program.obj"/>
+			<classpath>
+				<pathelement location="lib/mj-runtime-1.1.jar"/>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="debugObj" depends="disasm">
+		<java classname="rs.etf.pp1.mj.runtime.Run" input="test/input.txt">
+			<arg value="test/program.obj"/>
+			<arg value="-debug"/>
+			<classpath>
+				<pathelement location="lib/mj-runtime-1.1.jar"/>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="runObj" depends="debugObj">
+		<java classname="rs.etf.pp1.mj.runtime.Run" input="test/input.txt">
+			<arg value="test/program.obj"/>
+			<classpath>
+				<pathelement location="lib/mj-runtime-1.1.jar"/>
+			</classpath>
+		</java>
+	</target>
+
 </project>
