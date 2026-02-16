@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -34,7 +33,7 @@ public class Compiler
 		
 		Logger log = Logger.getLogger(Compiler.class);
 		
-		Reader br = null;
+		BufferedReader br = null;
 		
 		try
 		{
@@ -69,6 +68,8 @@ public class Compiler
 			
 			if(!parser.errorDetected && semanticAnalyzer.success())
 			{
+				log.info("Parsing successful!");
+
 				// code generation
 				File objFile = new File("test/program.obj");
 				if (objFile.exists())
@@ -79,8 +80,6 @@ public class Compiler
 				Code.dataSize = semanticAnalyzer.nVars;
 				Code.mainPc = codeGenerator.getMainPC();
 				Code.write(new FileOutputStream(objFile));
-
-				log.info("Parsing successful!");
 			}
 			else
 			{
@@ -89,7 +88,7 @@ public class Compiler
 		}
 		finally
 		{
-			if (br != null) try { br.close(); } catch (IOException e1) { log.error(e1.getMessage(), e1); }
+			if (br != null) try { br.close(); } catch (IOException ioe) { log.error(ioe.getMessage(), ioe); }
 		}
 	}
 	

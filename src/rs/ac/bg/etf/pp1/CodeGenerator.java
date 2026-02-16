@@ -1,6 +1,10 @@
 package rs.ac.bg.etf.pp1;
 
 import rs.ac.bg.etf.pp1.ast.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import rs.etf.pp1.mj.runtime.Code;
@@ -11,12 +15,16 @@ import rs.etf.pp1.symboltable.concepts.Struct;
 public class CodeGenerator extends VisitorAdaptor {
 
     private int mainPC;
+    
+    private boolean designatorAlreadyLoaded = false;
 
     public int getMainPC() {
         return this.mainPC;
     }
 
     private Stack<Obj> designatorObjStack = new Stack<>();
+
+    /* Designator */
 
     @Override
     public void visit(DesignatorName designatorName)
@@ -92,8 +100,6 @@ public class CodeGenerator extends VisitorAdaptor {
         Code.put(Code.arraylength);
         designatorAlreadyLoaded = true;
     }
-
-    private boolean designatorAlreadyLoaded = false;
 
     @Override
     public void visit(Designator designator)
@@ -276,10 +282,8 @@ public class CodeGenerator extends VisitorAdaptor {
         Obj methodObj = factor_designator.getDesignator().obj;
         String name = methodObj.getName();
 
-        // Built-in functions: ord and chr are no-ops (value already on stack), len emits arraylength
         if ("ord".equals(name) || "chr".equals(name))
         {
-            // no-op: argument is already on the expression stack
             return;
         }
         if ("len".equals(name))
@@ -346,4 +350,321 @@ public class CodeGenerator extends VisitorAdaptor {
             Code.put(Code.rem);
     }
 
+    /* ============================================================ */
+    /* Condition evaluation (shared by if/else, for, and ternary)   */
+    /* ============================================================ */
+
+    private Stack<List<Integer>> condFalseJumps = new Stack<>();
+    private Stack<List<Integer>> condTrueJumps = new Stack<>();
+
+    private Set<SyntaxNode> ternaryCondContextCreated = new HashSet<>();
+
+    private SyntaxNode findTernaryOwner(SyntaxNode node)
+    {
+        SyntaxNode current = node.getParent();
+        while (current != null)
+        {
+            if (current instanceof Statement_if || current instanceof Statement_for)
+                return null;
+            if (current instanceof Expression_condition)
+                return current;
+            current = current.getParent();
+        }
+        return null;
+    }
+
+    private void ensureCondContext(SyntaxNode condFactNode)
+    {
+        SyntaxNode ternaryOwner = findTernaryOwner(condFactNode);
+        if (ternaryOwner != null && !ternaryCondContextCreated.contains(ternaryOwner))
+        {
+            ternaryCondContextCreated.add(ternaryOwner);
+            condFalseJumps.push(new ArrayList<>());
+            condTrueJumps.push(new ArrayList<>());
+        }
+    }
+
+    @Override
+    public void visit(CondFact_single condFact)
+    {
+        ensureCondContext(condFact);
+        Code.loadConst(0);
+        Code.putFalseJump(Code.ne, 0);
+        condFalseJumps.peek().add(Code.pc - 2);
+    }
+
+    @Override
+    public void visit(CondFact_relop condFact)
+    {
+        ensureCondContext(condFact);
+        Relop relop = condFact.getRelop();
+        if (relop instanceof Relop_eql)
+            Code.putFalseJump(Code.eq, 0);
+        else if (relop instanceof Relop_neq)
+            Code.putFalseJump(Code.ne, 0);
+        else if (relop instanceof Relop_let)
+            Code.putFalseJump(Code.lt, 0);
+        else if (relop instanceof Relop_grt)
+            Code.putFalseJump(Code.gt, 0);
+        else if (relop instanceof Relop_lte)
+            Code.putFalseJump(Code.le, 0);
+        else if (relop instanceof Relop_gre)
+            Code.putFalseJump(Code.ge, 0);
+
+        condFalseJumps.peek().add(Code.pc - 2);
+    }
+
+    @Override
+    public void visit(OrConditionMarker marker)
+    {
+        Code.putJump(0);
+        condTrueJumps.peek().add(Code.pc - 2);
+
+        List<Integer> falseJumps = condFalseJumps.peek();
+        for (int addr : falseJumps)
+            Code.fixup(addr);
+        falseJumps.clear();
+    }
+
+    private void fixupTrueJumps()
+    {
+        List<Integer> trueJumps = condTrueJumps.peek();
+        for (int addr : trueJumps)
+            Code.fixup(addr);
+        trueJumps.clear();
+    }
+
+    private void fixupFalseJumps()
+    {
+        List<Integer> falseJumps = condFalseJumps.peek();
+        for (int addr : falseJumps)
+            Code.fixup(addr);
+        falseJumps.clear();
+    }
+
+    /* If/Else */
+
+    private Stack<List<Integer>> ifEndJumps = new Stack<>();
+
+    @Override
+    public void visit(IfStart ifStart)
+    {
+        condFalseJumps.push(new ArrayList<>());
+        condTrueJumps.push(new ArrayList<>());
+        ifEndJumps.push(new ArrayList<>());
+    }
+
+    @Override
+    public void visit(ThenMarker thenMarker)
+    {
+        fixupTrueJumps();
+    }
+
+    @Override
+    public void visit(ElseMarker elseMarker)
+    {
+        Code.putJump(0);
+        ifEndJumps.peek().add(Code.pc - 2);
+        fixupFalseJumps();
+    }
+
+    @Override
+    public void visit(ElseOpt_epsilon elseOpt)
+    {
+        fixupFalseJumps();
+    }
+
+    @Override
+    public void visit(Statement_if statementIf)
+    {
+        List<Integer> endJumps = ifEndJumps.pop();
+        for (int addr : endJumps)
+            Code.fixup(addr);
+        condFalseJumps.pop();
+        condTrueJumps.pop();
+    }
+
+    /* Switch/Case */
+
+    private Stack<Integer> caseSkipAddr = new Stack<>();
+    private Stack<Integer> pendingCaseFallThrough = new Stack<>(); // -1 = none
+
+    private Stack<List<Integer>> breakJumps = new Stack<>(); // for both switch and for loops
+
+    @Override
+    public void visit(SwitchInit switchInit)
+    {
+        breakJumps.push(new ArrayList<>());
+        pendingCaseFallThrough.push(-1);
+    }
+
+    @Override
+    public void visit(CaseStart caseStart)
+    {
+        // Get the case constant value
+        int caseValue;
+        SyntaxNode parent = caseStart.getParent();
+        if (parent instanceof CaseList_recursion)
+            caseValue = ((CaseList_recursion) parent).getNumConst().getN1();
+        else
+            caseValue = ((CaseList_single) parent).getNumConst().getN1();
+
+        // Duplicate switch expr value, load case constant, compare
+        Code.put(Code.dup);
+        Code.loadConst(caseValue);
+        Code.putFalseJump(Code.eq, 0);
+        caseSkipAddr.push(Code.pc - 2);
+
+        // Match: pop the expression value (entering case body)
+        Code.put(Code.pop);
+
+        // Fix up previous case's fall-through jump to here (body start, after pop)
+        int ft = pendingCaseFallThrough.pop();
+        if (ft != -1)
+            Code.fixup(ft);
+        pendingCaseFallThrough.push(-1);
+    }
+
+    @Override
+    public void visit(CaseEnd caseEnd)
+    {
+        // Emit fall-through jump to next case (or END if this is the last case)
+        Code.putJump(0);
+        pendingCaseFallThrough.pop();
+        pendingCaseFallThrough.push(Code.pc - 2);
+
+        // Fix up skip to here
+        Code.fixup(caseSkipAddr.pop());
+    }
+
+    @Override
+    public void visit(Statement_switch statementSwitch)
+    {
+        // Save last case's fall-through address
+        int lastFt = pendingCaseFallThrough.pop();
+
+        // No case matched: pop the expression value
+        Code.put(Code.pop);
+
+        // Fix up break jumps to here (past the cleanup pop)
+        List<Integer> breaks = breakJumps.pop();
+        for (int addr : breaks)
+            Code.fixup(addr);
+
+        // Fix up last case's fall-through to here
+        if (lastFt != -1)
+            Code.fixup(lastFt);
+    }
+
+    /* For Loop */
+
+    private Stack<Integer> forCondAddr = new Stack<>();
+    private Stack<Integer> forUpdateAddr = new Stack<>();
+    private Stack<Integer> forBodyJumpAddr = new Stack<>();
+
+    @Override
+    public void visit(ForInit forInit)
+    {
+        condFalseJumps.push(new ArrayList<>());
+        condTrueJumps.push(new ArrayList<>());
+        breakJumps.push(new ArrayList<>());
+    }
+
+    @Override
+    public void visit(ForConditionStart marker)
+    {
+        forCondAddr.push(Code.pc);
+    }
+
+    @Override
+    public void visit(ForUpdateStart marker)
+    {
+        // Fix up true jumps from OR in condition
+        fixupTrueJumps();
+
+        // Jump over the update section to the body
+        Code.putJump(0);
+        forBodyJumpAddr.push(Code.pc - 2);
+
+        // Loop back here after the body or a continue statement
+        forUpdateAddr.push(Code.pc);
+    }
+
+    @Override
+    public void visit(ForBodyStart marker)
+    {
+        // Jump back to condition
+        Code.putJump(forCondAddr.peek());
+
+        // Fix up jump from update to here (body start)
+        Code.fixup(forBodyJumpAddr.pop());
+    }
+
+    @Override
+    public void visit(Statement_for statementFor)
+    {
+        // Fix up jump from body to update
+        Code.putJump(forUpdateAddr.peek());
+
+        // Fix up condition false jumps to here (END)
+        fixupFalseJumps();
+
+        // Fix up break jumps to here (END)
+        List<Integer> breaks = breakJumps.pop();
+        for (int addr : breaks)
+            Code.fixup(addr);
+
+        forCondAddr.pop();
+        forUpdateAddr.pop();
+        condFalseJumps.pop();
+        condTrueJumps.pop();
+    }
+
+    /* Break/Continue */
+
+    @Override
+    public void visit(Statement_break statementBreak)
+    {
+        Code.putJump(0);
+        breakJumps.peek().add(Code.pc - 2);
+    }
+
+    @Override
+    public void visit(Statement_continue statementContinue)
+    {
+        Code.putJump(forUpdateAddr.peek());
+    }
+
+    /* Ternary operator */
+
+    private Stack<List<Integer>> ternaryEndJumps = new Stack<>();
+
+    @Override
+    public void visit(TernaryTrueStart marker)
+    {
+        fixupTrueJumps();
+        ternaryEndJumps.push(new ArrayList<>());
+    }
+
+    @Override
+    public void visit(TernaryFalseStart marker)
+    {
+        Code.putJump(0);
+        ternaryEndJumps.peek().add(Code.pc - 2);
+
+        fixupFalseJumps();
+    }
+
+    @Override
+    public void visit(Expression_condition exprCond)
+    {
+        // Fix up end jumps to here
+        List<Integer> endJumps = ternaryEndJumps.pop();
+        for (int addr : endJumps)
+            Code.fixup(addr);
+
+        ternaryCondContextCreated.remove(exprCond);
+        condFalseJumps.pop();
+        condTrueJumps.pop();
+    }
 }

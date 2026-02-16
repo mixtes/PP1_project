@@ -85,6 +85,17 @@ nonterminal DesignatorStatement DesignatorStatement;
 nonterminal StatementList StatementList;
 nonterminal ElseOpt ElseOpt;
 nonterminal ExpressionOpt ExpressionOpt;
+nonterminal IfStart IfStart;
+nonterminal ThenMarker ThenMarker;
+nonterminal ElseMarker ElseMarker;
+nonterminal OrConditionMarker OrConditionMarker;
+nonterminal ForConditionStart ForConditionStart;
+nonterminal ForUpdateStart ForUpdateStart;
+nonterminal ForBodyStart ForBodyStart;
+nonterminal TernaryTrueStart TernaryTrueStart;
+nonterminal TernaryFalseStart TernaryFalseStart;
+nonterminal CaseStart CaseStart;
+nonterminal CaseEnd CaseEnd;
 nonterminal NumConst NumConst;
 nonterminal ForInit ForInit;
 nonterminal SwitchInit SwitchInit;
@@ -276,7 +287,7 @@ Type ::= 	(Type) IDT:I1 {: RESULT=new Type(I1); RESULT.setLine(I1left); :};
 
 Statement ::= (Statement_designator) DesignatorStatement:D1 SCL {: RESULT=new Statement_designator(D1); RESULT.setLine(D1left); :}
 				|
-				(Statement_if) SIF SOB Condition:C1 SCB Statement:S2 ElseOpt:E3 {: RESULT=new Statement_if(C1, S2, E3); RESULT.setLine(C1left); :}
+				(Statement_if) IfStart:I1 SOB Condition:C2 SCB ThenMarker:T3 Statement:S4 ElseOpt:E5 {: RESULT=new Statement_if(I1, C2, T3, S4, E5); RESULT.setLine(I1left); :}
 				|
 				(Statement_break) BRK SCL {: RESULT=new Statement_break(); :}
 				|
@@ -290,29 +301,45 @@ Statement ::= (Statement_designator) DesignatorStatement:D1 SCL {: RESULT=new St
 				|
 				(Statement_switch) SwitchInit:S1 SOB Expression:E2 SCB LOB CaseList:C3 LCB {: RESULT=new Statement_switch(S1, E2, C3); RESULT.setLine(S1left); :}
 				|
-				(Statement_for) ForInit:F1 SOB DesignatorStatementOpt:D2 SCL ConditionOpt:C3 SCL DesignatorStatementOpt:D4 SCB Statement:S5 {: RESULT=new Statement_for(F1, D2, C3, D4, S5); RESULT.setLine(F1left); :}
+				(Statement_for) ForInit:F1 SOB DesignatorStatementOpt:D2 SCL ForConditionStart:F3 ConditionOpt:C4 SCL ForUpdateStart:F5 DesignatorStatementOpt:D6 ForBodyStart:F7 SCB Statement:S8 {: RESULT=new Statement_for(F1, D2, F3, C4, F5, D6, F7, S8); RESULT.setLine(F1left); :}
 				|
 				(Statement_block) LOB StatementList:S1 LCB {: RESULT=new Statement_block(S1); RESULT.setLine(S1left); :}
 				;
+
+IfStart ::= (IfStart) SIF {: RESULT=new IfStart(); :};
+
+ThenMarker ::= (ThenMarker) {: RESULT=new ThenMarker(); :} /* e */;
 
 SwitchInit ::= (SwitchInit) SWC {: RESULT=new SwitchInit(); :};
 
 ForInit ::= (ForInit) FOR {: RESULT=new ForInit(); :};
 
-ElseOpt ::= (ElseOpt_else) ELS Statement:S1 {: RESULT=new ElseOpt_else(S1); RESULT.setLine(S1left); :}
+ForConditionStart ::= (ForConditionStart) {: RESULT=new ForConditionStart(); :} /* e */;
+
+ForUpdateStart ::= (ForUpdateStart) {: RESULT=new ForUpdateStart(); :} /* e */;
+
+ForBodyStart ::= (ForBodyStart) {: RESULT=new ForBodyStart(); :} /* e */;
+
+ElseOpt ::= (ElseOpt_else) ElseMarker:E1 Statement:S2 {: RESULT=new ElseOpt_else(E1, S2); RESULT.setLine(E1left); :}
 				|
 				(ElseOpt_epsilon) {: RESULT=new ElseOpt_epsilon(); :} /* e */
 				;
+
+ElseMarker ::= (ElseMarker) ELS {: RESULT=new ElseMarker(); :};
 
 ExpressionOpt ::= (ExpressionOpt_exists) Expression:E1 {: RESULT=new ExpressionOpt_exists(E1); RESULT.setLine(E1left); :}
 					|
 					(ExpressionOpt_epsilon) {: RESULT=new ExpressionOpt_epsilon(); :} /* e */
 					;
 
-CaseList ::= (CaseList_recursion) CSE NumConst:N1 COL StatementList:S2 CaseList:C3 {: RESULT=new CaseList_recursion(N1, S2, C3); RESULT.setLine(N1left); :}
+CaseList ::= (CaseList_recursion) CSE NumConst:N1 COL CaseStart:C2 StatementList:S3 CaseEnd:C4 CaseList:C5 {: RESULT=new CaseList_recursion(N1, C2, S3, C4, C5); RESULT.setLine(N1left); :}
 				|
-				(CaseList_single) CSE NumConst:N1 COL StatementList:S2 {: RESULT=new CaseList_single(N1, S2); RESULT.setLine(N1left); :}
+				(CaseList_single) CSE NumConst:N1 COL CaseStart:C2 StatementList:S3 CaseEnd:C4 {: RESULT=new CaseList_single(N1, C2, S3, C4); RESULT.setLine(N1left); :}
 				;
+
+CaseStart ::= (CaseStart) {: RESULT=new CaseStart(); :} /* e */;
+
+CaseEnd ::= (CaseEnd) {: RESULT=new CaseEnd(); :} /* e */;
 
 NumConstOpt ::= (NumConstOpt_exists) COM NumConst:N1 {: RESULT=new NumConstOpt_exists(N1); RESULT.setLine(N1left); :}
 					|
@@ -362,8 +389,10 @@ ActPar ::= (ActPar) Expression:E1 {: RESULT=new ActPar(E1); RESULT.setLine(E1lef
 
 Condition ::= (Condition_single) CondTerm:C1 {: RESULT=new Condition_single(C1); RESULT.setLine(C1left); :}
 				|
-				(Condition_recursion) Condition:C1 LOR CondTerm:C2 {: RESULT=new Condition_recursion(C1, C2); RESULT.setLine(C1left); :}
+				(Condition_recursion) Condition:C1 LOR OrConditionMarker:O2 CondTerm:C3 {: RESULT=new Condition_recursion(C1, O2, C3); RESULT.setLine(C1left); :}
 				;
+
+OrConditionMarker ::= (OrConditionMarker) {: RESULT=new OrConditionMarker(); :} /* e */;
 
 /* CondTerm */
 
@@ -383,8 +412,12 @@ CondFact ::= (CondFact_relop) SimpleExpression:S1 Relop:R2 SimpleExpression:S3 {
 
 Expression ::= (Expression_termlist) SimpleExpression:S1 {: RESULT=new Expression_termlist(S1); RESULT.setLine(S1left); :}
 				|
-				(Expression_condition) Condition:C1 QSM Expression:E2 COL Expression:E3 {: RESULT=new Expression_condition(C1, E2, E3); RESULT.setLine(C1left); :}
+				(Expression_condition) Condition:C1 QSM TernaryTrueStart:T2 Expression:E3 COL TernaryFalseStart:T4 Expression:E5 {: RESULT=new Expression_condition(C1, T2, E3, T4, E5); RESULT.setLine(C1left); :}
 				;
+
+TernaryTrueStart ::= (TernaryTrueStart) {: RESULT=new TernaryTrueStart(); :} /* e */;
+
+TernaryFalseStart ::= (TernaryFalseStart) {: RESULT=new TernaryFalseStart(); :} /* e */;
 
 SimpleExpression ::= (SimpleExpression) TermList:T1 {: RESULT=new SimpleExpression(T1); RESULT.setLine(T1left); :};
 

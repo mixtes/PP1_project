@@ -56,7 +56,7 @@ nonterminal VarDecl, VarList, VarDeclListMultiple;
 nonterminal EnumIDT, EnumName, AdditionalEnumIDT, MethodDeclListOpt, ExtendsOpt;
 nonterminal AbstractMethodDeclListOpt, AbstractMethodDeclList, AbstractMethodDecl, MethodDecl;
 nonterminal FormParsList, FormParsAdditional, FormPar, FormParOpt, MethodDeclListPrgOpt;
-nonterminal Statement, DesignatorStatement, StatementList, ElseOpt, ExpressionOpt;
+nonterminal Statement, DesignatorStatement, StatementList, ElseOpt, ExpressionOpt, IfStart, ThenMarker, ElseMarker, OrConditionMarker, ForConditionStart, ForUpdateStart, ForBodyStart, TernaryTrueStart, TernaryFalseStart, CaseStart, CaseEnd;
 nonterminal NumConst, ForInit, SwitchInit;
 nonterminal CaseList, DesignatorStatementOpt, ConditionOpt, NumConstOpt, StatementListOpt;
 nonterminal ActParsOpt, ActPar, ActParsAdditional, ActParsListOpener, AssignOp, Relop, Addop, Mulop;
@@ -235,7 +235,7 @@ Type ::= 	(Type) IDT;
 
 Statement ::= (Statement_designator) DesignatorStatement SCL
 				|
-				(Statement_if) SIF SOB Condition SCB Statement ElseOpt
+				(Statement_if) IfStart SOB Condition SCB ThenMarker Statement ElseOpt
 				|
 				(Statement_break) BRK SCL
 				|
@@ -249,29 +249,45 @@ Statement ::= (Statement_designator) DesignatorStatement SCL
 				|
 				(Statement_switch) SwitchInit SOB Expression SCB LOB CaseList LCB
 				|
-				(Statement_for) ForInit SOB DesignatorStatementOpt SCL ConditionOpt SCL DesignatorStatementOpt SCB Statement
+				(Statement_for) ForInit SOB DesignatorStatementOpt SCL ForConditionStart ConditionOpt SCL ForUpdateStart DesignatorStatementOpt ForBodyStart SCB Statement
 				|
 				(Statement_block) LOB StatementList LCB
 				;
+
+IfStart ::= (IfStart) SIF;
+
+ThenMarker ::= (ThenMarker) /* e */;
 
 SwitchInit ::= (SwitchInit) SWC;
 
 ForInit ::= (ForInit) FOR;
 
-ElseOpt ::= (ElseOpt_else) ELS Statement
+ForConditionStart ::= (ForConditionStart) /* e */;
+
+ForUpdateStart ::= (ForUpdateStart) /* e */;
+
+ForBodyStart ::= (ForBodyStart) /* e */;
+
+ElseOpt ::= (ElseOpt_else) ElseMarker Statement
 				|
 				(ElseOpt_epsilon) /* e */
 				;
+
+ElseMarker ::= (ElseMarker) ELS;
 
 ExpressionOpt ::= (ExpressionOpt_exists) Expression
 					|
 					(ExpressionOpt_epsilon) /* e */
 					;
 
-CaseList ::= (CaseList_recursion) CSE NumConst COL StatementList CaseList
+CaseList ::= (CaseList_recursion) CSE NumConst COL CaseStart StatementList CaseEnd CaseList
 				|
-				(CaseList_single) CSE NumConst COL StatementList
+				(CaseList_single) CSE NumConst COL CaseStart StatementList CaseEnd
 				;
+
+CaseStart ::= (CaseStart) /* e */;
+
+CaseEnd ::= (CaseEnd) /* e */;
 
 NumConstOpt ::= (NumConstOpt_exists) COM NumConst
 					|
@@ -321,8 +337,10 @@ ActPar ::= (ActPar) Expression;
 
 Condition ::= (Condition_single) CondTerm
 				|
-				(Condition_recursion) Condition LOR CondTerm
+				(Condition_recursion) Condition LOR OrConditionMarker CondTerm
 				;
+
+OrConditionMarker ::= (OrConditionMarker) /* e */;
 
 /* CondTerm */
 
@@ -342,8 +360,12 @@ CondFact ::= (CondFact_relop) SimpleExpression Relop SimpleExpression
 
 Expression ::= (Expression_termlist) SimpleExpression
 				|
-				(Expression_condition) Condition QSM Expression COL Expression
+				(Expression_condition) Condition QSM TernaryTrueStart Expression COL TernaryFalseStart Expression
 				;
+
+TernaryTrueStart ::= (TernaryTrueStart) /* e */;
+
+TernaryFalseStart ::= (TernaryFalseStart) /* e */;
 
 SimpleExpression ::= (SimpleExpression) TermList;
 

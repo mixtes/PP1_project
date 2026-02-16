@@ -525,7 +525,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			this.abstractClassStructNodes.add(this.currentClassStructNode);
 		}
 		Tab.openScope();
-		this.currentFieldAddress = 0;
+		this.currentFieldAddress = 1;
 		this.currentClassMembersMap = new HashMap<>();
 	}
 
@@ -557,7 +557,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			this.currentClass = Tab.insert(Obj.Type, className.getI1(), this.currentClassStructNode);
 		}
 		Tab.openScope();
-		this.currentFieldAddress = 0;
+		this.currentFieldAddress = 1;
 		this.currentClassMembersMap = new HashMap<>();
 	}
 
