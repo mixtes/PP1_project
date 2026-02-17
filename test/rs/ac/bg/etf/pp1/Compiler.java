@@ -28,28 +28,35 @@ public class Compiler
 		Log4JUtils.instance().prepareLogFile(Logger.getRootLogger());
 	}
 	
-	public static void main(String[] args) throws Exception 
+	public static void main(String[] args) throws Exception
 	{
-		
+
 		Logger log = Logger.getLogger(Compiler.class);
-		
+
+		String inputPath  = (args.length > 0) ? args[0] : "test/program.mj";
+		String outputPath = (args.length > 1) ? args[1] : "test/program.obj";
+
 		BufferedReader br = null;
-		
+
 		try
 		{
-			File sourceCode = new File("test/program.mj");
+			File sourceCode = new File(inputPath);
+			if (!sourceCode.exists()) {
+				log.error("Input file not found: " + sourceCode.getAbsolutePath());
+				return;
+			}
 			log.info("Compiling source file: " + sourceCode.getAbsolutePath());
-			
+
 			br = new BufferedReader(new FileReader(sourceCode));
-			
+
 			Yylex lexer = new Yylex(br);
-			
+
 			MJParser parser = new MJParser(lexer);
-			
+
 			Symbol s = parser.parse();
-			
+
 			Program program = (Program)(s.value); // the post-order ensures that the last visited node was the root
-			
+
 			log.info(program.toString(""));
 			log.info("====================================================================");
 
@@ -59,19 +66,19 @@ public class Compiler
 			Obj boolTypeObj = Tab.insert(Obj.Type, "bool", boolType);
 			boolTypeObj.setAdr(-1);
 			boolTypeObj.setLevel(-1);
-			
+
 			SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer();
 			program.traverseBottomUp(semanticAnalyzer);
-			
+
 			log.info("====================================================================");
 			Tab.dump();
-			
+
 			if(!parser.errorDetected && semanticAnalyzer.success())
 			{
 				log.info("Parsing successful!");
 
 				// code generation
-				File objFile = new File("test/program.obj");
+				File objFile = new File(outputPath);
 				if (objFile.exists())
 					objFile.delete();
 
