@@ -103,6 +103,14 @@ public class CodeGenerator extends VisitorAdaptor {
                 break;
             }
         }
+        if (memberObj == null)
+        {
+            // Member not found — semantic analysis should have caught this;
+            // push a sentinel to keep the stack balanced and bail out.
+            designatorObjStack.set(designatorObjStack.size() - 1, new Obj(Obj.Var, suffix.getI2(), Tab.noType));
+            return;
+        }
+
         designatorObjStack.set(designatorObjStack.size() - 1, memberObj);
 
         // If this is an intermediate suffix, resolve the field access now
@@ -144,7 +152,7 @@ public class CodeGenerator extends VisitorAdaptor {
         if (methodTypeAndName.getParent() instanceof AbstractMethodDecl)
             return;
 
-        if ("main".equalsIgnoreCase(methodTypeAndName.getI1()))
+        if ("main".equals(methodTypeAndName.getI1()))
             this.mainPC = Code.pc;
 
         methodTypeAndName.obj.setAdr(Code.pc);
@@ -160,7 +168,7 @@ public class CodeGenerator extends VisitorAdaptor {
         Code.put(methodTypeAndName.obj.getLevel());
         Code.put(methodTypeAndName.obj.getLocalSymbols().size());
 
-        if ("main".equalsIgnoreCase(methodTypeAndName.getI1()))
+        if ("main".equals(methodTypeAndName.getI1()))
         {
             generateVTableInit();
         }

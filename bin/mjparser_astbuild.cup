@@ -98,6 +98,7 @@ nonterminal NumConst NumConst;
 nonterminal ForInit ForInit;
 nonterminal SwitchInit SwitchInit;
 nonterminal CaseList CaseList;
+nonterminal CaseListOpt CaseListOpt;
 nonterminal DesignatorStatementOpt DesignatorStatementOpt;
 nonterminal ConditionOpt ConditionOpt;
 nonterminal NumConstOpt NumConstOpt;
@@ -310,7 +311,7 @@ Statement ::= (Statement_designator) DesignatorStatement:D1 SCL {: RESULT=new St
 				|
 				(Statement_print) PRT SOB Expression:E1 NumConstOpt:N2 SCB SCL {: RESULT=new Statement_print(E1, N2); RESULT.setLine(E1left); :}
 				|
-				(Statement_switch) SwitchInit:S1 SOB Expression:E2 SCB LOB CaseList:C3 LCB {: RESULT=new Statement_switch(S1, E2, C3); RESULT.setLine(S1left); :}
+				(Statement_switch) SwitchInit:S1 SOB Expression:E2 SCB LOB CaseListOpt:C3 LCB {: RESULT=new Statement_switch(S1, E2, C3); RESULT.setLine(S1left); :}
 				|
 				(Statement_for) ForInit:F1 SOB DesignatorStatementOpt:D2 SCL ForConditionStart:F3 ConditionOpt:C4 SCL ForUpdateStart:F5 DesignatorStatementOpt:D6 ForBodyStart:F7 SCB Statement:S8 {: RESULT=new Statement_for(F1, D2, F3, C4, F5, D6, F7, S8); RESULT.setLine(F1left); :}
 				|
@@ -343,9 +344,14 @@ ExpressionOpt ::= (ExpressionOpt_exists) Expression:E1 {: RESULT=new ExpressionO
 					(ExpressionOpt_epsilon) {: RESULT=new ExpressionOpt_epsilon(); :} /* e */
 					;
 
-CaseList ::= (CaseList_recursion) CSE NumConst:N1 COL CaseStart:C2 StatementList:S3 CaseEnd:C4 CaseList:C5 {: RESULT=new CaseList_recursion(N1, C2, S3, C4, C5); RESULT.setLine(N1left); :}
+CaseList ::= (CaseList_recursion) CSE NumConst:N1 COL CaseStart:C2 StatementListOpt:S3 CaseEnd:C4 CaseList:C5 {: RESULT=new CaseList_recursion(N1, C2, S3, C4, C5); RESULT.setLine(N1left); :}
 				|
-				(CaseList_single) CSE NumConst:N1 COL CaseStart:C2 StatementList:S3 CaseEnd:C4 {: RESULT=new CaseList_single(N1, C2, S3, C4); RESULT.setLine(N1left); :}
+				(CaseList_single) CSE NumConst:N1 COL CaseStart:C2 StatementListOpt:S3 CaseEnd:C4 {: RESULT=new CaseList_single(N1, C2, S3, C4); RESULT.setLine(N1left); :}
+				;
+
+CaseListOpt ::= (CaseListOpt_exists) CaseList:C1 {: RESULT=new CaseListOpt_exists(C1); RESULT.setLine(C1left); :}
+				|
+				(CaseListOpt_epsilon) {: RESULT=new CaseListOpt_epsilon(); :} /* e */
 				;
 
 CaseStart ::= (CaseStart) {: RESULT=new CaseStart(); :} /* e */;

@@ -57,7 +57,7 @@ nonterminal AbstractMethodDeclListOpt, AbstractMethodDeclList, AbstractMethodDec
 nonterminal FormParsList, FormParsAdditional, FormPar, FormParOpt, MethodDeclListPrgOpt;
 nonterminal Statement, DesignatorStatement, StatementList, ElseOpt, ExpressionOpt, IfStart, ThenMarker, ElseMarker, OrConditionMarker, ForConditionStart, ForUpdateStart, ForBodyStart, TernaryTrueStart, TernaryFalseStart, CaseStart, CaseEnd;
 nonterminal NumConst, ForInit, SwitchInit;
-nonterminal CaseList, DesignatorStatementOpt, ConditionOpt, NumConstOpt, StatementListOpt;
+nonterminal CaseList, CaseListOpt, DesignatorStatementOpt, ConditionOpt, NumConstOpt, StatementListOpt;
 nonterminal ActParsOpt, ActPar, ActParsAdditional, ActParsListOpener, AssignOp, Relop, Addop, Mulop;
 nonterminal MinusOpt;
 nonterminal DesignatorSuffix;
@@ -259,7 +259,7 @@ Statement ::= (Statement_designator) DesignatorStatement SCL
 				|
 				(Statement_print) PRT SOB Expression NumConstOpt SCB SCL
 				|
-				(Statement_switch) SwitchInit SOB Expression SCB LOB CaseList LCB
+				(Statement_switch) SwitchInit SOB Expression SCB LOB CaseListOpt LCB
 				|
 				(Statement_for) ForInit SOB DesignatorStatementOpt SCL ForConditionStart ConditionOpt SCL ForUpdateStart DesignatorStatementOpt ForBodyStart SCB Statement
 				|
@@ -292,9 +292,14 @@ ExpressionOpt ::= (ExpressionOpt_exists) Expression
 					(ExpressionOpt_epsilon) /* e */
 					;
 
-CaseList ::= (CaseList_recursion) CSE NumConst COL CaseStart StatementList CaseEnd CaseList
+CaseList ::= (CaseList_recursion) CSE NumConst COL CaseStart StatementListOpt CaseEnd CaseList
 				|
-				(CaseList_single) CSE NumConst COL CaseStart StatementList CaseEnd
+				(CaseList_single) CSE NumConst COL CaseStart StatementListOpt CaseEnd
+				;
+
+CaseListOpt ::= (CaseListOpt_exists) CaseList
+				|
+				(CaseListOpt_epsilon) /* e */
 				;
 
 CaseStart ::= (CaseStart) /* e */;

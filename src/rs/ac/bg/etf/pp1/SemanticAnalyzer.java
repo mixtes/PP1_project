@@ -177,6 +177,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	
 	/* VarDecl */
 	
+	@Override
 	public void visit(VarDecl_single varDecl)
 	{
 		Obj variable = null;
@@ -216,6 +217,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 	}
 
+	@Override
 	public void visit(VarDecl_array varDecl)
 	{
 		Obj variable = null;
@@ -293,7 +295,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		this.currentMethod = Tab.insert(Obj.Meth, methodName, Tab.noType);
 		methodTypeAndName.obj = this.currentMethod;
 
-		if (methodName.equalsIgnoreCase("main"))
+		if ("main".equals(methodName))
 			this.mainMethod = this.currentMethod;
 
 		Tab.openScope();
@@ -394,6 +396,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	@Override
 	public void visit(MethodDecl methodDecl)
 	{
+		String methodName = this.currentMethod.getName();
 		this.currentMethod.setFpPos(0);
 		Tab.chainLocalSymbols(this.currentMethod);
 		Tab.closeScope();
@@ -403,6 +406,20 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			report_error("Non-void method must have a return statement.", methodDecl);
 		}
 		this.methodHasReturnStmt = false;
+
+		// If this method overrides an inherited abstract method, clear the abstract
+		// flag (fpPos=1) on any inherited copy so ClassDecl doesn't false-alarm.
+		if (this.currentClass != null)
+		{
+			for (Obj sym : Tab.currentScope().values())
+			{
+				if (sym != this.currentMethod && sym.getKind() == Obj.Meth
+						&& sym.getName().equals(methodName) && sym.getFpPos() == 1)
+				{
+					sym.setFpPos(0);
+				}
+			}
+		}
 
 		this.currentMethod = null;
 	}
@@ -449,14 +466,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
 	private boolean isEnumMemberValueUnique(int value)
 	{
-		for (int i = 0; i < this.currentEnumValues.size(); i++)
-		{
-			if (this.currentEnumValues.contains(value))
-			{
-				return false;
-			}
-		}
-		return true;
+		return !this.currentEnumValues.contains(value);
 	}
 
 	@Override
@@ -708,6 +718,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			{
 				report_error("Factor_designator_method exception: " + e.getMessage(), factor);
 				factor.struct = Tab.noType;
+				return;
 			}
 
 			factor.struct = methodObj.getType();
@@ -1184,7 +1195,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		else if (this.currentMethod.getType() != Tab.noType && statement.getExpressionOpt() instanceof ExpressionOpt_exists)
 		{
 			ExpressionOpt_exists returnExpr = (ExpressionOpt_exists) statement.getExpressionOpt();
-			if (!returnExpr.getExpression().struct.equals(this.currentMethod.getType()))
+			if (!isAssignable_deep(returnExpr.getExpression().struct, this.currentMethod.getType()))
 			{
 				report_error("Incompatible return type.", statement);
 			}
