@@ -161,11 +161,18 @@ VarDeclListMultiple ::= (VarDeclListMultiple_recursion) VarDeclListMultiple:V1 V
 							(VarDeclListMultiple_epsilon) {: RESULT=new VarDeclListMultiple_epsilon(); :} /* e */
 							;
 
-VarDeclList ::= (VarDeclList) Type:T1 VarList:V2 SCL {: RESULT=new VarDeclList(T1, V2); RESULT.setLine(T1left); :};
+VarDeclList ::= (VarDeclList_ok) Type:T1 VarList:V2 SCL {: RESULT=new VarDeclList_ok(T1, V2); RESULT.setLine(T1left); :}
+				|
+				(VarDeclList_err) error SCL {: RESULT=new VarDeclList_err(); :}
+				;
 
 VarList ::= (VarList_recursion) VarList:V1 COM VarDecl:V2 {: RESULT=new VarList_recursion(V1, V2); RESULT.setLine(V1left); :}
 				|
 				(VarList_single) VarDecl:V1 {: RESULT=new VarList_single(V1); RESULT.setLine(V1left); :}
+				|
+				(VarList_err_comma) VarList:V1 COM error {: RESULT=new VarList_err_comma(V1); RESULT.setLine(V1left); :}
+				|
+				(VarList_err_single) error {: RESULT=new VarList_err_single(); :}
 				;
 			
 VarDecl ::= (VarDecl_array) IDT:I1 MOB MCB {: RESULT=new VarDecl_array(I1); RESULT.setLine(I1left); :}
@@ -198,6 +205,8 @@ ClassName ::= (ClassName) IDT:I1 {: RESULT=new ClassName(I1); RESULT.setLine(I1l
 ExtendsOpt ::= (ExtendsOpt_exists) EXT Type:T1 {: RESULT=new ExtendsOpt_exists(T1); RESULT.setLine(T1left); :}
 				|
 				(ExtendsOpt_epsilon) {: RESULT=new ExtendsOpt_epsilon(); :} /* e */
+				|
+				(ExtendsOpt_err) EXT error {: RESULT=new ExtendsOpt_err(); :}
 				;
 
 MethodDeclListOpt ::= (MethodDeclListOpt_exists) LOB MethodDeclList:M1 LCB {: RESULT=new MethodDeclListOpt_exists(M1); RESULT.setLine(M1left); :}
@@ -275,6 +284,8 @@ FormParsAdditional ::= (FormParsAdditional_recursion) COM FormPar:F1 FormParsAdd
 FormPar ::= (FormPar_array) Type:T1 IDT:I2 MOB MCB {: RESULT=new FormPar_array(T1, I2); RESULT.setLine(T1left); :}
 			|
 			(FormPar_single) Type:T1 IDT:I2 {: RESULT=new FormPar_single(T1, I2); RESULT.setLine(T1left); :}
+			|
+			(FormPar_err) error {: RESULT=new FormPar_err(); :}
 			;
 
 /* Type */
@@ -286,6 +297,8 @@ Type ::= 	(Type) IDT:I1 {: RESULT=new Type(I1); RESULT.setLine(I1left); :};
 Statement ::= (Statement_designator) DesignatorStatement:D1 SCL {: RESULT=new Statement_designator(D1); RESULT.setLine(D1left); :}
 				|
 				(Statement_if) IfStart:I1 SOB Condition:C2 SCB ThenMarker:T3 Statement:S4 ElseOpt:E5 {: RESULT=new Statement_if(I1, C2, T3, S4, E5); RESULT.setLine(I1left); :}
+				|
+				(Statement_if_err) IfStart:I1 SOB error SCB ThenMarker:T2 Statement:S3 ElseOpt:E4 {: RESULT=new Statement_if_err(I1, T2, S3, E4); RESULT.setLine(I1left); :}
 				|
 				(Statement_break) BRK SCL {: RESULT=new Statement_break(); :}
 				|
@@ -365,6 +378,8 @@ DesignatorStatement ::= (DesignatorStatement_assign) Designator:D1 AssignOp:A2 E
 						(DesignatorStatement_inc) Designator:D1 INC {: RESULT=new DesignatorStatement_inc(D1); RESULT.setLine(D1left); :}
 						|
 						(DesignatorStatement_dec) Designator:D1 DEC {: RESULT=new DesignatorStatement_dec(D1); RESULT.setLine(D1left); :}
+						|
+						(DesignatorStatement_assign_err) Designator:D1 AssignOp:A2 error {: RESULT=new DesignatorStatement_assign_err(D1, A2); RESULT.setLine(D1left); :}
 						;
 
 /* ActPars */

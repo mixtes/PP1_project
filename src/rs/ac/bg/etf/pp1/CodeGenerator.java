@@ -141,7 +141,6 @@ public class CodeGenerator extends VisitorAdaptor {
     @Override
     public void visit(MethodTypeAndName_void methodTypeAndName)
     {
-        // Skip code generation for abstract methods
         if (methodTypeAndName.getParent() instanceof AbstractMethodDecl)
             return;
 
@@ -161,7 +160,6 @@ public class CodeGenerator extends VisitorAdaptor {
         Code.put(methodTypeAndName.obj.getLevel());
         Code.put(methodTypeAndName.obj.getLocalSymbols().size());
 
-        // Generate VFT initialization code at the start of main
         if ("main".equalsIgnoreCase(methodTypeAndName.getI1()))
         {
             generateVTableInit();
@@ -171,7 +169,6 @@ public class CodeGenerator extends VisitorAdaptor {
     @Override
     public void visit(MethodTypeAndName_type methodTypeAndName)
     {
-        // Skip code generation for abstract methods
         if (methodTypeAndName.getParent() instanceof AbstractMethodDecl)
             return;
 

@@ -119,6 +119,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			{
 				constant = Tab.insert(Obj.Con, constDecl.getI1(), this.currentType);
 				constant.setAdr(this.c_val);
+
+				report_info("Declared constant: " + constDecl.getI1() + " with value: " + this.c_val + "\n"
+								+ "Object node: [Kind=" + constant.getKind() + ", Type=" + constant.getType().getKind() + ", Address=" + constant.getAdr() + "]", constDecl);
 			}
 			else
 			{
@@ -206,6 +209,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 					variable.setLevel(1);
 				else
 					variable.setLevel(0);
+
+				report_info("Declared variable: " + varDecl.getI1() + " of type: " + this.currentType.getKind() + "\n"
+								+ "Object node: [Kind=" + variable.getKind() + ", Type=" + variable.getType().getKind() + ", Level=" + variable.getLevel() + "]", varDecl);
 			}
 		}
 	}
@@ -705,6 +711,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			}
 
 			factor.struct = methodObj.getType();
+
+			report_info("Method call: " + methodObj.getName() + "\n" + "Object node: [Kind: Method, Type: " + methodObj.getType().getKind() + "]", factor);
 		}
 	}
 
@@ -753,6 +761,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		{
 			factor.struct = this.currentType;
 		}
+
+		report_info("Instantiating object of class type: " + this.currentType, factor);
 	}
 
 	@Override
@@ -951,6 +961,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
 		designatorObjStack.set(designatorObjStack.size() - 1, memberObj);
 		designatorTypeStack.set(designatorTypeStack.size() - 1, memberObj.getType());
+
+		report_info("Accessed member: " + memberObj.getName() + "\n" + "Object node: [Kind: " + memberObj.getKind() + ", Type: " + memberObj.getType().getKind() + "]", suffix);
 	}
 
 	@Override
@@ -982,6 +994,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		Obj curObj = designatorObjStack.peek();
 		designatorObjStack.set(designatorObjStack.size() - 1, new Obj(Obj.Elem, curObj.getName(), elemType));
 		designatorTypeStack.set(designatorTypeStack.size() - 1, elemType);
+
+		report_info("Array access: " + curObj.getName() + "\n" + "Object node: [Kind: Array, Type: " + curObj.getKind() + "]", suffix);
 	}
 
 	@Override
@@ -1093,6 +1107,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			{
 				report_error("Designator_method exception: " + e.getMessage(), designatorStatement);
 			}
+
+			report_info("Method call: " + methObj.getName() + "\n" + "Object node: [Kind: Method, Type: " + methObj.getType().getKind() + "]", designatorStatement);
 		}
 	}
 
@@ -1365,6 +1381,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	public void visit(ActPar actPar)
 	{
 		this.methodCallActualParamsLists.peek().add(actPar.getExpression().struct);
+
+		report_info("Actual parameter found. ", actPar);
 	}
 
 	@Override

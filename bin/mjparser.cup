@@ -110,11 +110,18 @@ VarDeclListMultiple ::= (VarDeclListMultiple_recursion) VarDeclListMultiple VarD
 							(VarDeclListMultiple_epsilon) /* e */
 							;
 
-VarDeclList ::= (VarDeclList) Type VarList SCL;
+VarDeclList ::= (VarDeclList_ok) Type VarList SCL
+				|
+				(VarDeclList_err) error SCL
+				;
 
 VarList ::= (VarList_recursion) VarList COM VarDecl
 				|
 				(VarList_single) VarDecl
+				|
+				(VarList_err_comma) VarList COM error
+				|
+				(VarList_err_single) error
 				;
 			
 VarDecl ::= (VarDecl_array) IDT MOB MCB
@@ -147,6 +154,8 @@ ClassName ::= (ClassName) IDT;
 ExtendsOpt ::= (ExtendsOpt_exists) EXT Type
 				|
 				(ExtendsOpt_epsilon) /* e */
+				|
+				(ExtendsOpt_err) EXT error
 				;
 
 MethodDeclListOpt ::= (MethodDeclListOpt_exists) LOB MethodDeclList LCB
@@ -224,6 +233,8 @@ FormParsAdditional ::= (FormParsAdditional_recursion) COM FormPar FormParsAdditi
 FormPar ::= (FormPar_array) Type IDT MOB MCB
 			|
 			(FormPar_single) Type IDT
+			|
+			(FormPar_err) error
 			;
 
 /* Type */
@@ -235,6 +246,8 @@ Type ::= 	(Type) IDT;
 Statement ::= (Statement_designator) DesignatorStatement SCL
 				|
 				(Statement_if) IfStart SOB Condition SCB ThenMarker Statement ElseOpt
+				|
+				(Statement_if_err) IfStart SOB error SCB ThenMarker Statement ElseOpt
 				|
 				(Statement_break) BRK SCL
 				|
@@ -314,6 +327,8 @@ DesignatorStatement ::= (DesignatorStatement_assign) Designator AssignOp Express
 						(DesignatorStatement_inc) Designator INC
 						|
 						(DesignatorStatement_dec) Designator DEC
+						|
+						(DesignatorStatement_assign_err) Designator AssignOp error
 						;
 
 /* ActPars */
