@@ -2,8 +2,11 @@ package rs.ac.bg.etf.pp1;
 
 import rs.ac.bg.etf.pp1.ast.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -15,14 +18,35 @@ import rs.etf.pp1.symboltable.concepts.Struct;
 public class CodeGenerator extends VisitorAdaptor {
 
     private int mainPC;
+    private int currentDataAddr = 0;
+    private Struct currentClassStruct = null;
+    private Map<Struct, Integer> classVTableAddrs = new HashMap<>();
+    private Map<Struct, LinkedHashMap<String, Obj>> classOwnMethods = new HashMap<>();
+    private Map<Struct, LinkedHashMap<String, Obj>> classVTables = new HashMap<>();
+
+    private int tempSlotBase = 0;
+    private final int numTempSlots = 16;
+    private int nextTempSlot = 0;
+    private Stack<Integer> tempSlotStack = new Stack<>();
     
     private boolean designatorAlreadyLoaded = false;
+    private Stack<Obj> designatorObjStack = new Stack<>();
 
-    public int getMainPC() {
-        return this.mainPC;
+    public CodeGenerator(int nVars)
+    {
+        this.tempSlotBase = nVars;
+        this.currentDataAddr = nVars + numTempSlots;
     }
 
-    private Stack<Obj> designatorObjStack = new Stack<>();
+    public int getDataSize() 
+    {
+        return this.currentDataAddr;
+    }
+
+    public int getMainPC() 
+    {
+        return this.mainPC;
+    }
 
     /* Designator */
 
@@ -32,11 +56,16 @@ public class CodeGenerator extends VisitorAdaptor {
         Obj baseObj = designatorName.obj;
         designatorObjStack.push(baseObj);
 
-        // Only push the base onto the expression stack if the designator is complex (has suffixes)
-        // but NOT for enum types — enum member access resolves to a constant, no load needed
         Designator parent = (Designator) designatorName.getParent();
-        if (!(parent.getDesignatorSuffix() instanceof DesignatorSuffix_epsilon)
-            && baseObj.getKind() != Obj.Type)
+        boolean suffixIsEpsilon = parent.getDesignatorSuffix() instanceof DesignatorSuffix_epsilon;
+
+        // Implicit this: bare field access inside class method needs 'this' on stack
+        if (baseObj.getKind() == Obj.Fld)
+        {
+            Code.put(Code.load_n); // load_0 = this
+        }
+
+        if (!suffixIsEpsilon && baseObj.getKind() != Obj.Type)
         {
             Code.load(baseObj);
         }
@@ -112,20 +141,48 @@ public class CodeGenerator extends VisitorAdaptor {
     @Override
     public void visit(MethodTypeAndName_void methodTypeAndName)
     {
+        // Skip code generation for abstract methods
+        if (methodTypeAndName.getParent() instanceof AbstractMethodDecl)
+            return;
+
         if ("main".equalsIgnoreCase(methodTypeAndName.getI1()))
             this.mainPC = Code.pc;
 
         methodTypeAndName.obj.setAdr(Code.pc);
 
+        if (currentClassStruct != null)
+        {
+            classOwnMethods
+                .computeIfAbsent(currentClassStruct, k -> new LinkedHashMap<>())
+                .put(methodTypeAndName.getI1(), methodTypeAndName.obj);
+        }
+
         Code.put(Code.enter);
         Code.put(methodTypeAndName.obj.getLevel());
         Code.put(methodTypeAndName.obj.getLocalSymbols().size());
+
+        // Generate VFT initialization code at the start of main
+        if ("main".equalsIgnoreCase(methodTypeAndName.getI1()))
+        {
+            generateVTableInit();
+        }
     }
 
     @Override
     public void visit(MethodTypeAndName_type methodTypeAndName)
     {
+        // Skip code generation for abstract methods
+        if (methodTypeAndName.getParent() instanceof AbstractMethodDecl)
+            return;
+
         methodTypeAndName.obj.setAdr(Code.pc);
+
+        if (currentClassStruct != null)
+        {
+            classOwnMethods
+                .computeIfAbsent(currentClassStruct, k -> new LinkedHashMap<>())
+                .put(methodTypeAndName.getI2(), methodTypeAndName.obj);
+        }
 
         Code.put(Code.enter);
         Code.put(methodTypeAndName.obj.getLevel());
@@ -223,26 +280,87 @@ public class CodeGenerator extends VisitorAdaptor {
     public void visit(DesignatorStatement_method designatorStatement)
     {
         Obj methodObj = designatorStatement.getDesignator().obj;
-        String name = methodObj.getName();
+        String methodName = methodObj.getName();
 
-        if ("ord".equals(name) || "chr".equals(name))
-        {
+        if ("ord".equals(methodName) || "chr".equals(methodName)) {
             Code.put(Code.pop); // discard result since called as statement
             return;
         }
-        if ("len".equals(name))
-        {
+        if ("len".equals(methodName)) {
             Code.put(Code.arraylength);
             Code.put(Code.pop);
             return;
         }
 
-        int offset = methodObj.getAdr() - Code.pc;
-        Code.put(Code.call);
-        Code.put2(offset);
+        if (isVirtualMethod(methodObj))
+        {
+            int slot = tempSlotStack.pop();
+            nextTempSlot--;
+
+            Code.put(Code.getstatic);
+            Code.put2(slot);
+
+            Code.put(Code.getfield);
+            Code.put2(0);
+
+            Code.put(Code.invokevirtual);
+
+            for (char c : methodName.toCharArray())
+            {
+                Code.put4((int) c);
+            }
+
+            Code.put4(-1);
+        }
+        else
+        {
+            int offset = methodObj.getAdr() - Code.pc;
+            Code.put(Code.call);
+            Code.put2(offset);
+        }
 
         if (methodObj.getType() != Tab.noType)
             Code.put(Code.pop);
+    }
+    
+    @Override
+    public void visit(ActParsListOpener actParsListOpener)
+    {
+        Obj methodObj = null;
+        Designator designator = null;
+
+        if (actParsListOpener.getParent().getParent() instanceof DesignatorStatement_method)
+        {
+            DesignatorStatement_method dsm =
+                    (DesignatorStatement_method) actParsListOpener.getParent().getParent();
+            methodObj = dsm.getDesignator().obj;
+            designator = dsm.getDesignator();
+        }
+        else if (actParsListOpener.getParent().getParent() instanceof Factor_designator_method)
+        {
+            Factor_designator_method fdm =
+                    (Factor_designator_method) actParsListOpener.getParent().getParent();
+            methodObj = fdm.getDesignator().obj;
+            designator = fdm.getDesignator();
+        }
+
+        if (methodObj != null && isVirtualMethod(methodObj))
+        {
+            // Implicit this: bare method call inside class method (no explicit receiver)
+            if (designator != null && designator.getDesignatorSuffix() instanceof DesignatorSuffix_epsilon)
+            {
+                Code.put(Code.load_n); // load_0 = this
+            }
+
+            Code.put(Code.dup);
+
+            int slot = tempSlotBase + nextTempSlot;
+            nextTempSlot++;
+            tempSlotStack.push(slot);
+
+            Code.put(Code.putstatic);
+            Code.put2(slot);
+        }
     }
 
     /* Factor */
@@ -280,21 +398,44 @@ public class CodeGenerator extends VisitorAdaptor {
     public void visit(Factor_designator_method factor_designator)
     {
         Obj methodObj = factor_designator.getDesignator().obj;
-        String name = methodObj.getName();
+        String methodName = methodObj.getName();
 
-        if ("ord".equals(name) || "chr".equals(name))
+        if ("ord".equals(methodName) || "chr".equals(methodName))
         {
             return;
         }
-        if ("len".equals(name))
+        if ("len".equals(methodName))
         {
             Code.put(Code.arraylength);
             return;
         }
 
-        int offset = methodObj.getAdr() - Code.pc;
-        Code.put(Code.call);
-        Code.put2(offset);
+        if (isVirtualMethod(methodObj))
+        {
+            int slot = tempSlotStack.pop();
+            nextTempSlot--;
+
+            Code.put(Code.getstatic);
+            Code.put2(slot);
+
+            Code.put(Code.getfield);
+            Code.put2(0);
+
+            Code.put(Code.invokevirtual);
+
+            for (char c : methodName.toCharArray())
+            {
+                Code.put4((int) c);
+            }
+
+            Code.put4(-1);
+        }
+        else
+        {
+            int offset = methodObj.getAdr() - Code.pc;
+            Code.put(Code.call);
+            Code.put2(offset);
+        }
     }
 
     @Override
@@ -312,7 +453,15 @@ public class CodeGenerator extends VisitorAdaptor {
     {
         Code.put(Code.new_);
         int numFields = factor_object.struct.getNumberOfFields();
-        Code.put2(numFields * 4);
+        Code.put2((numFields + 1) * 4);
+
+        Code.put(Code.dup);
+
+        int vtableAddr = classVTableAddrs.get(factor_object.struct);
+        Code.loadConst(vtableAddr);
+
+        Code.put(Code.putfield);
+        Code.put2(0);
     }
 
     /* ExtensionFactor */
@@ -667,4 +816,124 @@ public class CodeGenerator extends VisitorAdaptor {
         condFalseJumps.pop();
         condTrueJumps.pop();
     }
+
+    /* Class */
+
+    @Override
+    public void visit(ClassName className)
+    {
+        this.currentClassStruct = className.obj.getType();
+    }
+
+    @Override
+    public void visit(AbsClassName className)
+    {
+        this.currentClassStruct = className.obj.getType();
+    }
+
+    @Override
+    public void visit(ClassDecl classDecl)
+    {
+        LinkedHashMap<String, Obj> vtable = buildVTableMap(currentClassStruct);
+        classVTables.put(currentClassStruct, vtable);
+
+        int vtableStartAddr = currentDataAddr;
+        classVTableAddrs.put(currentClassStruct, vtableStartAddr);
+
+        int vtableSize = 0;
+
+        for (String methodName : vtable.keySet())
+        {
+            vtableSize += methodName.length() + 1; // name chars + -1 terminator
+            vtableSize += 1; // method address
+        }
+
+        vtableSize += 1; // -2 VFT terminator
+
+        currentDataAddr += vtableSize;
+
+        this.currentClassStruct = null;
+    }
+
+    @Override
+    public void visit(AbstractClassDecl classDecl)
+    {
+        this.currentClassStruct = null;
+    }
+
+    private void generateVTableInit()
+    {
+        for (Map.Entry<Struct, LinkedHashMap<String, Obj>> entry : classVTables.entrySet())
+        {
+            Struct classStruct = entry.getKey();
+            LinkedHashMap<String, Obj> vtable = entry.getValue();
+            int addr = classVTableAddrs.get(classStruct);
+
+            for (Map.Entry<String, Obj> methodEntry : vtable.entrySet())
+            {
+                String methodName = methodEntry.getKey();
+                Obj methodObj = methodEntry.getValue();
+
+                // Write method name characters
+                for (char c : methodName.toCharArray())
+                {
+                    Code.loadConst((int) c);
+                    Code.put(Code.putstatic);
+                    Code.put2(addr++);
+                }
+
+                // Write name terminator (-1)
+                Code.loadConst(-1);
+                Code.put(Code.putstatic);
+                Code.put2(addr++);
+
+                // Write method address
+                Code.loadConst(methodObj.getAdr());
+                Code.put(Code.putstatic);
+                Code.put2(addr++);
+            }
+
+            // Write VFT terminator (-2)
+            Code.loadConst(-2);
+            Code.put(Code.putstatic);
+            Code.put2(addr++);
+        }
+    }
+
+    private boolean isVirtualMethod(Obj obj)
+    {
+        if (obj.getKind() != Obj.Meth) return false;
+        // A method is virtual if its locals contain "this" (the first local)
+        for (Obj local : obj.getLocalSymbols())
+        {
+            if ("this".equals(local.getName()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private LinkedHashMap<String, Obj> buildVTableMap(Struct struct)
+    {
+        LinkedHashMap<String, Obj> vtable = new LinkedHashMap<>();
+        Struct parenStruct = struct.getElemType();
+
+        if (parenStruct != null)
+        {
+            vtable.putAll(buildVTableMap(parenStruct));
+        }
+        
+        LinkedHashMap<String, Obj> ownMethods = classOwnMethods.get(struct);
+        if (ownMethods != null)
+        {
+            for (Map.Entry<String, Obj> entry : ownMethods.entrySet())
+            {
+                vtable.put(entry.getKey(), entry.getValue());
+            }
+        }
+        
+        return vtable;
+    }
+
 }

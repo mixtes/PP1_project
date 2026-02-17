@@ -75,9 +75,11 @@ public class Compiler
 				if (objFile.exists())
 					objFile.delete();
 
-				CodeGenerator codeGenerator = new CodeGenerator();
+				CodeGenerator codeGenerator = new CodeGenerator(semanticAnalyzer.nVars);
 				program.traverseBottomUp(codeGenerator);
-				Code.dataSize = semanticAnalyzer.nVars;
+
+				Code.dataSize = codeGenerator.getDataSize();
+
 				Code.mainPc = codeGenerator.getMainPC();
 				Code.write(new FileOutputStream(objFile));
 			}

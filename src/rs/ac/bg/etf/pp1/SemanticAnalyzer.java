@@ -527,6 +527,8 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		Tab.openScope();
 		this.currentFieldAddress = 1;
 		this.currentClassMembersMap = new HashMap<>();
+
+		absClassName.obj = this.currentClass;
 	}
 
 	@Override
@@ -547,18 +549,17 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	{
 		Obj classType = Tab.find(className.getI1());
 		this.currentClassStructNode = new Struct(Struct.Class);
-		if (classType != Tab.noObj)
-		{
+		if (classType != Tab.noObj) {
 			report_error("Multiple definitions of class type: " + className.getI1(), className);
-		  	this.currentClass = new Obj(Obj.Type, className.getI1(), this.currentClassStructNode);
-		}
-		else
-		{
+			this.currentClass = new Obj(Obj.Type, className.getI1(), this.currentClassStructNode);
+		} else {
 			this.currentClass = Tab.insert(Obj.Type, className.getI1(), this.currentClassStructNode);
 		}
 		Tab.openScope();
 		this.currentFieldAddress = 1;
 		this.currentClassMembersMap = new HashMap<>();
+
+		className.obj = this.currentClass;
 	}
 
 	@Override

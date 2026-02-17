@@ -57,8 +57,6 @@ nonterminal ClassDecl ClassDecl;
 nonterminal EnumDeclList EnumDeclList;
 nonterminal AbstractClassDecl AbstractClassDecl;
 nonterminal MethodDeclList MethodDeclList;
-nonterminal ClassName ClassName;
-nonterminal AbsClassName AbsClassName;
 nonterminal Type Type;
 nonterminal ConstDecl ConstDecl;
 nonterminal Constant Constant;
@@ -115,7 +113,7 @@ nonterminal Mulop Mulop;
 nonterminal MinusOpt MinusOpt;
 nonterminal DesignatorSuffix DesignatorSuffix;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct ExtensionFactor, Factor, FactorList, Term, TermList, SimpleExpression, Expression, Condition, CondFact, CondTerm;
-nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorName, MethodTypeAndName;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorName, MethodTypeAndName, ClassName, AbsClassName;
 
 precedence left ELS;
 

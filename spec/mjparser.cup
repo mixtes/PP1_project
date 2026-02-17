@@ -50,7 +50,6 @@ terminal EQL, NEQ, GRT, GRE, LET, LTE;
 
 nonterminal Program, ProgramName, DeclList;
 nonterminal ConstDeclList, VarDeclList, ClassDecl, EnumDeclList, AbstractClassDecl, MethodDeclList;
-nonterminal ClassName, AbsClassName;
 nonterminal Type, ConstDecl, Constant, AdditionalConstDecl;
 nonterminal VarDecl, VarList, VarDeclListMultiple;
 nonterminal EnumIDT, EnumName, AdditionalEnumIDT, MethodDeclListOpt, ExtendsOpt;
@@ -63,7 +62,7 @@ nonterminal ActParsOpt, ActPar, ActParsAdditional, ActParsListOpener, AssignOp, 
 nonterminal MinusOpt;
 nonterminal DesignatorSuffix;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct ExtensionFactor, Factor, FactorList, Term, TermList, SimpleExpression, Expression, Condition, CondFact, CondTerm;
-nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorName, MethodTypeAndName;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorName, MethodTypeAndName, ClassName, AbsClassName;
 
 precedence left ELS;
 
