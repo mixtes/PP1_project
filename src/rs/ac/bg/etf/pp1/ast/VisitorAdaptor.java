@@ -1,6 +1,6 @@
 // generated with ast extension for cup
 // version 0.8
-// 17/1/2026 16:4:33
+// 1/2/2026 21:4:38
 
 
 package rs.ac.bg.etf.pp1.ast;
@@ -126,6 +126,10 @@ public abstract class VisitorAdaptor implements Visitor {
     public void visit(ElseMarker ElseMarker) { visit(); }
     public void visit(ElseOpt_epsilon ElseOpt_epsilon) { visit(); }
     public void visit(ElseOpt_else ElseOpt_else) { visit(); }
+    public void visit(ForeachBodyStart ForeachBodyStart) { visit(); }
+    public void visit(WhileBodyStart WhileBodyStart) { visit(); }
+    public void visit(WhileConditionStart WhileConditionStart) { visit(); }
+    public void visit(WhileInit WhileInit) { visit(); }
     public void visit(ForBodyStart ForBodyStart) { visit(); }
     public void visit(ForUpdateStart ForUpdateStart) { visit(); }
     public void visit(ForConditionStart ForConditionStart) { visit(); }
@@ -134,6 +138,9 @@ public abstract class VisitorAdaptor implements Visitor {
     public void visit(ThenMarker ThenMarker) { visit(); }
     public void visit(IfStart IfStart) { visit(); }
     public void visit(Statement_block Statement_block) { visit(); }
+    public void visit(Statement_foreach Statement_foreach) { visit(); }
+    public void visit(Statement_do_while Statement_do_while) { visit(); }
+    public void visit(Statement_while Statement_while) { visit(); }
     public void visit(Statement_for Statement_for) { visit(); }
     public void visit(Statement_switch Statement_switch) { visit(); }
     public void visit(Statement_print Statement_print) { visit(); }

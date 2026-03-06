@@ -52,9 +52,13 @@ import java_cup.runtime.Symbol;
 "extends"						{ return new_symbol(sym.EXT, yytext()); }
 "continue"						{ return new_symbol(sym.CON, yytext()); }
 "for"							{ return new_symbol(sym.FOR, yytext()); }
+"foreach"						{ return new_symbol(sym.FOR, yytext()); }
 "length"						{ return new_symbol(sym.LEN, yytext()); }
 "switch"						{ return new_symbol(sym.SWC, yytext()); }
 "case"							{ return new_symbol(sym.CSE, yytext()); }
+
+"do"							{ return new_symbol(sym.SDO, yytext()); }	
+"while"							{ return new_symbol(sym.WHL, yytext()); }
 
 "+"								{ return new_symbol(sym.PLS, yytext()); }
 "-"								{ return new_symbol(sym.MNS, yytext()); }

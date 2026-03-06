@@ -48,6 +48,8 @@ terminal INC, DEC, LOR, AND, QSM, COL, MNS, PLS, MUL, DIV, MOD;
 terminal NEW, DOT, LEN, CSE;
 terminal EQL, NEQ, GRT, GRE, LET, LTE;
 
+terminal WHL, SDO;
+
 nonterminal Program, ProgramName, DeclList;
 nonterminal ConstDeclList, VarDeclList, ClassDecl, EnumDeclList, AbstractClassDecl, MethodDeclList;
 nonterminal Type, ConstDecl, Constant, AdditionalConstDecl;
@@ -63,6 +65,8 @@ nonterminal MinusOpt;
 nonterminal DesignatorSuffix;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct ExtensionFactor, Factor, FactorList, Term, TermList, SimpleExpression, Expression, Condition, CondFact, CondTerm;
 nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorName, MethodTypeAndName, ClassName, AbsClassName;
+
+nonterminal WhileInit, WhileConditionStart, WhileBodyStart, ForeachBodyStart;
 
 precedence left ELS;
 
@@ -263,6 +267,12 @@ Statement ::= (Statement_designator) DesignatorStatement SCL
 				|
 				(Statement_for) ForInit SOB DesignatorStatementOpt SCL ForConditionStart ConditionOpt SCL ForUpdateStart DesignatorStatementOpt ForBodyStart SCB Statement
 				|
+				(Statement_while) WhileInit SOB WhileConditionStart Condition WhileBodyStart SCB Statement
+				|
+				(Statement_do_while) SDO Statement WHL SOB Condition SCB SCL
+				|
+				(Statement_foreach) ForInit SOB Designator COL Designator SCB ForeachBodyStart Statement
+				|
 				(Statement_block) LOB StatementList LCB
 				;
 
@@ -279,6 +289,14 @@ ForConditionStart ::= (ForConditionStart) /* e */;
 ForUpdateStart ::= (ForUpdateStart) /* e */;
 
 ForBodyStart ::= (ForBodyStart) /* e */;
+
+WhileInit ::= (WhileInit) WHL;
+
+WhileConditionStart ::= (WhileConditionStart) /* e */;
+
+WhileBodyStart ::= (WhileBodyStart) /* e */;
+
+ForeachBodyStart ::= (ForeachBodyStart) /* e */;
 
 ElseOpt ::= (ElseOpt_else) ElseMarker Statement
 				|

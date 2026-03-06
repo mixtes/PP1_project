@@ -48,6 +48,8 @@ terminal INC, DEC, LOR, AND, QSM, COL, MNS, PLS, MUL, DIV, MOD;
 terminal NEW, DOT, LEN, CSE;
 terminal EQL, NEQ, GRT, GRE, LET, LTE;
 
+terminal WHL, SDO;
+
 nonterminal Program Program;
 nonterminal ProgramName ProgramName;
 nonterminal DeclList DeclList;
@@ -115,6 +117,11 @@ nonterminal MinusOpt MinusOpt;
 nonterminal DesignatorSuffix DesignatorSuffix;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct ExtensionFactor, Factor, FactorList, Term, TermList, SimpleExpression, Expression, Condition, CondFact, CondTerm;
 nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorName, MethodTypeAndName, ClassName, AbsClassName;
+
+nonterminal WhileInit WhileInit;
+nonterminal WhileConditionStart WhileConditionStart;
+nonterminal WhileBodyStart WhileBodyStart;
+nonterminal ForeachBodyStart ForeachBodyStart;
 
 precedence left ELS;
 
@@ -315,6 +322,12 @@ Statement ::= (Statement_designator) DesignatorStatement:D1 SCL {: RESULT=new St
 				|
 				(Statement_for) ForInit:F1 SOB DesignatorStatementOpt:D2 SCL ForConditionStart:F3 ConditionOpt:C4 SCL ForUpdateStart:F5 DesignatorStatementOpt:D6 ForBodyStart:F7 SCB Statement:S8 {: RESULT=new Statement_for(F1, D2, F3, C4, F5, D6, F7, S8); RESULT.setLine(F1left); :}
 				|
+				(Statement_while) WhileInit:W1 SOB WhileConditionStart:W2 Condition:C3 WhileBodyStart:W4 SCB Statement:S5 {: RESULT=new Statement_while(W1, W2, C3, W4, S5); RESULT.setLine(W1left); :}
+				|
+				(Statement_do_while) SDO Statement:S1 WHL SOB Condition:C2 SCB SCL {: RESULT=new Statement_do_while(S1, C2); RESULT.setLine(S1left); :}
+				|
+				(Statement_foreach) ForInit:F1 SOB Designator:D2 COL Designator:D3 SCB ForeachBodyStart:F4 Statement:S5 {: RESULT=new Statement_foreach(F1, D2, D3, F4, S5); RESULT.setLine(F1left); :}
+				|
 				(Statement_block) LOB StatementList:S1 LCB {: RESULT=new Statement_block(S1); RESULT.setLine(S1left); :}
 				;
 
@@ -331,6 +344,14 @@ ForConditionStart ::= (ForConditionStart) {: RESULT=new ForConditionStart(); :} 
 ForUpdateStart ::= (ForUpdateStart) {: RESULT=new ForUpdateStart(); :} /* e */;
 
 ForBodyStart ::= (ForBodyStart) {: RESULT=new ForBodyStart(); :} /* e */;
+
+WhileInit ::= (WhileInit) WHL {: RESULT=new WhileInit(); :};
+
+WhileConditionStart ::= (WhileConditionStart) {: RESULT=new WhileConditionStart(); :} /* e */;
+
+WhileBodyStart ::= (WhileBodyStart) {: RESULT=new WhileBodyStart(); :} /* e */;
+
+ForeachBodyStart ::= (ForeachBodyStart) {: RESULT=new ForeachBodyStart(); :} /* e */;
 
 ElseOpt ::= (ElseOpt_else) ElseMarker:E1 Statement:S2 {: RESULT=new ElseOpt_else(E1, S2); RESULT.setLine(E1left); :}
 				|

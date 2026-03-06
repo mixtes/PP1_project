@@ -67,6 +67,7 @@ public class Compiler
 			boolTypeObj.setAdr(-1);
 			boolTypeObj.setLevel(-1);
 
+			// semantic analysis
 			SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer();
 			program.traverseBottomUp(semanticAnalyzer);
 

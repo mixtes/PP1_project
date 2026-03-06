@@ -206,21 +206,119 @@ public class CodeGenerator extends VisitorAdaptor {
     @Override
     public void visit(Statement_print statement)
     {
-        if (statement.getNumConstOpt() instanceof NumConstOpt_exists)
-        {
-            NumConstOpt_exists numConstOpt = (NumConstOpt_exists) statement.getNumConstOpt();
-            int width = numConstOpt.getNumConst().getN1();
-            Code.loadConst(width);
-        }
-        else
-        {
-            Code.loadConst(0);
-        }
+        Struct exprType = statement.getExpression().struct;
 
-        if (statement.getExpression().struct.equals(Tab.charType))
-            Code.put(Code.bprint);
+        if (exprType.getKind() == Struct.Array)
+        {
+            // Array printing
+            Struct elemType = exprType.getElemType();
+
+            if (statement.getNumConstOpt() instanceof NumConstOpt_exists)
+            {
+                // print(arr, N) — print arr[N]
+                NumConstOpt_exists numConstOpt = (NumConstOpt_exists) statement.getNumConstOpt();
+                int index = numConstOpt.getNumConst().getN1();
+
+                // stack: [arr_addr]
+                Code.loadConst(index);
+                if (elemType.equals(Tab.charType))
+                    Code.put(Code.baload);
+                else
+                    Code.put(Code.aload);
+                Code.loadConst(0);
+                if (elemType.equals(Tab.charType))
+                    Code.put(Code.bprint);
+                else
+                    Code.put(Code.print);
+            }
+            else
+            {
+                // print(arr) — print all elements
+                // stack: [arr_addr]
+                // Save arr_addr in a temp global slot
+                int arrSlot = tempSlotBase + nextTempSlot++;
+                int idxSlot = tempSlotBase + nextTempSlot++;
+
+                // Store arr_addr
+                Code.put(Code.dup);               // [arr_addr, arr_addr]
+                Code.put(Code.putstatic);
+                Code.put2(arrSlot);                // [arr_addr]  (saved to slot)
+
+                // Get length, save for comparison
+                Code.put(Code.arraylength);        // [len]
+
+                // Store i = 0
+                Code.loadConst(0);                 // [len, 0]
+                Code.put(Code.putstatic);
+                Code.put2(idxSlot);                // [len]  (i=0 saved)
+
+                // LOOP_TOP:
+                int loopTop = Code.pc;
+                // stack: [len]
+                Code.put(Code.getstatic);
+                Code.put2(idxSlot);                // [len, i]
+
+                // Compare: stack is [len, i]. putFalseJump(gt) tests len > i, jumps when false (len <= i)
+                Code.putFalseJump(Code.gt, 0);     // if !(len > i) goto END
+                int endPatch = Code.pc - 2;
+                // stack: []
+
+                // Load arr[i]
+                Code.put(Code.getstatic);
+                Code.put2(arrSlot);                // [arr_addr]
+                Code.put(Code.getstatic);
+                Code.put2(idxSlot);                // [arr_addr, i]
+                if (elemType.equals(Tab.charType))
+                    Code.put(Code.baload);
+                else
+                    Code.put(Code.aload);          // [arr[i]]
+
+                // Print
+                Code.loadConst(0);                 // [arr[i], 0]
+                if (elemType.equals(Tab.charType))
+                    Code.put(Code.bprint);
+                else
+                    Code.put(Code.print);          // []
+
+                // i++
+                Code.put(Code.getstatic);
+                Code.put2(idxSlot);                // [i]
+                Code.loadConst(1);                 // [i, 1]
+                Code.put(Code.add);                // [i+1]
+                Code.put(Code.putstatic);
+                Code.put2(idxSlot);                // []  (i+1 saved)
+
+                // Reload len and jump to top
+                Code.put(Code.getstatic);
+                Code.put2(arrSlot);                // [arr_addr]
+                Code.put(Code.arraylength);        // [len]
+                Code.putJump(loopTop);
+
+                // END:
+                Code.fixup(endPatch);
+
+                nextTempSlot -= 2;
+            }
+        }
         else
-            Code.put(Code.print);
+        {
+            // Scalar printing (original behavior)
+            if (statement.getNumConstOpt() instanceof NumConstOpt_exists)
+            {
+                NumConstOpt_exists numConstOpt = (NumConstOpt_exists) statement.getNumConstOpt();
+                int width = numConstOpt.getNumConst().getN1();
+                Code.loadConst(width);
+            }
+            else
+            {
+                Code.loadConst(0);
+            }
+
+            if (exprType.equals(Tab.charType))
+                Code.put(Code.bprint);
+            else
+                Code.put(Code.print);
+        }
     }
 
     @Override
@@ -719,9 +817,19 @@ public class CodeGenerator extends VisitorAdaptor {
     @Override
     public void visit(ForInit forInit)
     {
-        condFalseJumps.push(new ArrayList<>());
-        condTrueJumps.push(new ArrayList<>());
-        breakJumps.push(new ArrayList<>());
+        boolean isForeach = forInit.getParent() instanceof Statement_foreach;
+        if (isForeach)
+        {
+            breakJumps.push(new ArrayList<>());
+            continueTargetAddr.push(-1); // deferred
+            continueJumps.push(new ArrayList<>());
+        }
+        else
+        {
+            condFalseJumps.push(new ArrayList<>());
+            condTrueJumps.push(new ArrayList<>());
+            breakJumps.push(new ArrayList<>());
+        }
     }
 
     @Override
@@ -742,6 +850,7 @@ public class CodeGenerator extends VisitorAdaptor {
 
         // Loop back here after the body or a continue statement
         forUpdateAddr.push(Code.pc);
+        continueTargetAddr.push(Code.pc);
     }
 
     @Override
@@ -770,8 +879,141 @@ public class CodeGenerator extends VisitorAdaptor {
 
         forCondAddr.pop();
         forUpdateAddr.pop();
+        continueTargetAddr.pop();
         condFalseJumps.pop();
         condTrueJumps.pop();
+    }
+    
+    /* While loop */
+    
+    private Stack<Integer> whileCondAddr = new Stack<>();
+    
+    @Override
+    public void visit(WhileInit whileInit)
+    {
+    	condFalseJumps.push(new ArrayList<>());
+        condTrueJumps.push(new ArrayList<>());
+        breakJumps.push(new ArrayList<>());
+    }
+    
+    @Override
+    public void visit(WhileConditionStart whileConditionStart)
+    {
+    	whileCondAddr.push(Code.pc);
+    	continueTargetAddr.push(Code.pc);
+    }
+    
+    @Override
+    public void visit(WhileBodyStart whileBodyStart)
+    {
+    	fixupTrueJumps();
+    }
+    
+    @Override
+    public void visit(Statement_while statementWhile)
+    {
+    	Code.putJump(whileCondAddr.peek());
+    	
+    	fixupFalseJumps();
+    	
+    	List<Integer> breaks = breakJumps.pop();
+        for (int addr : breaks)
+            Code.fixup(addr);
+        
+        whileCondAddr.pop();
+        continueTargetAddr.pop();
+        condFalseJumps.pop();
+        condTrueJumps.pop();
+    }
+    
+    /* ForEach */
+
+    private Stack<int[]> foreachSlots = new Stack<>(); // [arrSlot, idxSlot]
+    private Stack<Integer> foreachCondAddr = new Stack<>();
+    private Stack<Integer> foreachEndPatchAddr = new Stack<>();
+
+    // ForInit is shared between for and foreach.
+    // For foreach, the setup is done in ForeachBodyStart instead.
+
+    @Override
+    public void visit(ForeachBodyStart foreachBodyStart)
+    {
+        // At this point both Designators have been visited (iter var and array)
+        // Get the array and iterator from the parent Statement_foreach
+        Statement_foreach parent = (Statement_foreach) foreachBodyStart.getParent();
+        Obj arrObj = parent.getDesignator1().obj;
+        Obj iterVar = parent.getDesignator().obj;
+
+        int arrSlot = tempSlotBase + nextTempSlot++;
+        int idxSlot = tempSlotBase + nextTempSlot++;
+        foreachSlots.push(new int[]{arrSlot, idxSlot});
+
+        // Load array address and save it
+        Code.load(arrObj);
+        Code.put(Code.putstatic);
+        Code.put2(arrSlot);
+
+        // Init index = 0
+        Code.loadConst(0);
+        Code.put(Code.putstatic);
+        Code.put2(idxSlot);
+
+        // CONDITION: if index >= arr.length goto END
+        int condAddr = Code.pc;
+        foreachCondAddr.push(condAddr);
+
+        Code.put(Code.getstatic);
+        Code.put2(arrSlot);
+        Code.put(Code.arraylength);  // [len]
+        Code.put(Code.getstatic);
+        Code.put2(idxSlot);          // [len, idx]
+        Code.putFalseJump(Code.gt, 0); // if !(len > idx) goto END
+        foreachEndPatchAddr.push(Code.pc - 2);
+
+        // iter = arr[index]
+        Code.put(Code.getstatic);
+        Code.put2(arrSlot);
+        Code.put(Code.getstatic);
+        Code.put2(idxSlot);
+        if (arrObj.getType().getElemType() == Tab.charType)
+            Code.put(Code.baload);
+        else
+            Code.put(Code.aload);
+        Code.store(iterVar);
+    }
+
+    @Override
+    public void visit(Statement_foreach statementForeach)
+    {
+        int[] slots = foreachSlots.pop();
+        int idxSlot = slots[1];
+
+        // Fix up continue jumps to here (index++ section)
+        List<Integer> continues = continueJumps.pop();
+        for (int addr : continues)
+            Code.fixup(addr);
+        continueTargetAddr.pop();
+
+        // index++
+        Code.put(Code.getstatic);
+        Code.put2(idxSlot);
+        Code.loadConst(1);
+        Code.put(Code.add);
+        Code.put(Code.putstatic);
+        Code.put2(idxSlot);
+
+        // Jump back to condition
+        Code.putJump(foreachCondAddr.pop());
+
+        // END: fix up condition false jump
+        Code.fixup(foreachEndPatchAddr.pop());
+
+        // Fix up break jumps
+        List<Integer> breaks = breakJumps.pop();
+        for (int addr : breaks)
+            Code.fixup(addr);
+
+        nextTempSlot -= 2;
     }
 
     /* Break/Continue */
@@ -783,10 +1025,23 @@ public class CodeGenerator extends VisitorAdaptor {
         breakJumps.peek().add(Code.pc - 2);
     }
 
+    private Stack<Integer> continueTargetAddr = new Stack<>(); // -1 means deferred (foreach)
+    private Stack<List<Integer>> continueJumps = new Stack<>(); // for foreach deferred continues
+
     @Override
     public void visit(Statement_continue statementContinue)
     {
-        Code.putJump(forUpdateAddr.peek());
+        int target = continueTargetAddr.peek();
+        if (target == -1)
+        {
+            // Deferred continue (foreach) - record for later fixup
+            Code.putJump(0);
+            continueJumps.peek().add(Code.pc - 2);
+        }
+        else
+        {
+            Code.putJump(target);
+        }
     }
 
     /* Ternary operator */

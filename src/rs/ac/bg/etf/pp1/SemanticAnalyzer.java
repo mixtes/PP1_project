@@ -1172,11 +1172,19 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	@Override
 	public void visit(Statement_print statement)
 	{
-		if (statement.getExpression().struct != Tab.intType &&
-			statement.getExpression().struct != Tab.charType &&
-			statement.getExpression().struct != this.boolType)
+		Struct exprType = statement.getExpression().struct;
+		if (exprType != Tab.intType &&
+			exprType != Tab.charType &&
+			exprType != this.boolType)
 		{
-			report_error("Operand of 'print' must be of int, char, or bool type.", statement);
+			// Also allow arrays of int, char, bool
+			if (exprType.getKind() != Struct.Array ||
+				(exprType.getElemType() != Tab.intType &&
+				 exprType.getElemType() != Tab.charType &&
+				 exprType.getElemType() != this.boolType))
+			{
+				report_error("Operand of 'print' must be of int, char, bool, or array of these types.", statement);
+			}
 		}
 	}
 
@@ -1260,6 +1268,37 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	public void visit(Statement_for statement)
 	{
 		loopDepth--;
+	}
+
+	@Override
+	public void visit(Statement_foreach statement)
+	{
+		loopDepth--;
+
+		Obj iterVar = statement.getDesignator().obj;
+		Obj arrDesignator = statement.getDesignator1().obj;
+
+		// D1 must be a variable, field, or array element
+		int d1Kind = iterVar.getKind();
+		if (d1Kind != Obj.Var && d1Kind != Obj.Elem && d1Kind != Obj.Fld)
+		{
+			report_error("Foreach iterator must be a variable, array element, or field.", statement);
+			return;
+		}
+
+		// D2 must be an array
+		if (arrDesignator.getType().getKind() != Struct.Array)
+		{
+			report_error("Foreach source must be an array.", statement);
+			return;
+		}
+
+		// D1 type must be compatible with D2 element type
+		Struct elemType = arrDesignator.getType().getElemType();
+		if (!elemType.assignableTo(iterVar.getType()))
+		{
+			report_error("Foreach iterator type is not compatible with array element type.", statement);
+		}
 	}
 
 	@Override
