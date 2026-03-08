@@ -106,7 +106,7 @@ public class CodeGenerator extends VisitorAdaptor {
         if (memberObj == null)
         {
             // Member not found — semantic analysis should have caught this;
-            // push a sentinel to keep the stack balanced and bail out.
+            // push a decoy to keep the stack balanced and bail out.
             designatorObjStack.set(designatorObjStack.size() - 1, new Obj(Obj.Var, suffix.getI2(), Tab.noType));
             return;
         }
@@ -616,7 +616,8 @@ public class CodeGenerator extends VisitorAdaptor {
         SyntaxNode current = node.getParent();
         while (current != null)
         {
-            if (current instanceof Statement_if || current instanceof Statement_for)
+            if (current instanceof Statement_if || current instanceof Statement_for
+                || current instanceof Statement_while || current instanceof Statement_do_while)
                 return null;
             if (current instanceof Expression_condition)
                 return current;
@@ -926,6 +927,56 @@ public class CodeGenerator extends VisitorAdaptor {
         condTrueJumps.pop();
     }
     
+    /* Do-While loop */
+
+    private Stack<Integer> doWhileBodyAddr = new Stack<>();
+
+    @Override
+    public void visit(DoWhileInit doWhileInit)
+    {
+        breakJumps.push(new ArrayList<>());
+        continueTargetAddr.push(-1); // deferred — body is emitted before condition
+        continueJumps.push(new ArrayList<>());
+        doWhileBodyAddr.push(Code.pc);
+    }
+
+    @Override
+    public void visit(DoWhileCondStart doWhileCondStart)
+    {
+        condFalseJumps.push(new ArrayList<>());
+        condTrueJumps.push(new ArrayList<>());
+
+        // Fix up deferred continue jumps to here (condition start)
+        List<Integer> continues = continueJumps.peek();
+        for (int addr : continues)
+            Code.fixup(addr);
+        continues.clear();
+    }
+
+    @Override
+    public void visit(Statement_do_while statementDoWhile)
+    {
+        // Fix up OR short-circuit true jumps
+        fixupTrueJumps();
+
+        // Condition was true — jump back to body
+        Code.putJump(doWhileBodyAddr.peek());
+
+        // Condition was false — exit loop
+        fixupFalseJumps();
+
+        // Fix up break jumps to here (END)
+        List<Integer> breaks = breakJumps.pop();
+        for (int addr : breaks)
+            Code.fixup(addr);
+
+        doWhileBodyAddr.pop();
+        continueTargetAddr.pop();
+        continueJumps.pop();
+        condFalseJumps.pop();
+        condTrueJumps.pop();
+    }
+
     /* ForEach */
 
     private Stack<int[]> foreachSlots = new Stack<>(); // [arrSlot, idxSlot]
@@ -1177,11 +1228,11 @@ public class CodeGenerator extends VisitorAdaptor {
     private LinkedHashMap<String, Obj> buildVTableMap(Struct struct)
     {
         LinkedHashMap<String, Obj> vtable = new LinkedHashMap<>();
-        Struct parenStruct = struct.getElemType();
+        Struct parentStruct = struct.getElemType();
 
-        if (parenStruct != null)
+        if (parentStruct != null)
         {
-            vtable.putAll(buildVTableMap(parenStruct));
+            vtable.putAll(buildVTableMap(parentStruct));
         }
         
         LinkedHashMap<String, Obj> ownMethods = classOwnMethods.get(struct);

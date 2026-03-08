@@ -63,10 +63,12 @@ nonterminal CaseList, CaseListOpt, DesignatorStatementOpt, ConditionOpt, NumCons
 nonterminal ActParsOpt, ActPar, ActParsAdditional, ActParsListOpener, AssignOp, Relop, Addop, Mulop;
 nonterminal MinusOpt;
 nonterminal DesignatorSuffix;
+
 nonterminal rs.etf.pp1.symboltable.concepts.Struct ExtensionFactor, Factor, FactorList, Term, TermList, SimpleExpression, Expression, Condition, CondFact, CondTerm;
 nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorName, MethodTypeAndName, ClassName, AbsClassName;
 
 nonterminal WhileInit, WhileConditionStart, WhileBodyStart, ForeachBodyStart;
+nonterminal DoWhileInit, DoWhileCondStart;
 
 precedence left ELS;
 
@@ -269,7 +271,7 @@ Statement ::= (Statement_designator) DesignatorStatement SCL
 				|
 				(Statement_while) WhileInit SOB WhileConditionStart Condition WhileBodyStart SCB Statement
 				|
-				(Statement_do_while) SDO Statement WHL SOB Condition SCB SCL
+				(Statement_do_while) DoWhileInit Statement WHL SOB DoWhileCondStart Condition SCB SCL
 				|
 				(Statement_foreach) ForInit SOB Designator COL Designator SCB ForeachBodyStart Statement
 				|
@@ -297,6 +299,10 @@ WhileConditionStart ::= (WhileConditionStart) /* e */;
 WhileBodyStart ::= (WhileBodyStart) /* e */;
 
 ForeachBodyStart ::= (ForeachBodyStart) /* e */;
+
+DoWhileInit ::= (DoWhileInit) SDO;
+
+DoWhileCondStart ::= (DoWhileCondStart) /* e */;
 
 ElseOpt ::= (ElseOpt_else) ElseMarker Statement
 				|

@@ -20,7 +20,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	private boolean errorDetected = false;	
 	Logger log = Logger.getLogger(getClass());
 	private Obj myProgram;
-	int nVars;
+	private int nVars;
 
 	private Obj currentMethod;
 	private boolean methodHasReturnStmt = false;
@@ -36,7 +36,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	private int currentFieldAddress;
 
 	private HashSet<Struct> abstractClassStructNodes = new HashSet<>();
-	private HashMap<String, Obj> currentClassMembersMap = null;
+	private HashMap<String, Obj> currentClassMembersMap = null; // maps member name to Obj
 
 	private int c_val;
 	private Struct c_type;
@@ -73,6 +73,11 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	public boolean success()
 	{
 		return !this.errorDetected;
+	}
+
+	public int nVars()
+	{
+		return this.nVars;
 	}
 	
 	/* symbol table */
@@ -183,9 +188,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		Obj variable = null;
 
 		if (this.currentMethod == null && this.currentClass == null)
-			variable = Tab.find(varDecl.getI1());
+			variable = Tab.find(varDecl.getI1()); // either finds symbol or noObj
 		else
-			variable = Tab.currentScope().findSymbol(varDecl.getI1());
+			variable = Tab.currentScope().findSymbol(varDecl.getI1()); // either finds symbol or null
 
 		if (variable != null && variable != Tab.noObj)
 		{
@@ -304,7 +309,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		{
 			Obj thisParam = Tab.insert(Obj.Var, "this", this.currentClassStructNode);
 			thisParam.setLevel(2);
-			thisParam.setFpPos(1);
+			thisParam.setFpPos(1); // we mark formal parameters with fpPos = 1
 			this.currentMethod.setLevel(1);
 			if (this.currentClassMembersMap != null)
 				this.currentClassMembersMap.put(methodName, this.currentMethod);
@@ -342,7 +347,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		{
 			Obj thisParam = Tab.insert(Obj.Var, "this", this.currentClassStructNode);
 			thisParam.setLevel(2);
-			thisParam.setFpPos(1);
+			thisParam.setFpPos(1); // we mark formal parameters with fpPos = 1
 			this.currentMethod.setLevel(1);
 			if (this.currentClassMembersMap != null)
 				this.currentClassMembersMap.put(methodName, this.currentMethod);
@@ -354,14 +359,14 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	{
 		Obj parameter = Tab.currentScope().findSymbol(formPar.getI2());
 		
-		if (parameter != null && parameter != Tab.noObj)
+		if (parameter != null)
 		{
 			report_error("Multiple definitions of formal parameter: " + formPar.getI2(), formPar);
 		}
 		else
 		{
 			parameter = Tab.insert(Obj.Var, formPar.getI2(), this.currentType);
-			parameter.setFpPos(1);
+			parameter.setFpPos(1); // we mark formal parameters with fpPos = 1
 			currentMethod.setLevel(currentMethod.getLevel() + 1);
 
 			if (this.currentClass != null)
@@ -376,14 +381,14 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	{
 		Obj parameter = Tab.currentScope().findSymbol(formPar.getI2());
 		
-		if (parameter != null && parameter != Tab.noObj)
+		if (parameter != null)
 		{
 			report_error("Multiple definitions of formal parameter: " + formPar.getI2(), formPar);
 		}
 		else
 		{
 			parameter = Tab.insert(Obj.Var, formPar.getI2(), new Struct(Struct.Array, this.currentType));
-			parameter.setFpPos(1);
+			parameter.setFpPos(1); // we mark formal parameters with fpPos = 1
 			currentMethod.setLevel(currentMethod.getLevel() + 1);
 
 			if (this.currentClass != null)
@@ -397,7 +402,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	public void visit(MethodDecl methodDecl)
 	{
 		String methodName = this.currentMethod.getName();
-		this.currentMethod.setFpPos(0);
+		this.currentMethod.setFpPos(0); // not an abstract method
 		Tab.chainLocalSymbols(this.currentMethod);
 		Tab.closeScope();
 
@@ -407,8 +412,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}
 		this.methodHasReturnStmt = false;
 
-		// If this method overrides an inherited abstract method, clear the abstract
-		// flag (fpPos=1) on any inherited copy so ClassDecl doesn't false-alarm.
+		// if we're in a class, check if we need to unmark any inherited abstract method with the same name
 		if (this.currentClass != null)
 		{
 			for (Obj sym : Tab.currentScope().values())
@@ -427,7 +431,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	@Override
 	public void visit(AbstractMethodDecl abstractMethodDecl)
 	{
-		this.currentMethod.setFpPos(1);
+		this.currentMethod.setFpPos(1); // mark method as abstract
 		Tab.chainLocalSymbols(this.currentMethod);
 		Tab.closeScope();
 
@@ -502,20 +506,20 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		String enumMemberName = enumMember.getI1();
 		int enumMemberValue = this.previousEnumValue + 1;
 
+		boolean valueUnique = isEnumMemberValueUnique(enumMemberValue);
+
 		if (Tab.currentScope().findSymbol(enumMemberName) != null)
 		{
 			report_error("Multiple definitions of enum member: " + enumMemberName, enumMember);
 			return;
 		}
+		else if (!valueUnique)
+		{
+			report_error("Enum members must be unique.", enumMember);
+			return;
+		}
 		else
 		{
-			boolean valueUnique = isEnumMemberValueUnique(enumMemberValue);
-			if (!valueUnique)
-			{
-				report_error("Enum members must be unique.", enumMember);
-				return;
-			}
-
 			Obj newEnumMember = Tab.insert(Obj.Con, enumMemberName, this.currentEnumStructNode);
 			newEnumMember.setAdr(enumMemberValue);
 			this.previousEnumValue = enumMemberValue;
@@ -565,10 +569,13 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	{
 		Obj classType = Tab.find(className.getI1());
 		this.currentClassStructNode = new Struct(Struct.Class);
-		if (classType != Tab.noObj) {
+		if (classType != Tab.noObj) 
+		{
 			report_error("Multiple definitions of class type: " + className.getI1(), className);
 			this.currentClass = new Obj(Obj.Type, className.getI1(), this.currentClassStructNode);
-		} else {
+		} 
+		else 
+		{
 			this.currentClass = Tab.insert(Obj.Type, className.getI1(), this.currentClassStructNode);
 		}
 		Tab.openScope();
@@ -1271,6 +1278,30 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	}
 
 	@Override
+	public void visit(WhileInit whileInit)
+	{
+		loopDepth++;
+	}
+
+	@Override
+	public void visit(Statement_while statement)
+	{
+		loopDepth--;
+	}
+
+	@Override
+	public void visit(DoWhileInit doWhileInit)
+	{
+		loopDepth++;
+	}
+
+	@Override
+	public void visit(Statement_do_while statement)
+	{
+		loopDepth--;
+	}
+
+	@Override
 	public void visit(Statement_foreach statement)
 	{
 		loopDepth--;
@@ -1295,7 +1326,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 
 		// D1 type must be compatible with D2 element type
 		Struct elemType = arrDesignator.getType().getElemType();
-		if (!elemType.assignableTo(iterVar.getType()))
+		if (!this.isAssignable_deep(elemType, iterVar.getType()))
 		{
 			report_error("Foreach iterator type is not compatible with array element type.", statement);
 		}

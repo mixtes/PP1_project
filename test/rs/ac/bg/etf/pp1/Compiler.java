@@ -83,7 +83,7 @@ public class Compiler
 				if (objFile.exists())
 					objFile.delete();
 
-				CodeGenerator codeGenerator = new CodeGenerator(semanticAnalyzer.nVars);
+				CodeGenerator codeGenerator = new CodeGenerator(semanticAnalyzer.nVars());
 				program.traverseBottomUp(codeGenerator);
 
 				Code.dataSize = codeGenerator.getDataSize();
